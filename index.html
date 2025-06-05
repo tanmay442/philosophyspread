@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Philosophy Spread India</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Ensure html and body take full height */
+        html {
+            scroll-behavior: smooth; /* Smooth scrolling for anchors */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* Dark background like the image */
+            color: #F3F4F6; /* Light text */
+            min-height: 100vh; /* Ensure body takes at least full viewport height */
+        }
+        /* Changed from .hero-video-bg to .hero-image-bg for clarity */
+        .hero-image-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the image covers the entire area */
+            z-index: -1; /* Behind other content */
+            opacity: 0.18; /* Darkened by changing from 0.3 to 0.2 */
+        }
+        .navbar-glass {
+            background: rgba(17, 24, 39, 0.75); /* Slightly more opaque dark background */
+            backdrop-filter: blur(12px); /* Increased blur */
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* Subtler border */
+        }
+        .logo-text {
+            font-weight: 900; /* Extra bold like "OneText" */
+            font-size: 1.75rem; /* 28px */
+            letter-spacing: -0.025em;
+        }
+        .hero-section {
+            min-height: 80vh; /* Adjust as needed */
+            position: relative;
+            overflow: hidden; /* Important for background */
+        }
+        .btn-primary {
+            background-color: #3B82F6; /* Blue accent */
+            color: white;
+            transition: all 0.2s ease-in-out; /* Smoother transition */
+        }
+        .btn-primary:hover {
+            background-color: #2563EB;
+            transform: translateY(-2px); /* Slight raise effect */
+            box-shadow: 0 5px 12px rgba(59, 130, 246, 0.35); /* Enhanced shadow */
+        }
+        .btn-secondary {
+            background-color: transparent;
+            color: #F3F4F6;
+            border: 1px solid #3B82F6;
+            transition: all 0.2s ease-in-out; /* Smoother transition */
+        }
+        .btn-secondary:hover {
+            background-color: #3B82F6;
+            color: white;
+            transform: translateY(-2px); /* Slight raise effect */
+            box-shadow: 0 5px 12px rgba(59, 130, 246, 0.25);
+        }
+        .section-title {
+            font-size: 2.5rem; /* 40px */
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .footer-bg {
+            background-color: #1F2937; /* Slightly lighter dark for footer */
+        }
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.75); /* Darker overlay for modal */
+        }
+        .modal-content {
+            background-color: #1F2937; /* bg-gray-800 */
+            margin: 10% auto;
+            padding: 30px; /* Increased padding */
+            border: 1px solid #374151; /* bg-gray-700 */
+            width: 90%;
+            max-width: 500px; /* Adjusted max-width */
+            border-radius: 12px; /* More rounded corners */
+            text-align: center;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35); /* Enhanced shadow */
+            position: relative; /* For close button positioning */
+        }
+        .close-button {
+            color: #9CA3AF; /* Lighter gray */
+            position: absolute; /* Position relative to modal-content */
+            top: 15px;
+            right: 20px;
+            font-size: 30px; /* Adjusted size */
+            font-weight: bold;
+            line-height: 1;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: #F3F4F6;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .founder-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 2px solid #3B82F6;
+        }
+        .nav-link {
+            padding: 0.75rem 1.15rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease-in-out;
+            font-weight: 500;
+            font-size: 1rem; /* Standardized font size */
+            margin: 0 0.25rem; /* Add small margin to disconnect links slightly */
+        }
+        .nav-link:hover {
+            background-color: rgba(55, 65, 81, 0.6); /* bg-gray-700 with adjusted opacity */
+            transform: translateY(-2px) scale(1.02); /* Slight lift and scale */
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2); /* Subtle shadow for floating effect */
+        }
+
+        .nav-button { /* Common class for nav buttons */
+            padding: 0.65rem 1.25rem; /* Adjusted padding */
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin-left: 0.5rem; /* Space from nav links */
+        }
+        .blog-card-interactive {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .blog-card-interactive:hover {
+            transform: scale(1.03) translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar-glass sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-24">
+                <div class="flex items-center">
+                    <a href="#" class="logo-text text-white transition-opacity hover:opacity-80">Philosophy<span class="text-blue-500">Spread</span> <span class="text-sm font-normal text-gray-300">Trust</span></a>
+                </div>
+                <div class="hidden md:flex items-center text-gray-300">
+                    <a href="#mission" class="nav-link hover:text-white">Mission</a>
+                    <a href="#logic-reasoning" class="nav-link hover:text-white">Logic & Reasoning</a>
+                    <a href="#blog" class="nav-link hover:text-white">Blog</a>
+                    <a href="#free-internet" class="nav-link hover:text-white">Free Internet</a>
+                    <a href="#get-involved" class="nav-link hover:text-white">Get Involved</a>
+                </div>
+                <div class="flex items-center">
+                    <button onclick="openModal('loginSignupModal')" class="btn-primary nav-button">Login / Sign Up</button>
+                    <div class="md:hidden ml-3"> {/* Added margin for spacing mobile menu button */}
+                         <button id="mobile-menu-button" class="text-gray-300 hover:text-white focus:outline-none focus:text-white p-2 rounded-md hover:bg-gray-700">
+                            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"> {/* Slightly larger icon */}
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu, show/hide based on menu state. -->
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-3 pt-2 pb-4 space-y-1 sm:px-4 bg-gray-800 rounded-b-lg shadow-xl"> {/* Enhanced mobile menu appearance */}
+                <a href="#mission" class="text-gray-200 hover:bg-gray-700 hover:text-white block px-3 py-3 rounded-md text-base font-medium">Mission</a>
+                <a href="#logic-reasoning" class="text-gray-200 hover:bg-gray-700 hover:text-white block px-3 py-3 rounded-md text-base font-medium">Logic & Reasoning</a>
+                <a href="#blog" class="text-gray-200 hover:bg-gray-700 hover:text-white block px-3 py-3 rounded-md text-base font-medium">Blog</a>
+                <a href="#free-internet" class="text-gray-200 hover:bg-gray-700 hover:text-white block px-3 py-3 rounded-md text-base font-medium">Free Internet</a>
+                <a href="#get-involved" class="text-gray-200 hover:bg-gray-700 hover:text-white block px-3 py-3 rounded-md text-base font-medium">Get Involved</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section flex items-center justify-center text-center py-20 px-4 sm:px-6 lg:px-8">
+        <!--so tired of doin it please turn out ot be good--!>
+        <img src="image.png" alt="Background" class="hero-image-bg" onerror="this.onerror=null;this.src='https://placehold.co/1920x1080/000000/FFFFFF?text=Background+Image+Not+Found';">
+        <div class="relative z-10 max-w-3xl mx-auto">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-6">
+                <span class="block text-white">Unveiling Wisdom.</span>
+                <span class="block text-blue-400">Inspiring India.</span>
+            </h1>
+            <p class="text-lg sm:text-xl text-gray-300 mb-8">
+                Philosophy Spread Trust is dedicated to exploring timeless philosophical concepts and fostering critical thinking across the nation. Join us on a journey of discovery and Wisdom.
+            </p>
+            <div>
+                <button onclick="openModal('missionDetailModal')" class="btn-primary px-8 py-3 rounded-lg text-lg font-semibold transform hover:scale-105">Explore Our Mission</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section id="mission" class="py-16 sm:py-20 scroll-mt-32">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="section-title">Our Mission</h2>
+            <p class="mt-4 text-lg text-gray-300 max-w-2xl mx-auto">
+                Our core mission is to make philosophical teachings accessible and relevant to everyone in India. We aim to foster a culture of intellectual curiosity, ethical reasoning, and open dialogue. Through various programs and resources, we strive to empower individuals to lead more thoughtful and meaningful lives.
+            </p>
+        </div>
+    </section>
+
+    <!-- Critical Logic and Reasoning Section -->
+    <section id="logic-reasoning" class="py-16 sm:py-20 bg-gray-800 scroll-mt-32">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="section-title text-white">The Art of Critical Logic & Reasoning</h2>
+            <p class="mt-4 text-lg text-gray-300 max-w-2xl mx-auto">
+                We champion critical logic as a vital tool for navigating life's complexities. Mastering reasoning helps to analyze information, construct sound arguments, and make informed decisions, fostering clarity in a world of diverse perspectives.
+            </p>
+             <div class="mt-8">
+                 <button onclick="openModal('logicModal')" class="btn-primary px-8 py-3 rounded-lg text-lg font-semibold transition duration-150 transform hover:scale-105">Explore Logical Frameworks</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" class="py-16 sm:py-20 scroll-mt-32">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="section-title">From Our Blog</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+                <!-- Blog Post Card 1 (Placeholder) -->
+                <div class="bg-gray-700 rounded-lg shadow-lg overflow-hidden blog-card-interactive cursor-pointer" onclick="openModal('blogModal')">
+                    <img src="https://placehold.co/600x400/374151/FFFFFF?text=Blog+Image+1" alt="Blog Post 1" class="w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/374151/FFFFFF?text=Image+Not+Found';">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">The Essence of Stoicism in Modern Life</h3>
+                        <p class="text-gray-400 text-sm mb-4">Explore how ancient Stoic principles can guide us through contemporary challenges...</p>
+                        <span class="text-blue-400 hover:text-blue-300 font-medium">Read More &rarr;</span>
+                    </div>
+                </div>
+                <!-- Blog Post Card 2 (Placeholder) -->
+                <div class="bg-gray-700 rounded-lg shadow-lg overflow-hidden blog-card-interactive cursor-pointer" onclick="openModal('blogModal')">
+                    <img src="https://placehold.co/600x400/374151/FFFFFF?text=Blog+Image+2" alt="Blog Post 2" class="w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/374151/FFFFFF?text=Image+Not+Found';">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-white">Vedanta: Understanding the Self</h3>
+                        <p class="text-gray-400 text-sm mb-4">A brief introduction to the profound teachings of Vedanta and its relevance today...</p>
+                        <span class="text-blue-400 hover:text-blue-300 font-medium">Read More &rarr;</span>
+                    </div>
+                </div>
+                <!-- Blog Post Card 3 (Placeholder) - Now "Explore All Blogs" -->
+                <div class="bg-gray-700 rounded-lg shadow-lg overflow-hidden blog-card-interactive cursor-pointer" onclick="window.location.href='http://example.com'">
+                     <img src="https://placehold.co/600x400/3B82F6/FFFFFF?text=Explore+Blogs" alt="Explore All Blogs" class="w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/3B82F6/FFFFFF?text=Explore+Blogs';">
+                    <div class="p-6 text-center">
+                        <h3 class="text-xl font-semibold mb-2 text-white">Explore All Blogs</h3>
+                        <p class="text-gray-400 text-sm mb-4">Discover a wider range of our philosophical insights and articles.</p>
+                        <span class="text-blue-400 hover:text-blue-300 font-medium">Click to View &rarr;</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Free Internet Section -->
+    <section id="free-internet" class="py-16 sm:py-20 bg-gray-800 scroll-mt-32">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="section-title text-white">Philosophy and Free Internet</h2>
+            <p class="mt-4 text-lg text-gray-300 max-w-2xl mx-auto">
+                Explore the philosophical implications of free internet access and discover resources that advocate for and provide universal online connectivity. We believe access to information is a fundamental right that empowers individuals globally.
+            </p>
+            <div class="mt-8">
+                 <button onclick="openModal('freeInternetModal')" class="btn-primary px-8 py-3 rounded-lg text-lg font-semibold transition duration-150 transform hover:scale-105">Access Free Internet Resources</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Get Involved Section (Combined Contribute and Join Us) -->
+    <section id="get-involved" class="py-16 sm:py-20 scroll-mt-32">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="section-title">Get Involved With Us</h2>
+            <p class="mt-4 text-lg text-gray-300 max-w-2xl mx-auto">
+                Your support is vital to our mission. Whether through contributing your time and expertise, or joining our community, every action strengthens our collective journey of learning and growth.
+            </p>
+            <div class="mt-8 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                 <button onclick="openModal('contributeModal')" class="btn-secondary px-8 py-3 rounded-lg text-lg font-semibold transition duration-150 transform hover:scale-105">Learn How to Contribute</button>
+                 <button onclick="openModal('joinUsModal')" class="btn-secondary px-8 py-3 rounded-lg text-lg font-semibold transition duration-150 transform hover:scale-105">Join Our Community</button>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Footer -->
+    <footer class="footer-bg py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-gray-400">
+                <!-- Founder Info Column -->
+                <div>
+                    <div class="flex items-center mb-3">
+                        <!-- Founder's Circular Picture Placeholder: Replace # with image URL -->
+                        <img src="https://placehold.co/60x60/4A5568/FFFFFF?text=Founder" alt="Founder Name" class="founder-img">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">Founder's Name</h3>
+                            <p class="text-xs text-gray-500">Lead Visionary</p>
+                        </div>
+                    </div>
+                    <h4 class="text-md font-semibold text-gray-200 mb-1">Our Guiding Mission</h4>
+                    <p class="text-sm">Driven by a passion for knowledge and a belief in its transformative power, our founders embarked on this mission to ignite intellectual curiosity and ethical understanding across India.</p>
+                </div>
+
+                <!-- Trust Info Column -->
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-3">PhilosophySpread Trust</h3>
+                    <p class="text-sm">Spreading wisdom, inspiring change. Our journey began with a simple vision: to make philosophical insights accessible to all, fostering a more thoughtful and enlightened society.</p>
+                </div>
+
+                <!-- Connect Column -->
+                <div class="md:text-right">
+                    <h3 class="text-lg font-semibold text-white mb-3 md:text-right">Connect With Us</h3>
+                    <div class="flex space-x-4 mt-2 md:justify-end">
+                        <a href="#" onclick="openModal('socialModal')" class="text-gray-400 hover:text-white transition duration-150" title="Facebook"><i class="fab fa-facebook-f fa-lg"></i></a>
+                        <a href="#" onclick="openModal('socialModal')" class="text-gray-400 hover:text-white transition duration-150" title="Twitter"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" onclick="openModal('socialModal')" class="text-gray-400 hover:text-white transition duration-150" title="Instagram"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="#" onclick="openModal('socialModal')" class="text-gray-400 hover:text-white transition duration-150" title="LinkedIn"><i class="fab fa-linkedin-in fa-lg"></i></a>
+                         <a href="#" onclick="openModal('socialModal')" class="text-gray-400 hover:text-white transition duration-150" title="YouTube"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-10 border-t border-gray-700 pt-8 text-center text-sm text-gray-500">
+                 <p>Philosophy Spread Trust &bull; Fostering a thoughtful world.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div id="loginSignupModal" class="modal"> <!-- Renamed from loginModal and getStartedModal combined -->
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('loginSignupModal')">&times;</span>
+            <h3 class="text-2xl font-semibold mb-2 text-white">Access Your Account</h3>
+            <p class="text-gray-400 mb-6 text-sm">Login to continue your journey or Sign Up to join our community.</p>
+            <!-- Placeholder for login/signup form -->
+            <div class="space-y-4">
+                <input type="email" placeholder="Email Address" class="w-full p-3 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                <input type="password" placeholder="Password" class="w-full p-3 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                <button class="w-full btn-primary py-3 rounded-md font-semibold">Login</button>
+                <p class="text-gray-400 text-sm">Don't have an account? <a href="#" class="text-blue-400 hover:underline" onclick="closeModal('loginSignupModal'); openModal('signupModalPlaceholder');">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+     <div id="signupModalPlaceholder" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('signupModalPlaceholder')">&times;</span>
+            <h3 class="text-2xl font-semibold mb-4 text-white">Create Account</h3>
+            <p class="text-gray-300">Sign up functionality is under development. Thank you for your patience!</p>
+        </div>
+    </div>
+    <div id="missionDetailModal" class="modal"> <!-- Formerly getStartedModal -->
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('missionDetailModal')">&times;</span>
+            <h3 class="text-2xl font-semibold mb-4 text-white">Our Mission Details</h3>
+            <p class="text-gray-300">Thank you for your interest! Our mission is to make philosophical teachings accessible and relevant, fostering intellectual curiosity and ethical reasoning across India. Explore our site to learn more and discover how you can get involved.</p>
+        </div>
+    </div>
+    <div id="contributeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('contributeModal')">&times;</span>
+            <h3 class="text-2xl font-semibold mb-4 text-white">Contribute</h3>
+            <p class="text-gray-300">Contribution details will be available soon. We appreciate your willingness to support us!</p>
+        </div>
+    </div>
+    <div id="blogModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('blogModal')">&times;</span>
+            <h3 class="text-2xl font-semibold mb-4 text-white">Blog Post</h3>
+            <p class="text-gray-300">Full blog post content is coming soon. Stay tuned for insightful articles!</p>
+        </div>
+    </div>
+    <div id="joinUsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('joinUsModal')">&times;</span>
+            <h3 class="text-2xl font-semibold mb-4 text-white">Get Involved</h3>
+            <p class="text-gray-300">Information on how to participate and join our community activities will be updated shortly. We look forward to welcoming you!</p>
+        </div>
+    </div>
+    <div id="socialModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('socialModal')">&times;</span>
+            <h3 class="text-2xl font-semibold mb-4 text-white">Connect With Us</h3>
+            <p class="text-gray-300">Our social media pages are under construction. Please follow us once they are live!</p>
+        </div>
+    </div>
+    <div id="logicModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('logicModal')">&times;</span>
+            <h3 class="text-2xl font-semibold mb-4 text-white">Logical Frameworks</h3>
+            <p class="text-gray-300">Delve into the principles of logic. More content on logical frameworks and critical thinking exercises coming soon!</p>
+        </div>
+    </div>
+
+    {/* New Free Internet Modal */}
+    <div id="freeInternetModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('freeInternetModal')">&times;</span>
+            <h3 class="text-2xl font-semibold mb-4 text-white">Free Internet & Philosophy</h3>
+            <p class="text-gray-300">
+                This section will delve into the philosophical arguments for universal internet access as a human right. We will also provide curated resources and initiatives dedicated to making free and accessible internet a reality globally. Stay tuned for updates!
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Modal script
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = "block";
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            });
+        }
+
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href');
+                if (targetId === "#") {
+                    e.preventDefault(); // Prevent default if it's just a hash
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    // Let the browser handle the smooth scroll behavior and scroll-margin-top directly
+                }
+
+                if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+
+
+    </script>
+</body>
+</html>
