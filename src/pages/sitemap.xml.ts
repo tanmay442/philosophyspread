@@ -30,7 +30,7 @@ const parseDate = (value: unknown): string | undefined => {
 };
 
 const buildUrlTag = ({ loc, lastmod }: SitemapEntry) => {
-  const lines =['  <url>', `    <loc>${escapeXml(loc)}</loc>`];
+  const lines = ['  <url>', `    <loc>${escapeXml(loc)}</loc>`];
   if (lastmod) {
     lines.push(`    <lastmod>${escapeXml(lastmod)}</lastmod>`);
   }
