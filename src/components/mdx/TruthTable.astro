@@ -14,10 +14,10 @@ const { variables, rows } = Astro.props;
 function getColor(value: string): string {
   const normalized = value.trim().toUpperCase();
   if (normalized === 'T' || normalized === 'TRUE') {
-    return 'text-primary bg-primary-container';
+    return 'text-[#166534] bg-[#DCFCE7]';
   }
   if (normalized === 'F' || normalized === 'FALSE') {
-    return 'text-tertiary bg-tertiary-container';
+    return 'text-[#991B1B] bg-[#FEE2E2]';
   }
   return 'text-secondary bg-surface-container-low';
 }

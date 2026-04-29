@@ -66,9 +66,8 @@ const truncateText = (value: string, maxLength: number) =>
       tag={`ESSAY`}
       title={latestEssay.data.title}
       description={latestEssay.data.description}
-      bgClass="bg-primary"
-      hoverBgClass="hover:bg-tertiary hover:-translate-y-1"
-      hoverTextClass="hover:text-on-primary"
+      bgClass="bg-tertiary"
+      hoverBgClass="hover:bg-tertiary-container hover:-translate-y-1"
       href={`/essays/${latestEssay.id}`}
     />
   )}
