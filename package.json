@@ -21,6 +21,7 @@
     "@astrojs/mdx": "^5.0.4",
     "@astrojs/tailwind": "^6.0.2",
     "@types/node": "^22.19.17",
+    "@types/express": "^4.17.25",
     "tailwindcss": "^3.4.19",
     "tsx": "^4.21.0",
     "typescript": "~5.8.3",
