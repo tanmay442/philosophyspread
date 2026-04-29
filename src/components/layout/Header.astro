@@ -33,7 +33,7 @@ const mobileLinkClass = (segment: string) =>
   }`;
 ---
 
-<header class="fixed top-0 z-50 w-full border-b-2 border-secondary bg-surface shadow-[1px_1px_0px_#245ba7]">
+<header class="fixed top-0 z-50 w-full border-b-2 border-secondary bg-surface shadow-[1px_1px_0px_#1a1a1a]">
   <div class="relative z-50 mx-auto flex w-full max-w-7xl items-center justify-between bg-surface px-4 py-2">
     <a href="/" class="shrink-0 transition-opacity hover:opacity-90" aria-label="Philosophy Spread home">
       <span class="block h-10 w-[200px] sm:h-12 sm:w-[240px]">
@@ -85,7 +85,7 @@ const mobileLinkClass = (segment: string) =>
     </button>
   </div>
 
-  <div id="mobile-menu-backdrop" class="fixed inset-0 z-30 hidden bg-secondary/20 backdrop-blur-sm" aria-hidden="true"></div>
+  <div id="mobile-menu-backdrop" class="fixed inset-0 z-30 hidden bg-primary/20 backdrop-blur-sm" aria-hidden="true"></div>
 
   <div
     id="mobile-menu"
@@ -104,7 +104,7 @@ const mobileLinkClass = (segment: string) =>
         </SignInButton>
       </Show>
       <Show when="signed-in">
-        <div class="flex w-full items-center justify-between border-2 border-secondary/20 bg-secondary/5 p-4">
+        <div class="flex w-full items-center justify-between border-2 border-secondary/20 bg-primary/5 p-4">
           <div class="flex flex-col">
             <span class="text-[11px] font-bold uppercase leading-tight tracking-widest text-primary">Thank you</span>
             <span class="mt-1 text-sm font-medium italic leading-tight text-secondary">for joining!</span>
@@ -156,13 +156,13 @@ const mobileLinkClass = (segment: string) =>
     align-items: center !important;
     justify-content: center !important;
     overflow: hidden !important;
-    border: 2px solid #006b5f !important;
+    border: 2px solid #1a1a1a !important;
     border-radius: 9999px !important;
     padding: 2px !important;
   }
 
   .clerk-user-button:hover {
-    background-color: #006b5f !important;
+    background-color: #1a1a1a !important;
   }
 
   .clerk-user-button svg,
@@ -175,7 +175,7 @@ const mobileLinkClass = (segment: string) =>
 
   .clerk-dropdown,
   .clerk-popover {
-    border: 2px solid #006b5f !important;
+    border: 2px solid #1a1a1a !important;
     border-radius: 8px !important;
   }
 

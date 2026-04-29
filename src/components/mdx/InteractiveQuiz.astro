@@ -16,8 +16,8 @@ const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
 
 <div class="my-12 space-y-12 quiz-container">
   {questions.map((q, qIndex) => (
-    <div class="border-2 border-outline p-8 bg-white relative question-block" data-question-index={qIndex}>
-      <div class="absolute -top-3 -left-3 bg-secondary text-on-secondary font-label text-xs px-3 py-1 border-2 border-outline">
+    <div class="border-2 border-outline p-8 bg-surface-container-lowest relative question-block" data-question-index={qIndex}>
+      <div class="absolute -top-3 -left-3 bg-primary text-on-primary font-label text-xs px-3 py-1 border-2 border-outline">
         Q{qIndex + 1}
       </div>
       
@@ -52,13 +52,19 @@ const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
       const options = q.querySelectorAll('.option-btn');
       const feedback = q.querySelector('.feedback-container');
       const feedbackContent = q.querySelector('.feedback-content');
-      const explanationHtml = q.querySelector('.explanation-template').innerHTML;
+      const explanationTemplate = q.querySelector('.explanation-template');
+
+      if (!feedback || !feedbackContent || !explanationTemplate) {
+        return;
+      }
+
+      const explanationHtml = explanationTemplate.innerHTML;
       
       let isAnsweredCorrectly = false;
 
       const baseClasses = ['border-outline', 'hover:bg-surface-container-low'];
-      const correctClasses = ['bg-green-100', 'border-green-600', 'text-green-800', 'font-bold'];
-      const wrongClasses = ['bg-red-100', 'border-red-600', 'text-red-800'];
+      const correctClasses = ['bg-primary-container', 'border-primary', 'text-secondary', 'font-bold'];
+      const wrongClasses = ['bg-tertiary-container', 'border-tertiary', 'text-secondary'];
       
       options.forEach(opt => {
         opt.addEventListener('click', () => {
@@ -70,7 +76,7 @@ const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
             
             const letter = o.querySelector('.option-letter');
             if(letter) {
-              letter.classList.remove('text-green-800', 'text-red-800');
+              letter.classList.remove('text-tertiary');
               letter.classList.add('text-primary');
             }
           });
@@ -85,10 +91,10 @@ const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
             opt.classList.add(...correctClasses);
             if (currentLetter) {
               currentLetter.classList.remove('text-primary');
-              currentLetter.classList.add('text-green-800');
+              currentLetter.classList.add('text-primary');
             }
             
-            feedback.className = 'mt-4 p-4 text-sm block transition-all duration-300 bg-green-100 text-green-800 feedback-container';
+            feedback.className = 'mt-4 p-4 text-sm block transition-all duration-300 bg-primary-container text-secondary feedback-container';
             feedbackContent.innerHTML = explanationHtml;
             
             options.forEach(o => {
@@ -100,10 +106,10 @@ const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
             opt.classList.add(...wrongClasses);
             if (currentLetter) {
               currentLetter.classList.remove('text-primary');
-              currentLetter.classList.add('text-red-800');
+              currentLetter.classList.add('text-tertiary');
             }
             
-            feedback.className = 'mt-4 p-4 text-sm block transition-all duration-300 bg-red-100 text-red-800 feedback-container';
+            feedback.className = 'mt-4 p-4 text-sm block transition-all duration-300 bg-tertiary-container text-secondary feedback-container';
             feedbackContent.innerHTML = "Not quite. Think about the structure and truth of the premises, then try again!";
           }
         });
