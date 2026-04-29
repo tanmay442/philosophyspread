@@ -6,3 +6,6 @@ examplefiles
 # clerk configuration (can include secrets)
 /.clerk/
 .wrangler
+desing.md
+cache.bin
+churn.bin

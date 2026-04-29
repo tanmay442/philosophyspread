@@ -71,38 +71,30 @@ export async function GET() {
     getCollection('pages'),
   ]);
 
-  const termsPage = pages.find((entry) => entry.id === 'terms');
-  const contributePage = pages.find((entry) => entry.id === 'contribute');
-  const authorsPage = pages.find((entry) => entry.id === 'authors');
-
-  const staticEntries: SitemapEntry[] = [
-    { loc: toAbsolute('/') },
-    {
-      loc: toAbsolute('/terms'),
-      lastmod: parseDate(termsPage?.data.lastUpdated),
-    },
-    {
-      loc: toAbsolute('/contribute'),
-      lastmod: parseDate(contributePage?.data.lastUpdated),
-    },
-    {
-      loc: toAbsolute('/authors'),
-      lastmod: parseDate(authorsPage?.data.lastUpdated),
-    },
-  ];
-
   const essayDates = essays
     .map((entry) => parseDate(entry.data.pubDate))
     .filter((date): date is string => Boolean(date));
+    
   const bitDates = bits
     .map((entry) => parseDate(entry.data.timestamp))
     .filter((date): date is string => Boolean(date));
 
-  const entries: SitemapEntry[] = [
-    ...staticEntries,
+  const entries: SitemapEntry[] =[
+    // 1. The Home Page
+    { loc: toAbsolute('/') },
+    
+    // 2. All Static Pages (Dynamic mapping instead of hardcoding terms/authors/etc)
+    ...pages.map((entry) => ({
+      loc: toAbsolute(`/${entry.id}`),
+      lastmod: parseDate(entry.data.lastUpdated),
+    })),
+
+    // 3. Pagination Roots
     ...buildPaginationEntries('/essays', essays.length, ESSAYS_PAGE_SIZE, latestDate(essayDates)),
     ...buildPaginationEntries('/bits', bits.length, BITS_PAGE_SIZE, latestDate(bitDates)),
     ...buildPaginationEntries('/logic-modules', modules.length, MODULES_PAGE_SIZE),
+    
+    // 4. Individual Content Entries
     ...essays.map((entry) => ({
       loc: toAbsolute(`/essays/${entry.id}`),
       lastmod: parseDate(entry.data.pubDate),
@@ -116,7 +108,7 @@ export async function GET() {
     })),
   ];
 
-  const xml = [
+  const xml =[
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ...entries.map(buildUrlTag),

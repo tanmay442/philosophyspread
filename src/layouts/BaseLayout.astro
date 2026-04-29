@@ -2,6 +2,7 @@
 import { SEOMetadata } from 'astro-seo-metadata';
 import { Font } from 'astro:assets';
 import siteLogo from '../assets/logo.png';
+import '../index.css';
 
 interface Props {
   title?: string;
@@ -117,67 +118,67 @@ const combinedStructuredData = [...defaultStructuredData, ...additionalStructure
     <Font cssVariable="--font-jetbrains-mono" preload={[{ weight: 400, style: 'normal' }]} />
     <style is:global>
       .hard-offset {
-        box-shadow: 4px 4px 0px 0px #245ba7;
+        box-shadow: 4px 4px 0px 0px #1A1A1A;
         transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .hard-offset:hover {
         transform: translateY(-4px);
-        box-shadow: 8px 8px 0px 0px #245ba7;
+        box-shadow: 8px 8px 0px 0px #1A1A1A;
       }
       
       .hard-offset-teal {
-        box-shadow: 4px 4px 0px 0px #006b5f;
+        box-shadow: 4px 4px 0px 0px #1A1A1A;
         transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .hard-offset-teal:hover {
         transform: translateY(-4px);
-        box-shadow: 8px 8px 0px 0px #006b5f;
+        box-shadow: 8px 8px 0px 0px #1A1A1A;
       }
 
       /* Base Typography */
       body {
         font-family: var(--font-newsreader), serif;
-        background-color: #f8f9ff;
-        color: #0c1c2e;
+        background-color: #fdfcf0;
+        color: #1a1a1a;
         line-height: 1.7;
       }
 
       /* Headings - higher contrast */
       h1, .h1 {
-        color: #006b5f !important;
+        color: #1a1a1a !important;
         font-weight: 700;
         letter-spacing: -0.02em;
       }
 
       h2, .h2 {
-        color: #245ba7 !important;
+        color: #1a1a1a !important;
         font-weight: 600;
       }
 
       h3, .h3 {
-        color: #006b5f !important;
+        color: #1a1a1a !important;
         font-weight: 600;
       }
 
       /* Body text - higher contrast for readability */
       p, article {
-        color: #0c1c2e !important;
+        color: #1a1a1a !important;
       }
 
       /* Links */
       a {
-        color: #245ba7;
+        color: #0f5132;
         text-decoration: none;
       }
       a:hover {
-        color: #006b5f;
+        color: #ff8c5a;
         text-decoration: underline;
       }
 
       /* Selection */
       ::selection {
-        background-color: #8ef5e3;
-        color: #0c1c2e;
+        background-color: #e6d0ff;
+        color: #1a1a1a;
       }
 
       /* No border radius anywhere */
@@ -187,12 +188,12 @@ const combinedStructuredData = [...defaultStructuredData, ...additionalStructure
 
       /* Component backgrounds */
       .card, .quiz-container, blockquote, pre, code {
-        background-color: #ffffff !important;
+        background-color: #fffdf6 !important;
       }
 
       /* Borders */
       hr, .border {
-        border-color: #6d7a77 !important;
+        border-color: #1a1a1a !important;
       }
     </style>
   </head>

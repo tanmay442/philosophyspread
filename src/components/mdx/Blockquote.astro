@@ -10,20 +10,20 @@ const { icon = 'format_quote', variant = 'default' } = Astro.props;
 
 const variantStyles = {
   default: 'border-secondary bg-surface-container-low text-on-surface',
-  info: 'border-primary bg-blue-50 text-on-surface',
-  warning: 'border-orange-600 bg-orange-50 text-on-surface',
+  info: 'border-primary bg-primary-container text-secondary',
+  warning: 'border-tertiary bg-tertiary-container text-secondary',
 };
 
 const iconColors = {
   default: 'text-secondary',
   info: 'text-primary',
-  warning: 'text-orange-600',
+  warning: 'text-tertiary',
 };
 
 const iconBgColors = {
   default: 'bg-surface-container',
-  info: 'bg-blue-50',
-  warning: 'bg-orange-50',
+  info: 'bg-primary-container',
+  warning: 'bg-tertiary-container',
 };
 ---
 

@@ -12,7 +12,7 @@ if (!pageNumber) {
 }
 
 const essays = await getCollection('essays');
-const sortedEssays = essays.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const sortedEssays = [...essays].sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const page = paginateItems(sortedEssays, {
   pageNumber,
@@ -60,7 +60,7 @@ if (!page) {
       
       <nav class="mt-16 flex justify-center items-center space-x-4">
         {page.url.prev ? (
-          <a href={page.url.prev} class="font-label text-xs uppercase tracking-widest border-2 border-secondary px-6 py-3 hover:bg-secondary hover:text-surface transition-colors">
+          <a href={page.url.prev} class="font-label text-xs uppercase tracking-widest border-2 border-secondary px-6 py-3 hover:bg-primary hover:text-on-primary transition-colors">
             &lt;- Newer
           </a>
         ) : (
@@ -74,7 +74,7 @@ if (!page) {
         </span>
         
         {page.url.next ? (
-          <a href={page.url.next} class="font-label text-xs uppercase tracking-widest border-2 border-secondary px-6 py-3 hover:bg-secondary hover:text-surface transition-colors">
+          <a href={page.url.next} class="font-label text-xs uppercase tracking-widest border-2 border-secondary px-6 py-3 hover:bg-primary hover:text-on-primary transition-colors">
             Older -&gt;
           </a>
         ) : (

@@ -14,7 +14,7 @@ const sortedModules = logicModules.sort((a, b) => a.data.moduleNumber.localeComp
         <h2 class="font-label text-sm text-primary mb-2 uppercase tracking-[0.3em]">Foundation</h2>
         <h3 class="font-headline text-5xl">Master the Fundamentals</h3>
       </div>
-      <a href="/logic-modules" class="hidden md:flex font-label text-xs text-secondary uppercase tracking-[0.3em] hover:text-primary transition-colors items-center group">
+        <a href="/logic-modules" class="hidden md:flex font-label text-xs text-secondary uppercase tracking-[0.3em] hover:text-primary transition-colors items-center group no-underline hover:no-underline focus:no-underline">
         View All Modules 
         <Icon name="arrow_forward" class="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
       </a>
@@ -22,7 +22,7 @@ const sortedModules = logicModules.sort((a, b) => a.data.moduleNumber.localeComp
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
       {sortedModules.map((module) => (
-        <a href={`/logic-modules/${module.id}`} class="block group">
+        <a href={`/logic-modules/${module.id}`} class="block group no-underline hover:no-underline focus:no-underline">
           <LogicCard 
             moduleNumber={module.data.moduleNumber}
             title={module.data.title} 
@@ -33,7 +33,7 @@ const sortedModules = logicModules.sort((a, b) => a.data.moduleNumber.localeComp
     </div>
 
     <div class="mt-8 flex md:hidden justify-center">
-      <a href="/logic-modules" class="font-label text-xs text-secondary uppercase tracking-[0.3em] hover:text-primary transition-colors flex items-center group">
+      <a href="/logic-modules" class="font-label text-xs text-secondary uppercase tracking-[0.3em] hover:text-primary transition-colors flex items-center group no-underline hover:no-underline focus:no-underline">
         View All Modules 
         <Icon name="arrow_forward" class="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
       </a>

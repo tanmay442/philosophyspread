@@ -12,24 +12,20 @@
     "generate-types": "wrangler types"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^13.2.1",
-    "@astrojs/mdx": "^5.0.4",
-    "@astrojs/node": "^10.0.6",
-    "@astrojs/tailwind": "^6.0.2",
-    "@clerk/astro": "^3.0.21",
-    "astro": "^6.1.9",
-    "astro-seo-metadata": "^0.6.0",
-    "dotenv": "^17.4.2",
-    "express": "^4.22.1"
+    "@clerk/astro": "^3.0.22",
+    "astro": "^6.1.10",
+    "astro-seo-metadata": "^0.6.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.25",
+    "@astrojs/cloudflare": "^13.2.2",
+    "@astrojs/mdx": "^5.0.4",
+    "@astrojs/tailwind": "^6.0.2",
     "@types/node": "^22.19.17",
-    "autoprefixer": "^10.5.0",
+    "@types/express": "^4.17.25",
     "tailwindcss": "^3.4.19",
     "tsx": "^4.21.0",
     "typescript": "~5.8.3",
-    "wrangler": "^4.85.0"
+    "wrangler": "^4.86.0"
   },
   "overrides": {
     "vite": "^7"

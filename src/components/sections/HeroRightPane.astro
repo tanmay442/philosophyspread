@@ -44,8 +44,8 @@ const truncateText = (value: string, maxLength: number) =>
       tag={`MODULE ${latestLogic.data.moduleNumber}`}
       title={latestLogic.data.title}
       description={latestLogic.data.description}
-      bgClass="bg-[#D3E3FC]"
-      hoverBgClass="hover:bg-[#FFCCBC] hover:-translate-y-1"
+      bgClass="bg-primary-container"
+      hoverBgClass="hover:bg-tertiary-container hover:-translate-y-1"
       href={`/logic-modules/${latestLogic.id}`}
     />
   )}
@@ -55,8 +55,8 @@ const truncateText = (value: string, maxLength: number) =>
       tag={`BIT ${latestBit.data.bitNumber}`}
       title={latestBit.data.category}
       description={truncateText(latestBit.data.content, 100)}
-      bgClass="bg-[#FFFFFF]"
-      hoverBgClass="hover:bg-[#00887A]/10 hover:-translate-y-1"
+      bgClass="bg-surface-container-lowest"
+      hoverBgClass="hover:bg-primary/10 hover:-translate-y-1"
       href={`/bits/${latestBit.id}`}
     />
   )}
@@ -66,9 +66,8 @@ const truncateText = (value: string, maxLength: number) =>
       tag={`ESSAY`}
       title={latestEssay.data.title}
       description={latestEssay.data.description}
-      bgClass="bg-[#FFCCBC]"
-      hoverBgClass="hover:bg-[#D3E3FC] hover:-translate-y-1"
-      hoverTextClass="hover:text-white"
+      bgClass="bg-tertiary"
+      hoverBgClass="hover:bg-tertiary-container hover:-translate-y-1"
       href={`/essays/${latestEssay.id}`}
     />
   )}

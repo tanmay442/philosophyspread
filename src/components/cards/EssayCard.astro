@@ -23,7 +23,7 @@ const {
   imageSrc, 
   imageAlt,
   href = '#',
-  bgClass = 'bg-white hover:bg-surface-container-low',
+  bgClass = 'bg-surface-container-lowest hover:bg-surface-container-low',
   textClass = 'text-secondary',
   tagClass = 'text-primary',
   buttonClass = 'text-secondary hover:text-primary',
@@ -43,7 +43,7 @@ const timestampLabel =
 
 <a href={href} class="block group">
   <article class={`border-2 border-secondary flex flex-col h-full transition-colors ${bgClass}`}>
-    <div class="aspect-video overflow-hidden border-b-2 border-secondary bg-white">
+    <div class="aspect-video overflow-hidden border-b-2 border-secondary bg-surface-container-lowest">
       <img alt={imageAlt} class={`w-full h-full object-cover ${imageClass}`} src={imageSrc} referrerpolicy="no-referrer" />
     </div>
     <div class="p-8 flex-grow flex flex-col">
