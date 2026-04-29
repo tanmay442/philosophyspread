@@ -3,7 +3,7 @@ type PaginationUrls = {
   next: string | null;
 };
 
-export type PaginationResult<T> = {
+type PaginationResult<T> = {
   items: T[];
   currentPage: number;
   lastPage: number;
