@@ -5,7 +5,7 @@ import BitCard from '../cards/BitCard.astro';
 const bits = await getCollection('bits');
 const sortedBits = bits
   .sort((a: CollectionEntry<'bits'>, b: CollectionEntry<'bits'>) => b.data.timestamp.valueOf() - a.data.timestamp.valueOf())
-  .slice(0, 5);
+  .slice(0, 6);
 ---
 
 <section id="bits" class="py-24 px-8 md:px-12 bg-surface-container-low border-y-2 border-secondary">
