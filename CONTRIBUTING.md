@@ -19,9 +19,9 @@ You can contribute in three ways:
 
 ## CI workflows (detailed)
 
-This repository uses two GitHub Actions workflows:
+This repository uses a single combined GitHub Actions workflow:
 
-### 1) Build + Fallow
+### Build + Fallow + AI Review Guidance
 File: `.github/workflows/build-fallow.yml`
 
 **Runs on:**
@@ -47,11 +47,13 @@ File: `.github/workflows/build-fallow.yml`
 - Posts/updates a PR comment with the full fallow JSON report so Copilot can use it as context.
 - The comment uses marker `<!-- fallow-full-report-main-pr -->` for stable discovery.
 
-### 2) AI Review Guidance (Copilot)
-File: `.github/workflows/quality-ai-review.yml`
+**Embedded AI review job (`ai-review-gate`)**
 
-**Runs on:**
-- PRs to `main` and `master` (`opened`, `synchronize`, `reopened`, `ready_for_review`)
+**Runs only when:**
+- Event is `pull_request`
+- Target branch is `main` or `master`
+- Maintainer bypass is not active
+- It waits for `build-fallow` (`needs: build-fallow`) so the fallow report comment is available first.
 
 **What it does (normal path):**
 1. Posts/updates an `@copilot` guidance comment
@@ -59,7 +61,7 @@ File: `.github/workflows/quality-ai-review.yml`
 3. Relies on the fallow report PR comment as analysis context (`<!-- fallow-full-report-main-pr -->`)
 
 **Fail/block rules:**
-- This workflow does not enforce CodeRabbit checks.
+- This AI guidance job does not enforce CodeRabbit checks.
 
 ## Maintainer-only emergency bypass
 
@@ -69,17 +71,17 @@ For urgent production situations, there is a maintainer-only bypass flag.
 - **Who can use it:** only GitHub user **`tanmay442`**
 - **Where it works:**
   - direct `push` to `main` (skips Build + Fallow workflow)
-  - PR review guidance workflow (skips Copilot guidance steps)
+  - PR AI guidance job (skips Copilot guidance steps)
 
 If anyone else uses this flag, it has no effect.
 
 ## Branch protection recommendation
 
 On `main`, require these checks:
-- `Build + Fallow / build-fallow`
-- `AI Review Guidance (Copilot) / ai-review-gate`
+- `Build + Fallow + AI Review Guidance / build-fallow`
+- `Build + Fallow + AI Review Guidance / ai-review-gate`
 
-This ensures failing build/dead-code states block merge, while Copilot guidance is always posted on PRs.
+This ensures failing build/dead-code states block merge, while Copilot guidance runs after fallow context is posted.
 
 ---
 
