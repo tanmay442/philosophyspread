@@ -45,6 +45,7 @@ File: `.github/workflows/build-fallow.yml`
 
 **PR to `main` / `master` extra behavior:**
 - Posts/updates a PR comment with the full fallow JSON report so Copilot can use it as context.
+- The comment uses marker `<!-- fallow-full-report-main-pr -->` for stable discovery.
 
 ### 2) AI Review Guidance (Copilot)
 File: `.github/workflows/quality-ai-review.yml`
@@ -55,7 +56,7 @@ File: `.github/workflows/quality-ai-review.yml`
 **What it does (normal path):**
 1. Posts/updates an `@copilot` guidance comment
 2. Best-effort requests Copilot as reviewer
-3. Relies on the fallow report PR comment as analysis context
+3. Relies on the fallow report PR comment as analysis context (`<!-- fallow-full-report-main-pr -->`)
 
 **Fail/block rules:**
 - This workflow does not enforce CodeRabbit checks.

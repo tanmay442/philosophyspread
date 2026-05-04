@@ -60,7 +60,8 @@ jobs:
               '- Do **not** over-focus on hotspots if the code is already clean and understandable.\n' +
               '- Prioritize standards compliance, correctness, maintainability, and meaningful improvements.\n' +
               '- If better implementation choices exist, prioritize those suggestions clearly.\n\n' +
-              'Use the latest Fallow report comment in this PR as analysis context.';
+              'Use the latest Fallow report comment in this PR as analysis context.\n' +
+              'Look for comment marker: <!-- fallow-full-report-main-pr --> and prioritize findings from that JSON report.';
 
             const { owner, repo } = context.repo;
             const issue_number = context.payload.pull_request.number;
