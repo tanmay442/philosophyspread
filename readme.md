@@ -1,5 +1,7 @@
 # Philosophy Spread
 
+[![Build + Fallow + AI Review Guidance](https://github.com/tanmay442/PhilosophySpread/actions/workflows/build-fallow.yml/badge.svg)](https://github.com/tanmay442/PhilosophySpread/actions/workflows/build-fallow.yml)
+
 <p align="center">
   <img src="src/assets/logo.png" width="360" alt="Philosophy Spread Logo" />
 </p> 
