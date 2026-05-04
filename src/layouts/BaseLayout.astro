@@ -40,7 +40,6 @@ const imageType = imagePathname.endsWith('.png')
           ? 'image/avif'
           : undefined;
 const keywordsContent = keywords.join(', ');
-const shouldNoindex = Astro.url.hostname !== siteUrl.hostname;
 
 const defaultStructuredData: Array<Record<string, unknown>> = [
   {
@@ -97,12 +96,8 @@ const combinedStructuredData = [...defaultStructuredData, ...additionalStructure
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" type="image/svg+xml" href="/favicon.svg" />
     {keywordsContent && <meta name="keywords" content={keywordsContent} />}
-    {shouldNoindex && (
-      <>
-        <meta name="robots" content="noindex, nofollow" />
-        <meta name="googlebot" content="noindex, nofollow" />
-      </>
-    )}
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="googlebot" content="index, follow" />
     {combinedStructuredData.map((schema) => (
       <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}

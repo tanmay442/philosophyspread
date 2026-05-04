@@ -1,0 +1,10 @@
+# Global robots policy: allow all crawlers
+User-agent: *
+Allow: /
+Disallow:
+
+# Sitemap for faster URL discovery
+Sitemap: https://philosophyspread.live/sitemap.xml
+
+# Preferred host
+Host: philosophyspread.live
