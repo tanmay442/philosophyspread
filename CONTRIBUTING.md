@@ -30,7 +30,7 @@ File: `.github/workflows/build-fallow.yml`
 
 **Execution optimization:**
 - Uses workflow concurrency to cancel duplicate in-progress runs for the same branch/PR head.
-- Uses pnpm dependency caching via `actions/setup-node` to speed up installs.
+- Uses pnpm dependency caching via `actions/setup-node` (requires pnpm setup before caching) to speed up installs.
 
 **What it does (normal path):**
 1. Installs dependencies
@@ -43,7 +43,7 @@ File: `.github/workflows/build-fallow.yml`
 
 **Fail/block rules:**
 - Build failure -> workflow fails
-- Fallow execution failure -> workflow fails
+- Fallow execution failure -> workflow fails (via a follow-up gate step)
 - Dead code findings > 0 -> workflow fails (blocks merge when required checks are enabled)
 - Duplicate findings > 0 -> workflow does not fail; it warns and tags the actor
 
@@ -66,7 +66,7 @@ File: `.github/workflows/build-fallow.yml`
 3. Relies on the fallow report PR comment as analysis context (`<!-- fallow-full-report-main-pr -->`)
 
 **Fail/block rules:**
-- This AI guidance job does not enforce CodeRabbit checks.
+- This AI guidance job does not block merges; it posts guidance and requests Copilot as reviewer.
 
 ## Maintainer-only emergency bypass
 
@@ -74,9 +74,9 @@ For urgent production situations, there is a maintainer-only bypass flag.
 
 - **Flag:** `[skip-tanmay-gates]`
 - **Who can use it:** only GitHub user **`tanmay442`**
-- **Where it works:**
-  - direct `push` to `main` (skips Build + Fallow workflow)
-  - PR AI guidance job (skips Copilot guidance steps)
+**Where it works:**
+- direct `push` to `main` (skips Build + Fallow workflow)
+- PRs to `main`/`master` (skips the AI guidance job entirely because `build-fallow` is bypassed)
 
 If anyone else uses this flag, it has no effect.
 
