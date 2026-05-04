@@ -63,6 +63,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Setup pnpm
         if: steps.bypass.outputs.bypass != 'true'
@@ -86,7 +88,7 @@ jobs:
           set +e
 
           REPORT_PATH="$RUNNER_TEMP/fallow-report.json"
-          npx --yes fallow --config .github/fallow.ci.json --format json | tee "$REPORT_PATH"
+          pnpm fallow --config .github/fallow.ci.json --format json | tee "$REPORT_PATH"
           FALLOW_EXIT=$?
 
           DEAD_CODE_COUNT=$(jq '(
@@ -116,62 +118,23 @@ jobs:
           # Never fail here; gating is done after notification/comment steps.
           exit 0
 
-      - name: Post fallow report for PRs to main/master (for Copilot context)
-        if: always() && steps.bypass.outputs.bypass != 'true' && github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')
+      - name: Post fallow summary + report comment
+        if: always() && steps.bypass.outputs.bypass != 'true'
         uses: actions/github-script@v7
         env:
           REPORT_PATH: ${{ steps.fallow.outputs.report_path }}
+          DEAD_CODE_COUNT: ${{ steps.fallow.outputs.dead_code_count }}
+          DUPLICATE_COUNT: ${{ steps.fallow.outputs.duplicate_count }}
+          FALLOW_EXIT_CODE: ${{ steps.fallow.outputs.exit_code }}
         with:
           script: |
             const fs = require('fs');
-            const marker = '<!-- fallow-full-report-main-pr -->';
-            const reportPath = process.env.REPORT_PATH;
-            let report = reportPath && fs.existsSync(reportPath) ? fs.readFileSync(reportPath, 'utf8') : 'No fallow report found.';
-
-            const maxLen = 60000;
-            if (report.length > maxLen) {
-              report = report.slice(0, maxLen) + '\n\n... [truncated due to comment size limits]';
-            }
-
-            const body =
-              `${marker}\n` +
-              '# Fallow Report (full JSON)\n\n' +
-              `Actor: @${context.actor}\n\n` +
-              '<details><summary>Open full fallow report</summary>\n\n' +
-              '```json\n' +
-              `${report}\n` +
-              '```\n\n' +
-              '</details>';
-
-            const { owner, repo } = context.repo;
-            const issue_number = context.payload.pull_request.number;
-
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner,
-              repo,
-              issue_number,
-              per_page: 100,
-            });
-
-            const existing = comments.find((c) => c.body && c.body.includes(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
-            } else {
-              await github.rest.issues.createComment({ owner, repo, issue_number, body });
-            }
-
-      - name: Notify actor on dead code / duplicates
-        if: always() && steps.bypass.outputs.bypass != 'true' && (steps.fallow.outputs.dead_code_count != '0' || steps.fallow.outputs.duplicate_count != '0' || steps.fallow.outputs.exit_code != '0')
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const actor = context.actor;
-            const dead = Number('${{ steps.fallow.outputs.dead_code_count }}' || '0');
-            const dupes = Number('${{ steps.fallow.outputs.duplicate_count }}' || '0');
-            const exitCode = '${{ steps.fallow.outputs.exit_code }}';
+            const dead = Number(process.env.DEAD_CODE_COUNT || '0');
+            const dupes = Number(process.env.DUPLICATE_COUNT || '0');
+            const exitCode = process.env.FALLOW_EXIT_CODE || '0';
 
             const lines = [
-              `@${actor} Fallow checks detected issues.`,
+              `@${context.actor} Fallow checks detected issues.`,
               '',
               `- Fallow exit code: ${exitCode}`,
               `- Dead code findings: ${dead}`,
@@ -184,23 +147,65 @@ jobs:
                 ? 'Duplicate code detected. Please review and refactor where appropriate.'
                 : 'No duplication warnings.',
             ];
+            const summaryBody = lines.join('\n');
 
-            const body = lines.join('\n');
             const { owner, repo } = context.repo;
 
             if (context.eventName === 'pull_request') {
-              await github.rest.issues.createComment({
+              const reportMarker = '<!-- fallow-full-report-main-pr -->';
+              const summaryMarker = '<!-- fallow-summary -->';
+              const reportPath = process.env.REPORT_PATH;
+              let report = reportPath && fs.existsSync(reportPath) ? fs.readFileSync(reportPath, 'utf8') : 'No fallow report found.';
+
+              const maxLen = 60000;
+              if (report.length > maxLen) {
+                report = report.slice(0, maxLen) + '\n\n... [truncated due to comment size limits]';
+              }
+
+              const reportBody =
+                `${reportMarker}\n` +
+                '# Fallow Report (full JSON)\n\n' +
+                `Actor: @${context.actor}\n\n` +
+                `Summary:\n` +
+                `- Fallow exit code: ${exitCode}\n` +
+                `- Dead code findings: ${dead}\n` +
+                `- Duplicate clone groups: ${dupes}\n\n` +
+                '<details><summary>Open full fallow report</summary>\n\n' +
+                '```json\n' +
+                `${report}\n` +
+                '```\n\n' +
+                '</details>';
+
+              const issue_number = context.payload.pull_request.number;
+              const comments = await github.paginate(github.rest.issues.listComments, {
                 owner,
                 repo,
-                issue_number: context.payload.pull_request.number,
-                body,
+                issue_number,
+                per_page: 100,
               });
-            } else {
+
+              const existingReport = comments.find((c) => c.body && c.body.includes(reportMarker));
+              if (existingReport) {
+                await github.rest.issues.updateComment({ owner, repo, comment_id: existingReport.id, body: reportBody });
+              } else {
+                await github.rest.issues.createComment({ owner, repo, issue_number, body: reportBody });
+              }
+
+              if (dead > 0 || dupes > 0 || exitCode !== '0') {
+                const summary = `${summaryMarker}\n${summaryBody}`;
+                const existingSummary = comments.find((c) => c.body && c.body.includes(summaryMarker));
+                if (existingSummary) {
+                  await github.rest.issues.updateComment({ owner, repo, comment_id: existingSummary.id, body: summary });
+                } else {
+                  await github.rest.issues.createComment({ owner, repo, issue_number, body: summary });
+                }
+              }
+            } else if (dead > 0 || dupes > 0 || exitCode !== '0') {
               await github.rest.repos.createCommitComment({
                 owner,
                 repo,
                 commit_sha: context.sha,
-                body,
+                body: summaryBody,
               });
             }
 
@@ -224,7 +229,7 @@ jobs:
     if: always() && github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master') && needs.build-fallow.outputs.bypass != 'true'
 
     steps:
-      - name: Post / update Copilot guidance comment
+      - name: Post Copilot guidance + request reviewer
         uses: actions/github-script@v7
         with:
           script: |
@@ -233,12 +238,17 @@ jobs:
               `${marker}\n` +
               '# AI Review Guidance\n\n' +
               '@copilot Please review this PR.\n\n' +
-              'Guidance:\n' +
-              '- Do **not** over-focus on hotspots if the code is already clean and understandable.\n' +
-              '- Prioritize standards compliance, correctness, maintainability, and meaningful improvements.\n' +
-              '- If better implementation choices exist, prioritize those suggestions clearly.\n\n' +
+              'Focus:\n' +
+              '- Correctness, safety, and edge cases.\n' +
+              '- Consistency with existing patterns and architecture.\n' +
+              '- Maintainability: clear naming, minimal coupling, and straightforward control flow.\n' +
+              '- Performance only when there is clear impact.\n\n' +
+              'Required output:\n' +
+              '1. A brief summary of what changed (1-3 bullets).\n' +
+              '2. Risks or potential regressions (if any), with severity.\n' +
+              '3. Specific, actionable review comments tied to file paths.\n\n' +
               'Use the latest Fallow report comment in this PR as analysis context.\n' +
-              'Look for comment marker: <!-- fallow-full-report-main-pr --> and prioritize findings from that JSON report.';
+              'Look for comment marker: <!-- fallow-full-report-main-pr --> and prioritize dead code or duplication findings from that JSON report.';
 
             const { owner, repo } = context.repo;
             const issue_number = context.payload.pull_request.number;
@@ -257,18 +267,11 @@ jobs:
               await github.rest.issues.createComment({ owner, repo, issue_number, body });
             }
 
-      - name: Best-effort request Copilot as reviewer
-        uses: actions/github-script@v7
-        continue-on-error: true
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const pull_number = context.payload.pull_request.number;
             try {
               await github.rest.pulls.requestReviewers({
                 owner,
                 repo,
-                pull_number,
+                pull_number: issue_number,
                 reviewers: ['copilot'],
               });
               core.info('Requested copilot as reviewer.');

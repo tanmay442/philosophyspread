@@ -30,11 +30,12 @@ File: `.github/workflows/build-fallow.yml`
 
 **Execution optimization:**
 - Uses workflow concurrency to cancel duplicate in-progress runs for the same branch/PR head.
+- Uses pnpm dependency caching via `actions/setup-node` to speed up installs.
 
 **What it does (normal path):**
 1. Installs dependencies
 2. Runs `pnpm build`
-3. Runs `fallow` with `.github/fallow.ci.json`
+3. Runs `pnpm fallow` with `.github/fallow.ci.json`
 4. Prints full fallow JSON output in workflow logs (no artifact upload)
 5. Parses and classifies findings:
    - **dead code related findings** (blocking)
@@ -47,8 +48,9 @@ File: `.github/workflows/build-fallow.yml`
 - Duplicate findings > 0 -> workflow does not fail; it warns and tags the actor
 
 **PR to `main` / `master` extra behavior:**
-- Posts/updates a PR comment with the full fallow JSON report so Copilot can use it as context.
+- Posts/updates a PR comment with a short summary (exit code, dead code count, duplicate clone groups) plus the full fallow JSON report so Copilot can use it as context.
 - The comment uses marker `<!-- fallow-full-report-main-pr -->` for stable discovery.
+- When issues are detected, the workflow updates a single summary comment (`<!-- fallow-summary -->`) instead of posting a new one each run.
 
 **Embedded AI review job (`ai-review-gate`)**
 
@@ -89,4 +91,3 @@ This ensures failing build/dead-code states block merge, while Copilot guidance 
 ---
 
 **Footer reminder:** maintainer emergency bypass flag is `[skip-tanmay-gates]` (only `tanmay442`).
-
