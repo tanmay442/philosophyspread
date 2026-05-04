@@ -3,10 +3,12 @@ name: Build + Fallow + AI Review Guidance
 on:
   push:
     branches:
-      - '**'
+      - main
+      - master
   pull_request:
     branches:
-      - '**'
+      - main
+      - master
 
 permissions:
   contents: write

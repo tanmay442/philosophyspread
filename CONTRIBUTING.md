@@ -25,8 +25,8 @@ This repository uses a single combined GitHub Actions workflow:
 File: `.github/workflows/build-fallow.yml`
 
 **Runs on:**
-- every push to any branch
-- every PR to any branch
+- push to `main` or `master`
+- PRs targeting `main` or `master`
 
 **Execution optimization:**
 - Uses workflow concurrency to cancel duplicate in-progress runs for the same branch/PR head.
