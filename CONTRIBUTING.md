@@ -28,6 +28,9 @@ File: `.github/workflows/build-fallow.yml`
 - every push to any branch
 - every PR to any branch
 
+**Execution optimization:**
+- Uses workflow concurrency to cancel duplicate in-progress runs for the same branch/PR head.
+
 **What it does (normal path):**
 1. Installs dependencies
 2. Runs `pnpm build`
