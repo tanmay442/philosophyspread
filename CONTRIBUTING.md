@@ -17,13 +17,48 @@ You can contribute in three ways:
 3. **Issue reports / improvements**
    - Open a clear issue with repro steps and expected behavior
 
-## Development checks
+## CI workflows (detailed)
 
-CI currently runs:
+This repository uses two GitHub Actions workflows:
 
-- `pnpm build`
-- `npx fallow --config .github/fallow.ci.json`
-- CodeRabbit review gate on PRs to `main`
+### 1) Build + Fallow
+File: `.github/workflows/build-fallow.yml`
+
+**Runs on:**
+- every push to any branch
+- every PR to any branch
+
+**What it does (normal path):**
+1. Installs dependencies
+2. Runs `pnpm build`
+3. Runs `fallow` with `.github/fallow.ci.json`
+4. Prints full fallow JSON output in workflow logs (no artifact upload)
+5. Parses and classifies findings:
+   - **dead code related findings** (blocking)
+   - **duplicate clone findings** (warning only)
+
+**Fail/block rules:**
+- Build failure -> workflow fails
+- Fallow execution failure -> workflow fails
+- Dead code findings > 0 -> workflow fails (blocks merge when required checks are enabled)
+- Duplicate findings > 0 -> workflow does not fail; it warns and tags the actor
+
+**PR to `main` extra behavior:**
+- Posts/updates a PR comment with the full fallow JSON report so CodeRabbit can use it as context.
+
+### 2) AI Review Gate (CodeRabbit + Copilot)
+File: `.github/workflows/quality-ai-review.yml`
+
+**Runs on:**
+- PRs to `main` (`opened`, `synchronize`, `reopened`, `ready_for_review`)
+
+**What it does (normal path):**
+1. Posts/updates an `@copilot` guidance comment
+2. Best-effort requests Copilot as reviewer
+3. Polls check-runs on PR head SHA for CodeRabbit
+
+**Fail/block rules:**
+- If CodeRabbit check is missing, stuck pending, or returns a failing conclusion -> workflow fails.
 
 ## Maintainer-only emergency bypass
 
@@ -36,4 +71,16 @@ For urgent production situations, there is a maintainer-only bypass flag.
   - PR review gate workflow (skips CodeRabbit/Copilot gate)
 
 If anyone else uses this flag, it has no effect.
+
+## Branch protection recommendation
+
+On `main`, require these checks:
+- `Build + Fallow / build-fallow`
+- `AI Review Gate (CodeRabbit + Copilot) / ai-review-gate`
+
+This ensures failing build/dead-code/AI-review states block merge.
+
+---
+
+**Footer reminder:** maintainer emergency bypass flag is `[skip-tanmay-gates]` (only `tanmay442`).
 
