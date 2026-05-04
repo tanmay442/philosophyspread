@@ -43,22 +43,22 @@ File: `.github/workflows/build-fallow.yml`
 - Dead code findings > 0 -> workflow fails (blocks merge when required checks are enabled)
 - Duplicate findings > 0 -> workflow does not fail; it warns and tags the actor
 
-**PR to `main` extra behavior:**
-- Posts/updates a PR comment with the full fallow JSON report so CodeRabbit can use it as context.
+**PR to `main` / `master` extra behavior:**
+- Posts/updates a PR comment with the full fallow JSON report so Copilot can use it as context.
 
-### 2) AI Review Gate (CodeRabbit + Copilot)
+### 2) AI Review Guidance (Copilot)
 File: `.github/workflows/quality-ai-review.yml`
 
 **Runs on:**
-- PRs to `main` (`opened`, `synchronize`, `reopened`, `ready_for_review`)
+- PRs to `main` and `master` (`opened`, `synchronize`, `reopened`, `ready_for_review`)
 
 **What it does (normal path):**
 1. Posts/updates an `@copilot` guidance comment
 2. Best-effort requests Copilot as reviewer
-3. Polls check-runs on PR head SHA for CodeRabbit
+3. Relies on the fallow report PR comment as analysis context
 
 **Fail/block rules:**
-- If CodeRabbit check is missing, stuck pending, or returns a failing conclusion -> workflow fails.
+- This workflow does not enforce CodeRabbit checks.
 
 ## Maintainer-only emergency bypass
 
@@ -68,7 +68,7 @@ For urgent production situations, there is a maintainer-only bypass flag.
 - **Who can use it:** only GitHub user **`tanmay442`**
 - **Where it works:**
   - direct `push` to `main` (skips Build + Fallow workflow)
-  - PR review gate workflow (skips CodeRabbit/Copilot gate)
+  - PR review guidance workflow (skips Copilot guidance steps)
 
 If anyone else uses this flag, it has no effect.
 
@@ -76,9 +76,9 @@ If anyone else uses this flag, it has no effect.
 
 On `main`, require these checks:
 - `Build + Fallow / build-fallow`
-- `AI Review Gate (CodeRabbit + Copilot) / ai-review-gate`
+- `AI Review Guidance (Copilot) / ai-review-gate`
 
-This ensures failing build/dead-code/AI-review states block merge.
+This ensures failing build/dead-code states block merge, while Copilot guidance is always posted on PRs.
 
 ---
 

@@ -108,7 +108,7 @@ jobs:
           # Never fail here; gating is done after notification/comment steps.
           exit 0
 
-      - name: Post fallow report for PRs to main/master (for CodeRabbit context)
+      - name: Post fallow report for PRs to main/master (for Copilot context)
         if: always() && steps.bypass.outputs.bypass != 'true' && github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master')
         uses: actions/github-script@v7
         env:

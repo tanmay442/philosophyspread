@@ -1,4 +1,4 @@
-name: AI Review Gate (CodeRabbit + Copilot)
+name: AI Review Guidance (Copilot)
 
 on:
   pull_request:
@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: read
-  checks: read
   pull-requests: write
   issues: write
 
@@ -45,7 +44,7 @@ jobs:
         if: steps.bypass.outputs.bypass == 'true'
         run: |
           echo "Maintainer bypass enabled by tanmay442 using flag: ${{ steps.bypass.outputs.flag }}"
-          echo "Skipping CodeRabbit/Copilot gate for this run."
+          echo "Skipping Copilot guidance workflow for this run."
 
       - name: Post / update Copilot guidance comment
         if: steps.bypass.outputs.bypass != 'true'
@@ -61,7 +60,7 @@ jobs:
               '- Do **not** over-focus on hotspots if the code is already clean and understandable.\n' +
               '- Prioritize standards compliance, correctness, maintainability, and meaningful improvements.\n' +
               '- If better implementation choices exist, prioritize those suggestions clearly.\n\n' +
-              'This PR is merge-blocked by CodeRabbit status checks.';
+              'Use the latest Fallow report comment in this PR as analysis context.';
 
             const { owner, repo } = context.repo;
             const issue_number = context.payload.pull_request.number;
@@ -100,60 +99,3 @@ jobs:
               core.warning(`Could not request copilot reviewer automatically: ${error.message}`);
             }
 
-      - name: Enforce CodeRabbit check status
-        if: steps.bypass.outputs.bypass != 'true'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const sha = context.payload.pull_request.head.sha;
-            const maxAttempts = 12;
-            const delayMs = 20000;
-
-            const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-              const checks = await github.rest.checks.listForRef({
-                owner,
-                repo,
-                ref: sha,
-                per_page: 100,
-              });
-
-              const codeRabbitChecks = checks.data.check_runs.filter((run) =>
-                /code\s*rabbit|coderabbit/i.test(run.name),
-              );
-
-              core.info(`Attempt ${attempt}/${maxAttempts} - found ${codeRabbitChecks.length} CodeRabbit check(s).`);
-
-              if (codeRabbitChecks.length === 0) {
-                if (attempt < maxAttempts) {
-                  await sleep(delayMs);
-                  continue;
-                }
-                core.setFailed('CodeRabbit check not found. Ensure CodeRabbit GitHub App is installed and enabled for this repository.');
-                return;
-              }
-
-              const pending = codeRabbitChecks.filter((run) => run.status !== 'completed');
-              if (pending.length > 0) {
-                if (attempt < maxAttempts) {
-                  await sleep(delayMs);
-                  continue;
-                }
-                core.setFailed(`CodeRabbit check still pending after waiting. Pending: ${pending.map((p) => p.name).join(', ')}`);
-                return;
-              }
-
-              const failing = codeRabbitChecks.filter(
-                (run) => !['success', 'neutral', 'skipped'].includes(run.conclusion || ''),
-              );
-
-              if (failing.length > 0) {
-                core.setFailed(`CodeRabbit reported blocking findings: ${failing.map((f) => `${f.name} (${f.conclusion})`).join(', ')}`);
-                return;
-              }
-
-              core.info('CodeRabbit checks passed.');
-              return;
-            }
