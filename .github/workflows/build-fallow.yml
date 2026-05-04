@@ -9,7 +9,9 @@ on:
       - '**'
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
+  issues: write
 
 jobs:
   build-fallow:
@@ -68,13 +70,142 @@ jobs:
         if: steps.bypass.outputs.bypass != 'true'
         run: pnpm build
 
-      - name: Run fallow (ignore Cloudflare worker config)
+      - name: Run fallow and analyze report (log-only, no artifact)
         if: steps.bypass.outputs.bypass != 'true'
-        run: npx --yes fallow --config .github/fallow.ci.json --format markdown > fallow-report.md
+        id: fallow
+        shell: bash
+        run: |
+          set +e
 
-      - name: Upload fallow report
-        if: always() && steps.bypass.outputs.bypass != 'true'
-        uses: actions/upload-artifact@v4
+          REPORT_PATH="$RUNNER_TEMP/fallow-report.json"
+          npx --yes fallow --config .github/fallow.ci.json --format json | tee "$REPORT_PATH"
+          FALLOW_EXIT=$?
+
+          DEAD_CODE_COUNT=$(jq '(
+            .check.summary.unused_files +
+            .check.summary.unused_exports +
+            .check.summary.unused_types +
+            .check.summary.unused_dependencies +
+            .check.summary.unused_enum_members +
+            .check.summary.unused_class_members +
+            .check.summary.type_only_dependencies +
+            .check.summary.test_only_dependencies +
+            .check.summary.circular_dependencies
+          ) // 0' "$REPORT_PATH")
+
+          DUPLICATE_COUNT=$(jq '.dupes.stats.clone_groups // 0' "$REPORT_PATH")
+
+          echo "report_path=$REPORT_PATH" >> "$GITHUB_OUTPUT"
+          echo "exit_code=$FALLOW_EXIT" >> "$GITHUB_OUTPUT"
+          echo "dead_code_count=$DEAD_CODE_COUNT" >> "$GITHUB_OUTPUT"
+          echo "duplicate_count=$DUPLICATE_COUNT" >> "$GITHUB_OUTPUT"
+
+          echo "---- Fallow summary ----"
+          echo "exit_code=$FALLOW_EXIT"
+          echo "dead_code_count=$DEAD_CODE_COUNT"
+          echo "duplicate_count=$DUPLICATE_COUNT"
+
+          # Never fail here; gating is done after notification/comment steps.
+          exit 0
+
+      - name: Post fallow report for PRs to main (for CodeRabbit context)
+        if: always() && steps.bypass.outputs.bypass != 'true' && github.event_name == 'pull_request' && github.base_ref == 'main'
+        uses: actions/github-script@v7
+        env:
+          REPORT_PATH: ${{ steps.fallow.outputs.report_path }}
         with:
-          name: fallow-report-${{ github.run_id }}
-          path: fallow-report.md
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- fallow-full-report-main-pr -->';
+            const reportPath = process.env.REPORT_PATH;
+            let report = reportPath && fs.existsSync(reportPath) ? fs.readFileSync(reportPath, 'utf8') : 'No fallow report found.';
+
+            const maxLen = 60000;
+            if (report.length > maxLen) {
+              report = report.slice(0, maxLen) + '\n\n... [truncated due to comment size limits]';
+            }
+
+            const body =
+              `${marker}\n` +
+              '# Fallow Report (full JSON)\n\n' +
+              `Actor: @${context.actor}\n\n` +
+              '<details><summary>Open full fallow report</summary>\n\n' +
+              '```json\n' +
+              `${report}\n` +
+              '```\n\n' +
+              '</details>';
+
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+      - name: Notify actor on dead code / duplicates
+        if: always() && steps.bypass.outputs.bypass != 'true' && (steps.fallow.outputs.dead_code_count != '0' || steps.fallow.outputs.duplicate_count != '0' || steps.fallow.outputs.exit_code != '0')
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const actor = context.actor;
+            const dead = Number('${{ steps.fallow.outputs.dead_code_count }}' || '0');
+            const dupes = Number('${{ steps.fallow.outputs.duplicate_count }}' || '0');
+            const exitCode = '${{ steps.fallow.outputs.exit_code }}';
+
+            const lines = [
+              `@${actor} Fallow checks detected issues.`,
+              '',
+              `- Fallow exit code: ${exitCode}`,
+              `- Dead code findings: ${dead}`,
+              `- Duplicate clone groups: ${dupes}`,
+              '',
+              dead > 0
+                ? 'Dead code was found; this run will be failed to block merge/promotion.'
+                : 'No dead code detected.',
+              dupes > 0
+                ? 'Duplicate code detected. Please review and refactor where appropriate.'
+                : 'No duplication warnings.',
+            ];
+
+            const body = lines.join('\n');
+            const { owner, repo } = context.repo;
+
+            if (context.eventName === 'pull_request') {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: context.payload.pull_request.number,
+                body,
+              });
+            } else {
+              await github.rest.repos.createCommitComment({
+                owner,
+                repo,
+                commit_sha: context.sha,
+                body,
+              });
+            }
+
+      - name: Fail when dead code is detected
+        if: always() && steps.bypass.outputs.bypass != 'true' && (steps.fallow.outputs.dead_code_count != '0' || steps.fallow.outputs.exit_code != '0')
+        run: |
+          echo "❌ Blocking: dead code found (or fallow failed to run cleanly)."
+          echo "dead_code_count=${{ steps.fallow.outputs.dead_code_count }}"
+          echo "fallow_exit_code=${{ steps.fallow.outputs.exit_code }}"
+          exit 1
+
+      - name: Duplicate warning only (non-blocking)
+        if: always() && steps.bypass.outputs.bypass != 'true' && steps.fallow.outputs.duplicate_count != '0'
+        run: |
+          echo "⚠️ Duplicate code warning: clone_groups=${{ steps.fallow.outputs.duplicate_count }}"
+          echo "Please review duplication findings in the log and refactor if needed."
