@@ -1,0 +1,80 @@
+name: Build + Fallow
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+permissions:
+  contents: read
+
+jobs:
+  build-fallow:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect maintainer bypass flag
+        id: bypass
+        shell: bash
+        env:
+          ACTOR: ${{ github.actor }}
+          EVENT_NAME: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          FLAG='[skip-tanmay-gates]'
+          BYPASS='false'
+
+          if [ "$ACTOR" = "tanmay442" ] && [ "$EVENT_NAME" = "push" ] && [ "$REF" = "refs/heads/main" ]; then
+            if printf '%s' "$HEAD_COMMIT_MESSAGE" | grep -Fqi "$FLAG"; then
+              BYPASS='true'
+            fi
+          fi
+
+          echo "flag=$FLAG" >> "$GITHUB_OUTPUT"
+          echo "bypass=$BYPASS" >> "$GITHUB_OUTPUT"
+
+      - name: Bypass acknowledged
+        if: steps.bypass.outputs.bypass == 'true'
+        run: |
+          echo "Maintainer bypass enabled by tanmay442 using flag: ${{ steps.bypass.outputs.flag }}"
+          echo "Skipping build + fallow for this direct main push."
+
+      - name: Setup Node
+        if: steps.bypass.outputs.bypass != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Setup pnpm
+        if: steps.bypass.outputs.bypass != 'true'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        if: steps.bypass.outputs.bypass != 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Build check
+        if: steps.bypass.outputs.bypass != 'true'
+        run: pnpm build
+
+      - name: Run fallow (ignore Cloudflare worker config)
+        if: steps.bypass.outputs.bypass != 'true'
+        run: npx --yes fallow --config .github/fallow.ci.json --format markdown > fallow-report.md
+
+      - name: Upload fallow report
+        if: always() && steps.bypass.outputs.bypass != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fallow-report-${{ github.run_id }}
+          path: fallow-report.md

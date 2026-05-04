@@ -7,5 +7,5 @@ examplefiles
 /.clerk/
 .wrangler
 desing.md
-cache.bin
-churn.bin
+.local_resources.txt
+.fallow

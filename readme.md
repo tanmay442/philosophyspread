@@ -55,6 +55,7 @@ Useful links:
 
 - Terms and Policy: https://philosophyspread.live/terms
 - How to Contribute: https://philosophyspread.live/contribute
+- Contributor guide (repo): [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## GitHub Sponsors
 
@@ -80,5 +81,6 @@ Hosted on **Cloudflare Workers** for low-latency global delivery with dynamic SS
 ---
 
 <p align="center">
-  <em>Exploring wisdom. Inspiring minds.</em>
+  <em>Exploring wisdom. Inspiring minds.</em><br/>
+  <sub>Maintainer reminder: emergency CI bypass flag is <code>[skip-tanmay-gates]</code> (only <code>tanmay442</code>).</sub>
 </p>

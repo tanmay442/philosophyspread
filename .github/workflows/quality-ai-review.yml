@@ -1,0 +1,159 @@
+name: AI Review Gate (CodeRabbit + Copilot)
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  checks: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  ai-review-gate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect maintainer bypass flag
+        id: bypass
+        shell: bash
+        env:
+          ACTOR: ${{ github.actor }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          FLAG='[skip-tanmay-gates]'
+          BYPASS='false'
+
+          if [ "$ACTOR" = "tanmay442" ]; then
+            HEAD_MSG="$(git show -s --format=%B "$PR_HEAD_SHA" 2>/dev/null || true)"
+            if printf '%s' "$HEAD_MSG" | grep -Fqi "$FLAG"; then
+              BYPASS='true'
+            fi
+          fi
+
+          echo "flag=$FLAG" >> "$GITHUB_OUTPUT"
+          echo "bypass=$BYPASS" >> "$GITHUB_OUTPUT"
+
+      - name: Bypass acknowledged
+        if: steps.bypass.outputs.bypass == 'true'
+        run: |
+          echo "Maintainer bypass enabled by tanmay442 using flag: ${{ steps.bypass.outputs.flag }}"
+          echo "Skipping CodeRabbit/Copilot gate for this run."
+
+      - name: Post / update Copilot guidance comment
+        if: steps.bypass.outputs.bypass != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- ai-review-gate-guidance -->';
+            const body =
+              `${marker}\n` +
+              '# AI Review Guidance\n\n' +
+              '@copilot Please review this PR.\n\n' +
+              'Guidance:\n' +
+              '- Do **not** over-focus on hotspots if the code is already clean and understandable.\n' +
+              '- Prioritize standards compliance, correctness, maintainability, and meaningful improvements.\n' +
+              '- If better implementation choices exist, prioritize those suggestions clearly.\n\n' +
+              'This PR is merge-blocked by CodeRabbit status checks.';
+
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+      - name: Best-effort request Copilot as reviewer
+        if: steps.bypass.outputs.bypass != 'true'
+        uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pull_number = context.payload.pull_request.number;
+            try {
+              await github.rest.pulls.requestReviewers({
+                owner,
+                repo,
+                pull_number,
+                reviewers: ['copilot'],
+              });
+              core.info('Requested copilot as reviewer.');
+            } catch (error) {
+              core.warning(`Could not request copilot reviewer automatically: ${error.message}`);
+            }
+
+      - name: Enforce CodeRabbit check status
+        if: steps.bypass.outputs.bypass != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const sha = context.payload.pull_request.head.sha;
+            const maxAttempts = 12;
+            const delayMs = 20000;
+
+            const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+              const checks = await github.rest.checks.listForRef({
+                owner,
+                repo,
+                ref: sha,
+                per_page: 100,
+              });
+
+              const codeRabbitChecks = checks.data.check_runs.filter((run) =>
+                /code\s*rabbit|coderabbit/i.test(run.name),
+              );
+
+              core.info(`Attempt ${attempt}/${maxAttempts} - found ${codeRabbitChecks.length} CodeRabbit check(s).`);
+
+              if (codeRabbitChecks.length === 0) {
+                if (attempt < maxAttempts) {
+                  await sleep(delayMs);
+                  continue;
+                }
+                core.setFailed('CodeRabbit check not found. Ensure CodeRabbit GitHub App is installed and enabled for this repository.');
+                return;
+              }
+
+              const pending = codeRabbitChecks.filter((run) => run.status !== 'completed');
+              if (pending.length > 0) {
+                if (attempt < maxAttempts) {
+                  await sleep(delayMs);
+                  continue;
+                }
+                core.setFailed(`CodeRabbit check still pending after waiting. Pending: ${pending.map((p) => p.name).join(', ')}`);
+                return;
+              }
+
+              const failing = codeRabbitChecks.filter(
+                (run) => !['success', 'neutral', 'skipped'].includes(run.conclusion || ''),
+              );
+
+              if (failing.length > 0) {
+                core.setFailed(`CodeRabbit reported blocking findings: ${failing.map((f) => `${f.name} (${f.conclusion})`).join(', ')}`);
+                return;
+              }
+
+              core.info('CodeRabbit checks passed.');
+              return;
+            }
