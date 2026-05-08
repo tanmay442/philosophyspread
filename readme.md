@@ -1,6 +1,7 @@
 # Philosophy Spread
 
 [![Build + Fallow + AI Review Guidance](https://github.com/tanmay442/PhilosophySpread/actions/workflows/build-fallow.yml/badge.svg)](https://github.com/tanmay442/PhilosophySpread/actions/workflows/build-fallow.yml)
+[![Mirror to Codeberg](https://github.com/tanmay442/PhilosophySpread/actions/workflows/codeberg-mirror.yml/badge.svg)](https://github.com/tanmay442/PhilosophySpread/actions/workflows/codeberg-mirror.yml)
 
 <p align="center">
   <img src="src/assets/logo.png" width="360" alt="Philosophy Spread Logo" />
