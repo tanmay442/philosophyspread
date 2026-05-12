@@ -1,4 +1,5 @@
 {
+  "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "target": "ES2022",
     "experimentalDecorators": true,
@@ -17,13 +18,15 @@
     "jsx": "react-jsx",
     "paths": {
       "@/*": [
-        "./*"
+        "./src/*"
       ]
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
   },
   "include": [
+    "src/**/*",
+    ".astro/types.d.ts",
     "./worker-configuration.d.ts"
   ]
 }
