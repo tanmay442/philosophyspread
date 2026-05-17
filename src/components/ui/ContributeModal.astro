@@ -20,6 +20,7 @@ const contributeLinkClass =
 
 <!--- this whole section is ai generated  -->
 
+
 <dialog 
   id="contribute-modal"
   class={backdropClass}
@@ -47,13 +48,20 @@ const contributeLinkClass =
         Your support helps us keep the philosophical journey alive
       </p>
     </div>
-
+   
     <div class="p-6 md:p-8 pt-4 space-y-6">
       <div class="space-y-4 text-center">
         <p class="text-secondary/90 leading-relaxed">
           We appreciate your enthusiasm to join our philosophical journey. Your support reflects the spirit of curiosity and collaborative learning we value.
         </p>
-        
+        <div class="flex flex-col items-center gap-3 pt-4">
+        <a href="/contribute" class={contributeLinkClass}>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Learn how to contribute to the content
+        </a>
+      </div> 
         <div class="p-4 md:p-6 rounded-lg bg-primary-container/50 border-2 border-secondary/30 flex flex-col lg:flex-row items-center gap-6 lg:gap-8">
           <div class="flex-1 text-left">
             <p class="text-secondary font-medium mb-2 flex items-center gap-2">
@@ -126,15 +134,6 @@ const contributeLinkClass =
             <span>Read more</span>
             <Icon name="arrow_forward" class="h-3 w-3" />
           </div>
-        </a>
-      </div>
-
-      <div class="text-center pt-4">
-        <a href="mailto:contribute@philosophyspread.com?subject=Contributing to Philosophy Spread" class={contributeLinkClass}>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
-          Send your writing to contribute to the collection
         </a>
       </div>
 
