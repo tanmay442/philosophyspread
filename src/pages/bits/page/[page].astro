@@ -16,7 +16,7 @@ const sortedBits = [...bits].sort((a, b) => b.data.timestamp.valueOf() - a.data.
 
 const page = paginateItems(sortedBits, {
   pageNumber,
-  pageSize: 12,
+  pageSize: 6,
   basePath: '/bits',
 });
 
