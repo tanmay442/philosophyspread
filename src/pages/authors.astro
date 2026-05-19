@@ -14,6 +14,11 @@ if (!authorsPage) {
 }
 
 const { Content } = await render(authorsPage);
+const lastUpdated = authorsPage.data.lastUpdated.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
 
 const components = {
   Blockquote,
@@ -40,7 +45,7 @@ const components = {
         </h1>
         
         <p class="text-on-surface-variant leading-relaxed font-body">
-          Last Updated: {authorsPage.data.lastUpdated}
+          Last Updated: {lastUpdated}
         </p>
       </header>
 
