@@ -16,6 +16,7 @@ if (!contributePage) {
 
 const { Content } = await render(contributePage);
 const lastUpdated = contributePage.data.lastUpdated.toLocaleDateString('en-US', {
+  timeZone: 'UTC',
   year: 'numeric',
   month: 'long',
   day: 'numeric',
