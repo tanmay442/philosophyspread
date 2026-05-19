@@ -16,6 +16,7 @@ if (!authorsPage) {
 
 const { Content } = await render(authorsPage);
 const lastUpdated = authorsPage.data.lastUpdated.toLocaleDateString('en-US', {
+  timeZone: 'UTC',
   year: 'numeric',
   month: 'long',
   day: 'numeric',
