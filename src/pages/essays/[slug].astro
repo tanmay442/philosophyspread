@@ -6,6 +6,7 @@ import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
 import Blockquote from '../../components/mdx/Blockquote.astro';
 import siteLogo from '../../assets/logo.png';
+import { getSiteUrl } from '../../utils/site';
 
 const slug = Astro.params.slug;
 
@@ -21,7 +22,7 @@ if (!essay) {
 }
 
 const { Content } = await render(essay);
-const siteUrl = Astro.site ?? new URL('https://philosophyspread.live');
+const siteUrl = getSiteUrl(Astro.site);
 const essayUrl = new URL(Astro.url.pathname, siteUrl).toString();
 const socialImagePath = essay.data.imageSrc.endsWith('.avif')
   ? siteLogo.src

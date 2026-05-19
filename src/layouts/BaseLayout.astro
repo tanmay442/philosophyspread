@@ -2,6 +2,7 @@
 import { SEOMetadata } from 'astro-seo-metadata';
 import { Font } from 'astro:assets';
 import siteLogo from '../assets/logo.png';
+import { getSiteUrl } from '../utils/site';
 import '../index.css';
 
 interface Props {
@@ -22,7 +23,7 @@ const {
   structuredData = [],
 } = Astro.props as Props;
 
-const siteUrl = Astro.site ?? new URL('https://philosophyspread.live');
+const siteUrl = getSiteUrl(Astro.site);
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
 const resolvedImageUrl = image.startsWith('http://') || image.startsWith('https://')
   ? image
