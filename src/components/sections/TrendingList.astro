@@ -1,16 +1,12 @@
 ---
-import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import TrendingArticle from '../cards/TrendingArticle.astro';
 
-const essays = await getCollection('essays');
-const featuredEssay = essays.find((essay) => essay.data.featured) ?? essays[0];
+interface Props {
+  trendingEssays: CollectionEntry<'essays'>[];
+}
 
-const trendingEssays = featuredEssay
-  ? essays
-      .filter((essay) => essay.id !== featuredEssay.id)
-      .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-      .slice(0, 3)
-  : [];
+const { trendingEssays } = Astro.props;
 ---
 
 <div class="border-l-0 md:border-l-2 border-secondary md:pl-12 flex-grow">

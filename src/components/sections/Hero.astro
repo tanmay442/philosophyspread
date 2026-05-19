@@ -1,9 +1,18 @@
 ---
+import type { CollectionEntry } from 'astro:content';
 import HeroLeftPane from './HeroLeftPane.astro';
 import HeroRightPane from './HeroRightPane.astro';
+
+interface Props {
+  latestLogic?: CollectionEntry<'logicModules'>;
+  latestBit?: CollectionEntry<'bits'>;
+  latestEssay?: CollectionEntry<'essays'>;
+}
+
+const { latestLogic, latestBit, latestEssay } = Astro.props;
 ---
 
 <section class="min-h-[calc(100dvh-80px)] grid grid-cols-1 md:grid-cols-10 border-b-2 border-secondary">
   <HeroLeftPane />
-  <HeroRightPane />
+  <HeroRightPane latestLogic={latestLogic} latestBit={latestBit} latestEssay={latestEssay} />
 </section>

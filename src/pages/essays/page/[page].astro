@@ -5,6 +5,7 @@ import Header from '../../../components/layout/Header.astro';
 import Footer from '../../../components/layout/Footer.astro';
 import EssayCard from '../../../components/cards/EssayCard.astro';
 import { paginateItems, parsePageNumber } from '../../../utils/pagination';
+import { ESSAYS_PAGE_SIZE } from '../../../constants/pagination';
 
 const pageNumber = parsePageNumber(Astro.params.page);
 if (!pageNumber) {
@@ -16,7 +17,7 @@ const sortedEssays = [...essays].sort((a, b) => b.data.pubDate.valueOf() - a.dat
 
 const page = paginateItems(sortedEssays, {
   pageNumber,
-  pageSize: 9,
+  pageSize: ESSAYS_PAGE_SIZE,
   basePath: '/essays',
 });
 

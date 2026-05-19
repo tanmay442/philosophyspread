@@ -1,8 +1,11 @@
 ---
-import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 
-const essays = await getCollection('essays');
-const featuredEssay = essays.find((essay) => essay.data.featured) ?? essays[0];
+interface Props {
+  essay?: CollectionEntry<'essays'>;
+}
+
+const { essay: featuredEssay } = Astro.props;
 ---
 
 <div class="md:col-span-8">

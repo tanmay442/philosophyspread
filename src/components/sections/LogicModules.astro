@@ -1,10 +1,13 @@
 ---
-import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import LogicCard from '../cards/LogicCard.astro';
 import Icon from '../ui/Icon.astro';
 
-const logicModules = await getCollection('logicModules');
-const sortedModules = logicModules.sort((a, b) => a.data.moduleNumber.localeCompare(b.data.moduleNumber)).slice(0, 4);
+interface Props {
+  logicModules: CollectionEntry<'logicModules'>[];
+}
+
+const { logicModules } = Astro.props;
 ---
 
 <section id="logic" class="py-24 px-8 md:px-12 bg-surface">
@@ -21,7 +24,7 @@ const sortedModules = logicModules.sort((a, b) => a.data.moduleNumber.localeComp
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-      {sortedModules.map((module) => (
+      {logicModules.map((module) => (
         <a href={`/logic-modules/${module.id}`} class="block group no-underline hover:no-underline focus:no-underline">
           <LogicCard 
             moduleNumber={module.data.moduleNumber}

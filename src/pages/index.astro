@@ -7,6 +7,60 @@ import DailyBits from '../components/sections/DailyBits.astro';
 import Essays from '../components/sections/Essays.astro';
 import GetInvolved from '../components/sections/GetInvolved.astro';
 import Footer from '../components/layout/Footer.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+const [logicModules, bits, essays] = await Promise.all([
+  getCollection('logicModules'),
+  getCollection('bits'),
+  getCollection('essays'),
+]);
+
+const latestBy = <T,>(items: T[], compareFn: (a: T, b: T) => number): T | undefined => {
+  if (!items.length) {
+    return undefined;
+  }
+
+  return items.reduce((best, curr) => (compareFn(curr, best) < 0 ? curr : best));
+};
+
+const moduleNumberCollator = new Intl.Collator(undefined, {
+  numeric: true,
+  sensitivity: 'base',
+});
+
+const logicModuleCards = [...logicModules]
+  .sort((a, b) => moduleNumberCollator.compare(a.data.moduleNumber, b.data.moduleNumber))
+  .slice(0, 4);
+
+const dailyBitCards = [...bits]
+  .sort((a: CollectionEntry<'bits'>, b: CollectionEntry<'bits'>) => b.data.timestamp.valueOf() - a.data.timestamp.valueOf())
+  .slice(0, 6);
+
+const latestLogic = latestBy(
+  logicModules,
+  (a: CollectionEntry<'logicModules'>, b: CollectionEntry<'logicModules'>) =>
+    moduleNumberCollator.compare(b.data.moduleNumber, a.data.moduleNumber),
+);
+
+const latestBit = latestBy(
+  bits,
+  (a: CollectionEntry<'bits'>, b: CollectionEntry<'bits'>) =>
+    b.data.timestamp.valueOf() - a.data.timestamp.valueOf(),
+);
+
+const latestEssay = latestBy(
+  essays,
+  (a: CollectionEntry<'essays'>, b: CollectionEntry<'essays'>) =>
+    b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const featuredEssay = essays.find((essay) => essay.data.featured) ?? essays[0];
+const trendingEssays = featuredEssay
+  ? essays
+      .filter((essay) => essay.id !== featuredEssay.id)
+      .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+      .slice(0, 3)
+  : [];
 ---
 
 <BaseLayout
@@ -16,10 +70,10 @@ import Footer from '../components/layout/Footer.astro';
 >
   <Header />
   <main class="pt-20">
-    <Hero />
-    <LogicModules />
-    <DailyBits />
-    <Essays />
+    <Hero latestLogic={latestLogic} latestBit={latestBit} latestEssay={latestEssay} />
+    <LogicModules logicModules={logicModuleCards} />
+    <DailyBits bits={dailyBitCards} />
+    <Essays featuredEssay={featuredEssay} trendingEssays={trendingEssays} />
     <GetInvolved />
   </main>
   <Footer />

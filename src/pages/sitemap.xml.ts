@@ -1,9 +1,7 @@
 import { getCollection } from 'astro:content';
-
-const SITE_URL = 'https://philosophyspread.live';
-const ESSAYS_PAGE_SIZE = 9;
-const BITS_PAGE_SIZE = 12;
-const MODULES_PAGE_SIZE = 4;
+import type { APIContext } from 'astro';
+import { BITS_PAGE_SIZE, ESSAYS_PAGE_SIZE, MODULES_PAGE_SIZE } from '../constants/pagination';
+import { getSiteUrl } from '../utils/site';
 
 type SitemapEntry = {
   loc: string;
@@ -18,7 +16,7 @@ const escapeXml = (value: string) =>
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&apos;');
 
-const toAbsolute = (pathname: string) => new URL(pathname, SITE_URL).toString();
+const toAbsolute = (pathname: string, siteUrl: URL) => new URL(pathname, siteUrl).toString();
 
 const parseDate = (value: unknown): string | undefined => {
   if (!value) {
@@ -53,17 +51,19 @@ const buildPaginationEntries = (
   basePath: string,
   totalItems: number,
   pageSize: number,
+  siteUrl: URL,
   lastmod?: string,
 ): SitemapEntry[] => {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
   return Array.from({ length: totalPages }, (_, index) => ({
-    loc: toAbsolute(`${basePath}/page/${index + 1}`),
+    loc: toAbsolute(`${basePath}/page/${index + 1}`, siteUrl),
     lastmod,
   }));
 };
 
-export async function GET() {
+export async function GET({ site }: APIContext) {
+  const siteUrl = getSiteUrl(site);
   const [essays, bits, modules, pages] = await Promise.all([
     getCollection('essays'),
     getCollection('bits'),
@@ -79,32 +79,32 @@ export async function GET() {
     .map((entry) => parseDate(entry.data.timestamp))
     .filter((date): date is string => Boolean(date));
 
-  const entries: SitemapEntry[] =[
+  const entries: SitemapEntry[] = [
     // 1. The Home Page
-    { loc: toAbsolute('/') },
+    { loc: toAbsolute('/', siteUrl) },
     
     // 2. All Static Pages (Dynamic mapping instead of hardcoding terms/authors/etc)
     ...pages.map((entry) => ({
-      loc: toAbsolute(`/${entry.id}`),
+      loc: toAbsolute(`/${entry.id}`, siteUrl),
       lastmod: parseDate(entry.data.lastUpdated),
     })),
 
     // 3. Pagination Roots
-    ...buildPaginationEntries('/essays', essays.length, ESSAYS_PAGE_SIZE, latestDate(essayDates)),
-    ...buildPaginationEntries('/bits', bits.length, BITS_PAGE_SIZE, latestDate(bitDates)),
-    ...buildPaginationEntries('/logic-modules', modules.length, MODULES_PAGE_SIZE),
+    ...buildPaginationEntries('/essays', essays.length, ESSAYS_PAGE_SIZE, siteUrl, latestDate(essayDates)),
+    ...buildPaginationEntries('/bits', bits.length, BITS_PAGE_SIZE, siteUrl, latestDate(bitDates)),
+    ...buildPaginationEntries('/logic-modules', modules.length, MODULES_PAGE_SIZE, siteUrl),
     
     // 4. Individual Content Entries
     ...essays.map((entry) => ({
-      loc: toAbsolute(`/essays/${entry.id}`),
+      loc: toAbsolute(`/essays/${entry.id}`, siteUrl),
       lastmod: parseDate(entry.data.pubDate),
     })),
     ...bits.map((entry) => ({
-      loc: toAbsolute(`/bits/${entry.id}`),
+      loc: toAbsolute(`/bits/${entry.id}`, siteUrl),
       lastmod: parseDate(entry.data.timestamp),
     })),
     ...modules.map((entry) => ({
-      loc: toAbsolute(`/logic-modules/${entry.id}`),
+      loc: toAbsolute(`/logic-modules/${entry.id}`, siteUrl),
     })),
   ];
 

@@ -1,7 +1,8 @@
 ---
-import { SEOMetadata } from 'astro-seo-metadata';
+import SEOMetadata from 'astro-seo-metadata/SEOMetadata.astro';
 import { Font } from 'astro:assets';
 import siteLogo from '../assets/logo.png';
+import { getSiteUrl } from '../utils/site';
 import '../index.css';
 
 interface Props {
@@ -22,7 +23,7 @@ const {
   structuredData = [],
 } = Astro.props as Props;
 
-const siteUrl = Astro.site ?? new URL('https://philosophyspread.live');
+const siteUrl = getSiteUrl(Astro.site);
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
 const resolvedImageUrl = image.startsWith('http://') || image.startsWith('https://')
   ? image
@@ -112,15 +113,6 @@ const combinedStructuredData = [...defaultStructuredData, ...additionalStructure
     />
     <Font cssVariable="--font-jetbrains-mono" preload={[{ weight: 400, style: 'normal' }]} />
     <style is:global>
-      .hard-offset {
-        box-shadow: 4px 4px 0px 0px #1A1A1A;
-        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-      .hard-offset:hover {
-        transform: translateY(-4px);
-        box-shadow: 8px 8px 0px 0px #1A1A1A;
-      }
-      
       .hard-offset-teal {
         box-shadow: 4px 4px 0px 0px #1A1A1A;
         transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
