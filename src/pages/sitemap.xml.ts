@@ -1,4 +1,4 @@
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import type { APIContext } from 'astro';
 import { BITS_PAGE_SIZE, ESSAYS_PAGE_SIZE, MODULES_PAGE_SIZE } from '../constants/pagination';
 import { getSiteUrl } from '../utils/site';
@@ -7,6 +7,11 @@ type SitemapEntry = {
   loc: string;
   lastmod?: string;
 };
+
+type EssayEntry = CollectionEntry<'essays'>;
+type BitEntry = CollectionEntry<'bits'>;
+type LogicModuleEntry = CollectionEntry<'logicModules'>;
+type PageEntry = CollectionEntry<'pages'>;
 
 const escapeXml = (value: string) =>
   value
@@ -72,19 +77,19 @@ export async function GET({ site }: APIContext) {
   ]);
 
   const essayDates = essays
-    .map((entry) => parseDate(entry.data.pubDate))
-    .filter((date): date is string => Boolean(date));
-    
+    .map((entry: EssayEntry) => parseDate(entry.data.pubDate))
+    .filter((date: string | undefined): date is string => Boolean(date));
+
   const bitDates = bits
-    .map((entry) => parseDate(entry.data.timestamp))
-    .filter((date): date is string => Boolean(date));
+    .map((entry: BitEntry) => parseDate(entry.data.timestamp))
+    .filter((date: string | undefined): date is string => Boolean(date));
 
   const entries: SitemapEntry[] = [
     // 1. The Home Page
     { loc: toAbsolute('/', siteUrl) },
     
     // 2. All Static Pages (Dynamic mapping instead of hardcoding terms/authors/etc)
-    ...pages.map((entry) => ({
+    ...pages.map((entry: PageEntry) => ({
       loc: toAbsolute(`/${entry.id}`, siteUrl),
       lastmod: parseDate(entry.data.lastUpdated),
     })),
@@ -95,15 +100,15 @@ export async function GET({ site }: APIContext) {
     ...buildPaginationEntries('/logic-modules', modules.length, MODULES_PAGE_SIZE, siteUrl),
     
     // 4. Individual Content Entries
-    ...essays.map((entry) => ({
+    ...essays.map((entry: EssayEntry) => ({
       loc: toAbsolute(`/essays/${entry.id}`, siteUrl),
       lastmod: parseDate(entry.data.pubDate),
     })),
-    ...bits.map((entry) => ({
+    ...bits.map((entry: BitEntry) => ({
       loc: toAbsolute(`/bits/${entry.id}`, siteUrl),
       lastmod: parseDate(entry.data.timestamp),
     })),
-    ...modules.map((entry) => ({
+    ...modules.map((entry: LogicModuleEntry) => ({
       loc: toAbsolute(`/logic-modules/${entry.id}`, siteUrl),
     })),
   ];
