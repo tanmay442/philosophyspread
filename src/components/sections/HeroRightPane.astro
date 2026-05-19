@@ -1,38 +1,14 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import HeroBlock from '../cards/HeroBlock.astro';
 
-const pickLatest = <T,>(items: T[], compareFn: (a: T, b: T) => number): T | undefined => {
-  if (!items.length) {
-    return undefined;
-  }
+interface Props {
+  latestLogic?: CollectionEntry<'logicModules'>;
+  latestBit?: CollectionEntry<'bits'>;
+  latestEssay?: CollectionEntry<'essays'>;
+}
 
-  return items.slice(1).reduce(
-    (latestItem, item) => (compareFn(item, latestItem) < 0 ? item : latestItem),
-    items[0],
-  );
-};
-
-const logicModules = await getCollection('logicModules');
-const latestLogic = pickLatest(
-  logicModules,
-  (a: CollectionEntry<'logicModules'>, b: CollectionEntry<'logicModules'>) =>
-    b.data.moduleNumber.localeCompare(a.data.moduleNumber),
-);
-
-const bits = await getCollection('bits');
-const latestBit = pickLatest(
-  bits,
-  (a: CollectionEntry<'bits'>, b: CollectionEntry<'bits'>) =>
-    b.data.timestamp.valueOf() - a.data.timestamp.valueOf(),
-);
-
-const essays = await getCollection('essays');
-const latestEssay = pickLatest(
-  essays,
-  (a: CollectionEntry<'essays'>, b: CollectionEntry<'essays'>) =>
-    b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const { latestLogic, latestBit, latestEssay } = Astro.props;
 
 const truncateText = (value: string, maxLength: number) =>
   value.length > maxLength ? `${value.slice(0, maxLength)}...` : value;

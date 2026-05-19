@@ -77,6 +77,10 @@ jobs:
         if: steps.bypass.outputs.bypass != 'true'
         run: pnpm install --frozen-lockfile
 
+      - name: Lint
+        if: steps.bypass.outputs.bypass != 'true'
+        run: pnpm lint
+
       - name: Build check
         if: steps.bypass.outputs.bypass != 'true'
         run: pnpm build
