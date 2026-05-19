@@ -1,6 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ReadingProgressBar from '../../components/ui/ReadingProgressBar.astro';
 import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
 import TruthTable from '../../components/mdx/TruthTable.astro';
@@ -37,6 +38,7 @@ const components = {
   description={currentModule.data.description}
   keywords={['logic module', 'reasoning', 'critical thinking', currentModule.data.category, currentModule.data.difficulty]}
 >
+  <ReadingProgressBar />
   <Header />
   
   <main class="pt-32 px-6 md:px-12 pb-20 max-w-4xl mx-auto">
