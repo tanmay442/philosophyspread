@@ -4,6 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
 import Icon from '../components/ui/Icon.astro';
+import Prose from '../components/ui/Prose.astro';
 
 const pages = await getCollection('pages');
 const termsPage = pages.find((entry) => entry.id === 'terms');
@@ -44,17 +45,9 @@ const lastUpdated = termsPage.data.lastUpdated.toLocaleDateString('en-US', {
         </p>
       </header>
 
-      <div class="prose prose-xl max-w-none font-body leading-relaxed
-        prose-headings:font-headline prose-headings:text-secondary prose-headings:font-bold
-        prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b-2 prose-h2:border-outline prose-h2:pb-4
-        prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4
-        prose-p:mb-6 prose-p:text-lg prose-p:text-on-surface
-        prose-a:text-primary prose-a:underline hover:prose-a:text-secondary
-        prose-strong:text-on-surface prose-strong:font-bold
-        prose-ul:list-disc prose-ul:pl-6 prose-li:mb-2 prose-li:text-on-surface prose-li:pl-2
-        prose-ul ul:list-[circle] prose-ul ul:pl-6">
+      <Prose variant="page">
         <Content />
-      </div>
+      </Prose>
     </article>
   </main>
 

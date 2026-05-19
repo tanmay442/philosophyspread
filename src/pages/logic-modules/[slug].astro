@@ -9,6 +9,7 @@ import FormalProof from '../../components/mdx/FormalProof.astro';
 import InteractiveQuiz from '../../components/mdx/InteractiveQuiz.astro';
 import Blockquote from '../../components/mdx/Blockquote.astro';
 import Callout from '../../components/mdx/Callout.astro';
+import Prose from '../../components/ui/Prose.astro';
 
 const moduleSlug = Astro.params.slug;
 const modules = await getCollection('logicModules');
@@ -71,17 +72,9 @@ const components = {
         )}
       </header>
 
-      <div class="prose prose-xl max-w-3xl mx-auto font-body leading-relaxed
-        prose-headings:font-headline prose-headings:text-secondary prose-headings:font-bold
-        prose-h2:text-4xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:border-b-2 prose-h2:border-outline prose-h2:pb-4
-        prose-h3:text-2xl prose-h3:mt-10 prose-h3:mb-4
-        prose-p:mb-8 prose-p:text-xl prose-p:text-on-surface
-        prose-a:text-primary hover:prose-a:text-secondary
-        prose-strong:text-on-surface prose-strong:font-bold
-        prose-ul:list-square prose-ul:pl-6 prose-li:mb-3 prose-li:text-xl prose-li:text-on-surface
-        prose-code:text-on-surface prose-code:bg-surface-container prose-code:px-2 prose-code:py-0.5">
+      <Prose variant="logicModule">
         <Content components={components} />
-      </div>
+      </Prose>
       
       <nav class="mt-20 md:mt-24 pt-8 border-t-2 border-secondary flex gap-3 sm:gap-4 md:gap-8">
         {prevModule ? (

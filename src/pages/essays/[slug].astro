@@ -7,6 +7,7 @@ import Footer from '../../components/layout/Footer.astro';
 import Blockquote from '../../components/mdx/Blockquote.astro';
 import siteLogo from '../../assets/logo.png';
 import { getSiteUrl } from '../../utils/site';
+import Prose from '../../components/ui/Prose.astro';
 
 const slug = Astro.params.slug;
 
@@ -102,17 +103,9 @@ const components = {
         </div>
       </div>
 
-      <div class="prose prose-xl max-w-3xl mx-auto font-body leading-relaxed
-        prose-headings:font-headline prose-headings:text-secondary prose-headings:font-bold
-        prose-h2:text-4xl prose-h2:mt-16 prose-h2:mb-6 prose-h2:border-b-2 prose-h2:border-outline prose-h2:pb-4
-        prose-h3:text-2xl prose-h3:mt-10 prose-h3:mb-4
-        prose-p:mb-8 prose-p:text-xl prose-p:text-on-surface
-        prose-a:text-primary hover:prose-a:text-secondary
-        prose-strong:text-on-surface prose-strong:font-bold
-        prose-ul:list-square prose-ul:pl-6 prose-li:mb-3 prose-li:text-xl prose-li:text-on-surface
-        prose-blockquote:not-italic prose-blockquote:border-none prose-blockquote:pl-0">
+      <Prose variant="essay">
         <Content components={components} />
-      </div>
+      </Prose>
       
       {essay.data.tags.length > 0 && (
         <div class="mt-16 pt-8 border-t-2 border-secondary flex flex-wrap gap-2">
