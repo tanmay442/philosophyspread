@@ -1,0 +1,47 @@
+---
+---
+
+<div
+  class="reading-progress-bar fixed top-0 left-0 right-0 z-[60] h-[5px] bg-tertiary origin-left"
+  aria-hidden="true"
+  hidden
+  data-reading-progress-bar
+></div>
+
+<script>
+  const bar = document.querySelector('[data-reading-progress-bar]') as HTMLDivElement | null;
+
+  if (bar) {
+    let ticking = false;
+
+    const updateProgress = () => {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+
+      if (maxScroll <= 0) {
+        bar.hidden = true;
+        bar.style.transform = 'scaleX(0)';
+        return;
+      }
+
+      const progress = Math.min(Math.max(window.scrollY / maxScroll, 0), 1);
+      bar.style.transform = `scaleX(${progress})`;
+      bar.hidden = false;
+    };
+
+    const requestUpdate = () => {
+      if (ticking) return;
+      ticking = true;
+
+      window.requestAnimationFrame(() => {
+        ticking = false;
+        updateProgress();
+      });
+    };
+
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+    window.addEventListener('load', requestUpdate);
+    window.addEventListener('pageshow', requestUpdate);
+    requestUpdate();
+  }
+</script>
