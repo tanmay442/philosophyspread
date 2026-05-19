@@ -15,6 +15,7 @@ if (!termsPage) {
 
 const { Content } = await render(termsPage);
 const lastUpdated = termsPage.data.lastUpdated.toLocaleDateString('en-US', {
+  timeZone: 'UTC',
   year: 'numeric',
   month: 'long',
   day: 'numeric',
