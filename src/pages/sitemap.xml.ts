@@ -1,9 +1,7 @@
 import { getCollection } from 'astro:content';
+import { BITS_PAGE_SIZE, ESSAYS_PAGE_SIZE, MODULES_PAGE_SIZE } from '../constants/pagination';
 
 const SITE_URL = 'https://philosophyspread.live';
-const ESSAYS_PAGE_SIZE = 9;
-const BITS_PAGE_SIZE = 12;
-const MODULES_PAGE_SIZE = 4;
 
 type SitemapEntry = {
   loc: string;
@@ -79,7 +77,7 @@ export async function GET() {
     .map((entry) => parseDate(entry.data.timestamp))
     .filter((date): date is string => Boolean(date));
 
-  const entries: SitemapEntry[] =[
+  const entries: SitemapEntry[] = [
     // 1. The Home Page
     { loc: toAbsolute('/') },
     

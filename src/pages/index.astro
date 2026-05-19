@@ -20,10 +20,7 @@ const latestBy = <T,>(items: T[], compareFn: (a: T, b: T) => number): T | undefi
     return undefined;
   }
 
-  return items.slice(1).reduce(
-    (latestItem, item) => (compareFn(item, latestItem) < 0 ? item : latestItem),
-    items[0],
-  );
+  return items.reduce((best, curr) => (compareFn(curr, best) < 0 ? curr : best));
 };
 
 const logicModuleCards = [...logicModules]
