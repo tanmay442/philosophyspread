@@ -2,7 +2,7 @@
 ---
 
 <div
-  class="reading-progress-bar fixed top-0 left-0 right-0 z-[60] h-[5px] bg-tertiary origin-left"
+  class="reading-progress-bar pointer-events-none fixed top-0 left-0 right-0 z-[60] h-[5px] bg-tertiary origin-left"
   aria-hidden="true"
   hidden
   data-reading-progress-bar
@@ -10,12 +10,16 @@
 
 <script>
   const bar = document.querySelector('[data-reading-progress-bar]') as HTMLDivElement | null;
+  const article = document.querySelector('article') as HTMLElement | null;
 
-  if (bar) {
+  if (bar && article) {
     let ticking = false;
 
     const updateProgress = () => {
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const articleRect = article.getBoundingClientRect();
+      const articleTop = articleRect.top + window.scrollY;
+      const articleBottom = articleRect.bottom + window.scrollY;
+      const maxScroll = articleBottom - articleTop - window.innerHeight;
 
       if (maxScroll <= 0) {
         bar.hidden = true;
@@ -23,7 +27,7 @@
         return;
       }
 
-      const progress = Math.min(Math.max(window.scrollY / maxScroll, 0), 1);
+      const progress = Math.min(Math.max((window.scrollY - articleTop) / maxScroll, 0), 1);
       bar.style.transform = `scaleX(${progress})`;
       bar.hidden = false;
     };
