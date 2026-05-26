@@ -1,0 +1,6 @@
+allowBuilds:
+  '@clerk/shared': true
+  esbuild: true
+  fallow: true
+  sharp: true
+  workerd: true
