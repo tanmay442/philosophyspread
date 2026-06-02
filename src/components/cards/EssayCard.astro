@@ -34,6 +34,7 @@ const {
 const timestampLabel =
   readTime instanceof Date
     ? readTime.toLocaleDateString('en-US', {
+        timeZone: 'UTC',
         year: 'numeric',
         month: 'short',
         day: 'numeric',

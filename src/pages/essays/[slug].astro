@@ -87,7 +87,12 @@ const components = {
           <span>&bull;</span>
           <span>&bull;</span>
           <time datetime={essay.data.pubDate.toISOString()}>
-            {essay.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            {essay.data.pubDate.toLocaleDateString('en-US', {
+              timeZone: 'UTC',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
           </time>
         </div>
       </header>
