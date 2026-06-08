@@ -5,7 +5,6 @@ import ReadingProgressBar from '../../components/ui/ReadingProgressBar.astro';
 import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
 import Blockquote from '../../components/mdx/Blockquote.astro';
-import siteLogo from '../../assets/logo.png';
 import { getSiteUrl } from '../../utils/site';
 import Prose from '../../components/ui/Prose.astro';
 
@@ -25,9 +24,7 @@ if (!essay) {
 const { Content } = await render(essay);
 const siteUrl = getSiteUrl(Astro.site);
 const essayUrl = new URL(Astro.url.pathname, siteUrl).toString();
-const socialImagePath = essay.data.imageSrc.endsWith('.avif')
-  ? siteLogo.src
-  : essay.data.imageSrc;
+const socialImagePath = essay.data.imageSrc;
 const socialImageUrl = socialImagePath.startsWith('http://') || socialImagePath.startsWith('https://')
   ? socialImagePath
   : new URL(socialImagePath, siteUrl).toString();
@@ -84,7 +81,6 @@ const components = {
         </p>
         <div class="flex items-center justify-center space-x-4 font-label text-xs uppercase tracking-widest text-secondary">
           <span>By {essay.data.author}</span>
-          <span>&bull;</span>
           <span>&bull;</span>
           <time datetime={essay.data.pubDate.toISOString()}>
             {essay.data.pubDate.toLocaleDateString('en-US', {
