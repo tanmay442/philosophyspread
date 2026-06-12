@@ -100,7 +100,7 @@ const combinedStructuredData = [...defaultStructuredData, ...additionalStructure
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="googlebot" content="index, follow" />
     {combinedStructuredData.map((schema) => (
-      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}
     
     <link rel="preconnect" href="https://clerk.philosophyspread.live" crossorigin />
