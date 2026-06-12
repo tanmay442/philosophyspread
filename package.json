@@ -15,8 +15,7 @@
     "@astrojs/check": "^0.9.9",
     "@clerk/astro": "^3.4.2",
     "astro": "^6.4.6",
-    "astro-seo-metadata": "^0.6.0",
-    "zod": "^4.4.3"
+    "astro-seo-metadata": "^0.6.0"
   },
   "devDependencies": {
     "@astrojs/cloudflare": "^13.7.0",
