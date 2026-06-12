@@ -20,9 +20,6 @@ importers:
       astro-seo-metadata:
         specifier: ^0.6.0
         version: 0.6.0
-      zod:
-        specifier: ^4.4.3
-        version: 4.4.3
     devDependencies:
       '@astrojs/cloudflare':
         specifier: ^13.7.0
