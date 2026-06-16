@@ -34,9 +34,6 @@ export default defineConfig({
     port: 3000,
   },
   vite: {
-    optimizeDeps: {
-      exclude: ['@clerk/astro', '@clerk/astro/components', 'astro-seo-metadata'],
-    },
     ssr: {
       optimizeDeps: {
         exclude: ['@clerk/astro', '@clerk/astro/components', 'astro-seo-metadata'],

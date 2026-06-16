@@ -3,7 +3,7 @@ interface Props {
   tag: string;
   title: string;
   description: string;
-  readTime: string | Date;
+  date: string | Date;
   imageSrc: string;
   imageAlt: string;
   href?: string;
@@ -13,21 +13,21 @@ const {
   tag,
   title,
   description,
-  readTime,
+  date,
   imageSrc,
   imageAlt,
   href = '#',
 } = Astro.props as Props;
 
 const timestampLabel =
-  readTime instanceof Date
-    ? readTime.toLocaleDateString('en-US', {
+  date instanceof Date
+    ? date.toLocaleDateString('en-US', {
         timeZone: 'UTC',
         year: 'numeric',
         month: 'short',
         day: 'numeric',
       })
-    : readTime;
+    : date;
 ---
 
 <a href={href} class="block group">

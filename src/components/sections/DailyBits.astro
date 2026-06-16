@@ -21,9 +21,10 @@ const { bits } = Astro.props;
     
     <div class="columns-1 md:columns-2 lg:columns-3 gap-8">
       {bits.map((bit: CollectionEntry<'bits'>) => (
-        <BitCard 
-          tag={`#${bit.data.bitNumber} / ${bit.data.category.toUpperCase()}`} 
-          content={bit.data.content} 
+        <BitCard
+          tag={`#${bit.data.bitNumber} / ${bit.data.category.toUpperCase()}`}
+          time={bit.data.timestamp.toLocaleString('en-US', { timeZone: 'UTC', dateStyle: 'medium', timeStyle: 'short' }) + ' UTC'}
+          content={bit.data.content}
           href={`/bits/${bit.id}`}
         />
       ))}

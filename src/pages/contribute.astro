@@ -11,7 +11,7 @@ const pages = await getCollection('pages');
 const contributePage = pages.find((entry) => entry.id === 'contribute');
 
 if (!contributePage) {
-  return new Response('Not found', { status: 404 });
+  return Astro.rewrite('/404');
 }
 
 const { Content } = await render(contributePage);
