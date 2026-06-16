@@ -84,7 +84,6 @@ In addition to operators, our system requires two kinds of symbols:
   `C, C₁, C₂, C₃, ...`
   `D, D₁, D₂, D₃, ...`
 
-
 A 'formula' is any sequence of these symbols, such as `B₁~((A)•` or `C₃)))((`. However, we are only interested in sequences that are grammatically correct, which we call **Well-Formed Formulae (WFFs)**.
 
 <Callout type="example" title="Recursive Definition of a WFF">
@@ -115,9 +114,7 @@ Since we have successfully broken the formula down into its basic components usi
 
 Now we begin to interpret our system, which we'll call **R.S.** (for 'Rosser's System', after the logician J. Barkley Rosser). We intend for `~(P)` to stand for negation and `(P)•(Q)` for conjunction. With just these two operators, we want our system to be **functionally complete**—that is, able to express every possible truth-functional compound statement.
 
-
 To make the system easier to use, we introduce abbreviations in our metalanguage (Syntax Language). These abbreviations do not exist in the object language itself.
-
 
 - **Disjunction (v):** `P v Q` is an abbreviation for `~((~(P))•(~(Q)))`. In natural language, this is the inclusive "or". "P or Q" means P is true, or Q is true, or both are true.
 - **Conditional (⊃):** `P ⊃ Q` is an abbreviation for `~((P)•(~(Q)))`. This represents the "if... then..." statement. "If P, then Q." (For a refresher, see our module on [truth-functional connectives](/logic-modules/module07-truthtables).)
@@ -165,7 +162,6 @@ R.S. can express all of these:
 - `f3(P)` (always false) is expressible as `P•~P`. (Contradiction)
 - `f4(P)` (always true) is expressible as `~(~(P•~P))`. (Tautology)
 
-
 Similarly, there are 16 possible truth functions for two arguments (binary functions), and 256 for three arguments. It can be proven that R.S. can express every single one. This proof shows that for any truth table, no matter how many variables it has, we can construct an equivalent WFF in R.S. using only `~` and `•`. This leads to our first major theorem **about** the system:
 
 <Callout type="info" title="Metatheorem I">
@@ -178,7 +174,6 @@ Similarly, there are 16 possible truth functions for two arguments (binary funct
 
 To build a deductive system, we need starting points (axioms) and rules for moving from one point to another (rules of inference). To simplify proofs, we can assume infinitely many WFFs as axioms, as long as they fit specific patterns.
 
-
 ### The Axioms of R.S.
 
 1. `P ⊃ (P•P)`
@@ -188,7 +183,6 @@ To build a deductive system, we need starting points (axioms) and rules for movi
 3. `(P ⊃ Q) ⊃ [~(Q•R) ⊃ ~(R•P)]`
    **Natural Language Meaning:** This axiom is a complex version of Transposition (or Modus Tollens). It essentially states that if P implies Q, then if Q and R cannot both be true, then R and P cannot both be true.
 These are axiom **schemata**; any WFF that has one of these forms is an axiom. For example, `(A•B) ⊃ A` and `((C⊃D)•~F) ⊃ (C⊃D)` are both instances of Axiom 2.
-
 
 ### The Rule of Inference
 
@@ -216,12 +210,9 @@ An important property of an axiom set is **independence**, which means that no a
 2. All other axioms **have** the characteristic.
 3. The characteristic is **hereditary** with respect to the rules of inference (i.e., the rules can't produce a formula without the characteristic from formulas that have it).
 
-
 We can't use "being a tautology" because all our axioms have that characteristic. Instead, we can use a three-valued logic model with values `{0, 1, 2}`. We can think of `0` as our "designated" or "true-like" value.
 
-
 By carefully defining truth tables for `~` and `•` in this three-valued system, we can show that Axioms 2 and 3 will always evaluate to `0` (they have the characteristic), but for certain inputs, Axiom 1 evaluates to `1` (it lacks the characteristic). This proves Axiom 1 is independent. The process can be repeated with different three-valued models to prove the independence of Axioms 2 and 3 as well.
-
 
 ## 7. Development and Deductive Completeness
 

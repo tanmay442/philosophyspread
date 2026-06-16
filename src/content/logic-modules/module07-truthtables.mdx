@@ -54,14 +54,11 @@ export const quizData = [
 
 So far, we have dealt with simple, atomic statements like "The sun is a star." Now, we move to **complex statements**, which are built by combining simple statements using special words called **logical connectives**. The real power of logic lies in its ability to analyze the structure of these complex claims, which form the backbone of all sophisticated arguments.
 
-
 Just as a few mathematical operations (+, -, ×, ÷) can create an infinite number of equations, a handful of logical connectives—'and', 'or', 'not', and 'if...then'—allow us to construct and analyze an infinite variety of complex logical statements.
-
 
 ## 2. The Logical Connectives
 
 To analyze complex statements, we first symbolize simple statements with capital letters (A, B, C, etc.) and use special symbols for the connectives. This symbolic language strips away the ambiguity of everyday language, revealing the pure logical structure.
-
 
 ### 2.1 Conjunction (and)
 
@@ -73,7 +70,6 @@ A conjunction joins two statements and asserts that both are true. We use the do
 
 **Example:** "The project is challenging, **but** it is also rewarding." This is only true if "The project is challenging" is true AND "it is also rewarding" is true.
 
-
 ### 2.2 Disjunction (or)
 
 A disjunction joins two statements and asserts that at least one of them is true. We use the wedge symbol (v) for the inclusive 'or'.
@@ -84,7 +80,6 @@ A disjunction joins two statements and asserts that at least one of them is true
 
 **Example:** "To qualify, you need a degree **or** five years of experience." An applicant qualifies if they have the degree, the experience, or both.
 
-
 ### 2.3 Negation (not)
 
 Negation simply reverses the truth value of a statement. We use the tilde symbol (~) to represent 'not' or 'it is not the case that...'.
@@ -93,9 +88,7 @@ Negation simply reverses the truth value of a statement. We use the tilde symbol
   <strong>Not A</strong> is symbolized as <strong>~A</strong>. If A is true, ~A is false. If A is false, ~A is true.
 </Callout>
 
-
 **Double Negation:** Just like in grammar, two negatives cancel each other out. `~~A` is logically equivalent to `A`.
-
 
 ### 2.4 Conditional (if...then...)
 
@@ -107,11 +100,9 @@ The conditional statement is one of the most important in logic. It posits a rel
 
 This rule can seem odd. Why is the statement true when the 'if' part is false? Think of it as a promise. If I say "**If** you get an A on the final, **then** I will buy you a car," I only break my promise (making the statement false) if you get an A and I *don't* buy you a car. If you don't get an A, I haven't broken my promise, regardless of whether I buy you a car or not.
 
-
 ## 3. Truth Tables: The Ultimate Lie Detector
 
 A **truth table** is a diagram that provides a complete breakdown of a complex statement's truth value under every possible combination of truth values for its simple components. It's a systematic way to determine when a statement is true or false without any guesswork.
-
 
 ### How to Build a Truth Table
 
@@ -133,11 +124,9 @@ A **truth table** is a diagram that provides a complete breakdown of a complex s
   <p class="text-sm text-on-surface-variant">Notice the single 'F' in the second row—this is the defining feature of a conditional.</p>
 </Callout>
 
-
 ## 4. Tautologies, Contradictions, and Equivalence
 
 Truth tables allow us to classify complex statements into powerful categories.
-
 
 - **Tautology (or Theorem):** A statement that is true under every possible truth-value combination. The final column of its truth table is all 'T's. Tautologies are truths of logic itself. Example: "Either it is raining or it is not raining" (P v ~P).
 - **Contradiction:** A statement that is false under every possible truth-value combination. The final column is all 'F's. Example: "It is raining and it is not raining" (P • ~P).
@@ -158,7 +147,6 @@ Truth tables allow us to classify complex statements into powerful categories.
   />
   <p class="text-sm text-on-surface-variant">Since the columns for <strong>~(A • B)</strong> and <strong>~A v ~B</strong> are identical (F, T, T, T), the statements are logically equivalent.</p>
 </Callout>
-
 
 ## 5. Test Your Skills: Evaluate the Statements
 
