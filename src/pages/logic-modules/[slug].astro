@@ -23,7 +23,7 @@ const moduleIndex = sortedModules.findIndex((entry: CollectionEntry<'logicModule
 const moduleByNumber = new Map(modules.map((m) => [m.data.moduleNumber, m]));
 
 if (moduleIndex === -1) {
-  return new Response('Not found', { status: 404 });
+  return Astro.rewrite('/404');
 }
 
 const currentModule = sortedModules[moduleIndex];

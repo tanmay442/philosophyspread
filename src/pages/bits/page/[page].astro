@@ -9,7 +9,7 @@ import { BITS_PAGE_SIZE } from '../../../constants/pagination';
 
 const pageNumber = parsePageNumber(Astro.params.page);
 if (!pageNumber) {
-  return new Response('Not found', { status: 404 });
+  return Astro.rewrite('/404');
 }
 
 const bits = await getCollection('bits');
@@ -22,7 +22,7 @@ const page = paginateItems(sortedBits, {
 });
 
 if (!page) {
-  return new Response('Not found', { status: 404 });
+  return Astro.rewrite('/404');
 }
 ---
 
