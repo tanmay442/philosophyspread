@@ -84,6 +84,5 @@ Hosted on **Cloudflare Workers** for low-latency global delivery with dynamic SS
 ---
 
 <p align="center">
-  <em>Exploring wisdom. Inspiring minds.</em><br/>
-  <sub>Maintainer reminder: emergency CI bypass flag is <code>[skip-tanmay-gates]</code> (only <code>tanmay442</code>).</sub>
+  <em>Exploring wisdom. Inspiring minds.</em>
 </p>
