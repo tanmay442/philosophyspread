@@ -123,6 +123,7 @@ export async function GET({ site }: APIContext) {
   return new Response(xml, {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
+      'Cache-Control': 'public, max-age=60, s-maxage=3600, stale-while-revalidate=86400',
     },
   });
 }
