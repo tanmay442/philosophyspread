@@ -54,11 +54,9 @@ export const quizData = [
 
 In the previous modules, you learned how truth tables can be used to determine the validity of any deductive argument. However, for an argument with five or more simple statements, a truth table would require 32 rows or more. This is not only tedious but impractical.
 
-<br/>
 
 Instead, we can prove an argument's validity by deducing its conclusion from its premises in a series of short, simple steps. This is the **method of deduction**. It relies on a set of elementary argument forms that are already known to be valid. These are our tools for building proofs.
 
-<br/>
 
 ## 2. Understanding the Symbols
 
@@ -167,7 +165,6 @@ q
   <p class="mt-4">Notice the first row: it is the <strong>only</strong> row where both premises are true. In that row, the conclusion is also true. There is no row with all true premises and a false conclusion, so the rule is valid.</p>
 </div>
 
-<br/>
 
 ## 4. Formal Proofs in Action
 
@@ -190,12 +187,10 @@ A **formal proof of validity** is a sequence of statements where each step is ei
   <p class="mt-4">In step 4, we use Hypothetical Syllogism on lines 1 and 2 to create a new conditional. In step 5, we use Modus Ponens on our new line 4 and our premise on line 3 to derive the conclusion.</p>
 </div>
 
-<br/>
 
 ## 5. Expanding the Toolkit: Rules of Replacement
 
 The nine rules of inference are powerful, but they aren't sufficient to prove every valid argument. For example, how would you prove the simple argument `A • B /∴ B`? Simplification only lets you infer `A`! To solve this, we would first need to use Commutation to change `A • B` to `B • A`, and then use Simplification. This requires a second set of tools: the **Rules of Replacement**.
-<br/>
 These rules are based on **logical equivalence**. Each pair of expressions is logically identical, meaning you can replace one with the other anywhere it appears—even inside a larger statement. This is a key difference from the Rules of Inference, which must apply to an entire line.
 
 <Callout type="info" title="Key Distinction: Replacement vs. Substitution">
@@ -289,7 +284,6 @@ Unlike truth tables, formal proofs require strategy. There's no single recipe fo
   <p class="mt-4 text-sm text-on-surface-variant"><strong>Strategy:</strong> Seeing <code class="font-mono text-secondary">{"~"}A</code> as the goal, Modus Tollens is a likely candidate. To use it on line 3, we need <code class="font-mono text-secondary">{"~"}(R • S)</code>. We look at premise 2 and see that, thanks to De Morgan's theorem, <code class="font-mono text-secondary">{"~"}R v {"~"}S</code> is equivalent to <code class="font-mono text-secondary">{"~"}(R • S)</code>. The path becomes clear. We also simplify `(A • A)` to `A` using Tautology to set up the final Modus Tollens step.</p>
 </div>
 
-<br/>
 
 ## 7. Test Your Skills
 
