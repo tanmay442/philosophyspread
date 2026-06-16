@@ -8,23 +8,21 @@ interface Props {
 const { essay: featuredEssay } = Astro.props;
 ---
 
-<div class="md:col-span-8">
-  <div class="mb-12">
-    <h2 class="font-label text-xs text-secondary mb-4 uppercase tracking-[0.4em]">Featured Essay</h2>
-    {featuredEssay && (
-      <>
-        <img 
-          src={featuredEssay.data.imageSrc} 
-          alt={featuredEssay.data.imageAlt} 
-          class="w-full aspect-video object-cover border-2 border-secondary filter grayscale contrast-125 mb-12"
-          referrerpolicy="no-referrer"
-        />
-        <h3 class="font-headline text-5xl md:text-6xl mb-6 leading-tight">{featuredEssay.data.title}</h3>
-        <p class="font-body text-xl text-on-surface opacity-90 leading-relaxed mb-8">
-          {featuredEssay.data.description}
-        </p>
-        <a href={`/essays/${featuredEssay.id}`} class="font-label text-sm text-primary font-bold uppercase border-b-2 border-primary pb-1 hover:text-secondary transition-all">Read the full spread</a>
-      </>
-    )}
+{featuredEssay && (
+  <div class="md:col-span-8">
+    <div class="mb-12">
+      <h2 class="font-label text-xs text-secondary mb-4 uppercase tracking-[0.4em]">Featured Essay</h2>
+      <img
+        src={featuredEssay.data.imageSrc}
+        alt={featuredEssay.data.imageAlt}
+        class="w-full aspect-video object-cover border-2 border-secondary filter grayscale contrast-125 mb-12"
+        referrerpolicy="no-referrer"
+      />
+      <h3 class="font-headline text-5xl md:text-6xl mb-6 leading-tight">{featuredEssay.data.title}</h3>
+      <p class="font-body text-xl text-on-surface opacity-90 leading-relaxed mb-8">
+        {featuredEssay.data.description}
+      </p>
+      <a href={`/essays/${featuredEssay.id}`} class="font-label text-sm text-primary font-bold uppercase border-b-2 border-primary pb-1 hover:text-secondary transition-all">Read the full spread</a>
+    </div>
   </div>
-</div>
+)}
