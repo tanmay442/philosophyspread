@@ -1,22 +1,18 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Header from '../../../components/layout/Header.astro';
 import Footer from '../../../components/layout/Footer.astro';
 import LogicCard from '../../../components/cards/LogicCard.astro';
 import { paginateItems, parsePageNumber } from '../../../utils/pagination';
 import { MODULES_PAGE_SIZE } from '../../../constants/pagination';
-import { moduleNumberCollator } from '../../../utils/latest';
+import { getSortedLogicModules } from '../../../utils/latest';
 
 const pageNumber = parsePageNumber(Astro.params.page);
 if (!pageNumber) {
   return Astro.rewrite('/404');
 }
 
-const modules = await getCollection('logicModules');
-const sortedModules = [...modules].sort((a, b) =>
-  moduleNumberCollator.compare(a.data.moduleNumber, b.data.moduleNumber),
-);
+const sortedModules = await getSortedLogicModules();
 
 const page = paginateItems(sortedModules, {
   pageNumber,

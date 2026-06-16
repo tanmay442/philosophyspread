@@ -1,13 +1,13 @@
 ---
 import HardOffsetCard from '../ui/HardOffsetCard.astro';
-import Icon from '../ui/Icon.astro';
+import Icon, { type IconName } from '../ui/Icon.astro';
 import { truncateWords, ELLIPSIS } from '../../utils/text';
 
 interface Props {
   title: string;
   description: string;
   moduleNumber?: string;
-  icon?: string;
+  icon?: IconName;
   class?: string;
   titleClass?: string;
 }

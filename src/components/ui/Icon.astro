@@ -41,7 +41,7 @@ interface Props {
 
 const { name, class: className = '', title } = Astro.props as Props;
 
-const icon = iconPaths[name];
+const icon: IconDefinition = iconPaths[name];
 const paths = icon.paths;
 const filled = icon.fill ?? false;
 const decorative = !title;

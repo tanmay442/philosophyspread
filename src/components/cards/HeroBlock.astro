@@ -15,25 +15,34 @@ type CommonProps = {
 type AnchorProps = HTMLAttributes<'a'> & CommonProps & { href: string };
 type DivProps = HTMLAttributes<'div'> & CommonProps & { href?: never };
 
-export type Props = AnchorProps | DivProps;
+type Props = AnchorProps | DivProps;
 
 const props = Astro.props as Props;
-const { tag, title, description, bgClass, hoverBgClass, hoverTextClass = '' } = props;
+const {
+  tag,
+  title,
+  description,
+  bgClass,
+  hoverBgClass,
+  hoverTextClass = '',
+  class: className,
+  ...rest
+} = props;
 const href = 'href' in props ? props.href : undefined;
 
-const blockClass = `block flex-1 p-8 border-b-2 border-secondary transition-all duration-300 cursor-pointer group no-underline hover:no-underline focus:no-underline ${bgClass} ${hoverBgClass} ${hoverTextClass} ${props.class ?? ''}`.trim();
+const blockClass = `block flex-1 p-8 border-b-2 border-secondary transition-all duration-300 cursor-pointer group no-underline hover:no-underline focus:no-underline ${bgClass} ${hoverBgClass} ${hoverTextClass} ${className ?? ''}`.trim();
 const tagClass = `block mb-4 text-primary ${hoverTextClass ? 'group-hover:text-on-primary transition-colors' : ''}`;
 const descriptionClass = `font-body text-lg opacity-80 ${hoverTextClass ? 'group-hover:opacity-100' : ''}`;
 ---
 
 {href ? (
-  <a href={href} class={blockClass}>
+  <a href={href} class={blockClass} {...rest}>
     <SectionTag class={tagClass}>{tag}</SectionTag>
     <h2 class="font-headline text-3xl mb-4 group-hover:italic">{title}</h2>
     <p class={descriptionClass}>{description}</p>
   </a>
 ) : (
-  <div class={blockClass}>
+  <div class={blockClass} {...rest}>
     <SectionTag class={tagClass}>{tag}</SectionTag>
     <h2 class="font-headline text-3xl mb-4 group-hover:italic">{title}</h2>
     <p class={descriptionClass}>{description}</p>
