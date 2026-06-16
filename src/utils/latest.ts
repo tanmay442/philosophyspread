@@ -19,13 +19,11 @@ const pickLatest = <T,>(items: T[], compareFn: (a: T, b: T) => number): T | unde
   return items.reduce((best, curr) => (compareFn(curr, best) < 0 ? curr : best));
 };
 
-export async function getLatestContent(): Promise<LatestContent> {
-  const [logicModules, bits, essays] = await Promise.all([
-    getCollection('logicModules'),
-    getCollection('bits'),
-    getCollection('essays'),
-  ]);
-
+export async function getLatestContent(
+  logicModules: CollectionEntry<'logicModules'>[],
+  bits: CollectionEntry<'bits'>[],
+  essays: CollectionEntry<'essays'>[],
+): Promise<LatestContent> {
   const latestLogic = pickLatest(
     logicModules,
     (a: CollectionEntry<'logicModules'>, b: CollectionEntry<'logicModules'>) =>

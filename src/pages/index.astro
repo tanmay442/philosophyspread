@@ -10,12 +10,13 @@ import Footer from '../components/layout/Footer.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { getLatestContent, getSortedLogicModules } from '../utils/latest';
 
-const [logicModules, bits, essays, { latestLogic, latestBit, latestEssay }] = await Promise.all([
+const [logicModules, bits, essays] = await Promise.all([
   getSortedLogicModules(),
   getCollection('bits'),
   getCollection('essays'),
-  getLatestContent(),
 ]);
+
+const { latestLogic, latestBit, latestEssay } = await getLatestContent(logicModules, bits, essays);
 
 const logicModuleCards = logicModules.slice(0, 4);
 

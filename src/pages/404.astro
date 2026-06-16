@@ -6,8 +6,15 @@ import HeroBlock from '../components/cards/HeroBlock.astro';
 import Icon from '../components/ui/Icon.astro';
 import { getLatestContent } from '../utils/latest';
 import { truncateText } from '../utils/text';
+import { getCollection } from 'astro:content';
 
-const { latestLogic, latestBit, latestEssay } = await getLatestContent();
+const [logicModules, bits, essays] = await Promise.all([
+  getCollection('logicModules'),
+  getCollection('bits'),
+  getCollection('essays'),
+]);
+
+const { latestLogic, latestBit, latestEssay } = await getLatestContent(logicModules, bits, essays);
 
 const requestedPath = Astro.url.pathname;
 ---
