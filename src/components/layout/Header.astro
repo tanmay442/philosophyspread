@@ -6,6 +6,10 @@ import Icon from '../ui/Icon.astro';
 import { buildClerkRedirectProps, currentReturnTo } from '../../utils/clerk-redirect';
 
 const currentPath = Astro.url.pathname.replace(/^\//, '');
+
+const isActiveSegment = (segment: string) =>
+  currentPath === segment || currentPath.startsWith(`${segment}/`);
+
 const signInRedirectProps = buildClerkRedirectProps(currentReturnTo(Astro.url.pathname, Astro.url.search));
 
 const navigationLinks = [
@@ -16,14 +20,14 @@ const navigationLinks = [
 
 const desktopLinkClass = (segment: string) =>
   `font-label text-xs uppercase tracking-widest transition-colors ${
-    currentPath.startsWith(segment)
+    isActiveSegment(segment)
       ? 'text-primary border-b-2 border-primary font-bold'
       : 'text-secondary hover:text-primary'
   }`;
 
 const mobileLinkClass = (segment: string) =>
   `font-headline text-3xl uppercase tracking-widest border-b-2 border-secondary pb-4 transition-colors ${
-    currentPath.startsWith(segment) ? 'text-primary italic' : 'text-secondary hover:text-primary'
+    isActiveSegment(segment) ? 'text-primary italic' : 'text-secondary hover:text-primary'
   }`;
 ---
 
