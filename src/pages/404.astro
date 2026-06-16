@@ -1,0 +1,139 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import HeroBlock from '../components/cards/HeroBlock.astro';
+import Icon from '../components/ui/Icon.astro';
+
+const [logicModules, bits, essays] = await Promise.all([
+  getCollection('logicModules'),
+  getCollection('bits'),
+  getCollection('essays'),
+]);
+
+const moduleNumberCollator = new Intl.Collator(undefined, {
+  numeric: true,
+  sensitivity: 'base',
+});
+
+const latestLogic = logicModules.length
+  ? [...logicModules].sort((a, b) =>
+      moduleNumberCollator.compare(b.data.moduleNumber, a.data.moduleNumber),
+    )[0]
+  : undefined;
+
+const latestBit = bits.length
+  ? [...bits].sort(
+      (a: CollectionEntry<'bits'>, b: CollectionEntry<'bits'>) =>
+        b.data.timestamp.valueOf() - a.data.timestamp.valueOf(),
+    )[0]
+  : undefined;
+
+const latestEssay = essays.length
+  ? [...essays].sort(
+      (a: CollectionEntry<'essays'>, b: CollectionEntry<'essays'>) =>
+        b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+    )[0]
+  : undefined;
+
+const truncateText = (value: string, maxLength: number) =>
+  value.length > maxLength ? `${value.slice(0, maxLength)}...` : value;
+
+const requestedPath = Astro.url.pathname;
+---
+
+<BaseLayout
+  title="404 | Content Not Found | Philosophy Spread"
+  description="The page you were looking for could not be found. Explore the latest logic modules, idea bits, and essays from Philosophy Spread."
+  keywords={['404', 'not found', 'philosophy spread']}
+>
+  <Header />
+
+  <main class="pt-20">
+    <section class="min-h-[calc(100dvh-80px)] grid grid-cols-1 md:grid-cols-10 border-b-2 border-secondary">
+      <!-- Left pane: 404 message -->
+      <div class="md:col-span-6 flex flex-col justify-center p-8 md:p-12 lg:p-24 border-b-2 md:border-b-0 md:border-r-2 border-secondary bg-surface-container-lowest">
+        <span class="font-label text-xs uppercase tracking-widest text-primary mb-8">
+          [ ERROR 404 · ROUTE NOT RESOLVED ]
+        </span>
+
+        <h1 class="font-headline text-7xl md:text-8xl lg:text-9xl leading-[0.9] tracking-tighter text-on-surface mb-8">
+          <span class="block italic">I wandered,</span>
+          <span class="block">therefore I am lost.</span>
+        </h1>
+
+        <p class="font-headline text-2xl md:text-3xl italic text-on-surface mb-6 max-w-xl">
+          The page you looking for is beyond the margin of our manuscript.
+        </p>
+
+        <p class="font-body text-base md:text-lg opacity-80 mb-10 max-w-xl">
+          We couldn't locate
+          <code class="font-label text-sm bg-surface-container px-2 py-1 mx-1 break-all">{requestedPath}</code>
+          within Philosophy Spread. The link may be outdated, mistyped, or simply uncharted.
+        </p>
+
+        <div class="flex flex-wrap gap-4 font-label text-sm">
+          <a href="/" class="hover:text-primary transition-colors italic inline-flex items-center gap-2">
+            <Icon name="arrow_back" class="h-4 w-4" />
+            01. RETURN HOME
+          </a>
+          <a href="/essays/page/1" class="hover:text-primary transition-colors italic">
+            02. BROWSE ESSAYS
+          </a>
+          <a href="/logic-modules/page/1" class="hover:text-primary transition-colors italic">
+            03. BROWSE LOGIC MODULES
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Right pane: latest content (mirrors HeroRightPane) -->
+      <div class="md:col-span-4 flex flex-col bg-surface-container-low">
+
+      <!-- TO_DO -- >  Maybe will style this better in future -->
+        
+        <!-- <div class="px-8 pt-8 pb-2">
+          <span class="font-label text-xs uppercase tracking-widest text-primary">
+            [ WHILE YOU'RE HERE — EXPLORE THE LATEST ]
+          </span>
+        </div> -->
+
+        {latestLogic && (
+          <HeroBlock
+            tag={`MODULE ${latestLogic.data.moduleNumber}`}
+            title={latestLogic.data.title}
+            description={latestLogic.data.description}
+            bgClass="bg-primary-container"
+            hoverBgClass="hover:bg-tertiary-container hover:-translate-y-1"
+            href={`/logic-modules/${latestLogic.id}`}
+          />
+        )}
+
+        {latestBit && (
+          <HeroBlock
+            tag={`BIT ${latestBit.data.bitNumber}`}
+            title={latestBit.data.category}
+            description={truncateText(latestBit.data.content, 100)}
+            bgClass="bg-surface-container-lowest"
+            hoverBgClass="hover:bg-primary/10 hover:-translate-y-1"
+            href={`/bits/${latestBit.id}`}
+          />
+        )}
+
+        {latestEssay && (
+          <HeroBlock
+            tag="ESSAY"
+            title={latestEssay.data.title}
+            description={latestEssay.data.description}
+            bgClass="bg-tertiary"
+            hoverBgClass="hover:bg-tertiary-container hover:-translate-y-1"
+            href={`/essays/${latestEssay.id}`}
+          />
+        )}
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
