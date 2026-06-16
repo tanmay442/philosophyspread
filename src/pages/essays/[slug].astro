@@ -18,7 +18,7 @@ const essays = await getCollection('essays');
 const essay = essays.find((entry: CollectionEntry<'essays'>) => entry.id === slug);
 
 if (!essay) {
-  return new Response('Not found', { status: 404 });
+  return Astro.rewrite('/404');
 }
 
 const { Content } = await render(essay);

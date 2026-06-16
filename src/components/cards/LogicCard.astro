@@ -1,12 +1,13 @@
 ---
 import HardOffsetCard from '../ui/HardOffsetCard.astro';
-import Icon from '../ui/Icon.astro';
+import Icon, { type IconName } from '../ui/Icon.astro';
+import { truncateWords, ELLIPSIS } from '../../utils/text';
 
 interface Props {
   title: string;
   description: string;
   moduleNumber?: string;
-  icon?: string;
+  icon?: IconName;
   class?: string;
   titleClass?: string;
 }
@@ -21,10 +22,7 @@ const {
 } = Astro.props;
 
 const MAX_DESCRIPTION_WORDS = 20;
-const descriptionWords = description.trim().split(/\s+/).filter(Boolean);
-const displayDescription = descriptionWords.length > MAX_DESCRIPTION_WORDS
-  ? `${descriptionWords.slice(0, MAX_DESCRIPTION_WORDS).join(' ')}.....`
-  : description;
+const displayDescription = truncateWords(description, MAX_DESCRIPTION_WORDS);
 ---
 
 <HardOffsetCard class={`group relative break-inside-avoid transition-all duration-200 ${className}`}>
@@ -39,6 +37,6 @@ const displayDescription = descriptionWords.length > MAX_DESCRIPTION_WORDS
     {displayDescription}
   </p>
   <div class="pt-4 border-t border-outline-variant flex justify-between items-center mt-auto">
-    <span class="font-label text-[10px] text-primary uppercase tracking-widest">Expand Module -&gt;</span>
+    <span class="font-label text-[10px] text-primary uppercase tracking-widest">Expand Module {ELLIPSIS}</span>
   </div>
 </HardOffsetCard>

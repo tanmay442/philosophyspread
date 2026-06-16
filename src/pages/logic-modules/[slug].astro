@@ -1,5 +1,6 @@
 ---
-import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { render, type CollectionEntry } from 'astro:content';
+import { getSortedLogicModules } from '../../utils/latest';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ReadingProgressBar from '../../components/ui/ReadingProgressBar.astro';
 import Header from '../../components/layout/Header.astro';
@@ -17,13 +18,12 @@ if (moduleSlug && /^\d+$/.test(moduleSlug)) {
   return Astro.redirect(`/logic-modules/page/${moduleSlug}`, 301);
 }
 
-const modules = await getCollection('logicModules');
-const sortedModules = modules.sort((a, b) => a.data.moduleNumber.localeCompare(b.data.moduleNumber));
+const sortedModules = await getSortedLogicModules();
 const moduleIndex = sortedModules.findIndex((entry: CollectionEntry<'logicModules'>) => entry.id === moduleSlug);
-const moduleByNumber = new Map(modules.map((m) => [m.data.moduleNumber, m]));
+const moduleByNumber = new Map(sortedModules.map((m) => [m.data.moduleNumber, m]));
 
 if (moduleIndex === -1) {
-  return new Response('Not found', { status: 404 });
+  return Astro.rewrite('/404');
 }
 
 const currentModule = sortedModules[moduleIndex];

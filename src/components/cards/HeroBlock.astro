@@ -1,23 +1,50 @@
 ---
+import type { HTMLAttributes } from 'astro/types';
 import SectionTag from '../ui/SectionTag.astro';
 
-interface Props {
+type CommonProps = {
   tag: string;
   title: string;
   description: string;
   bgClass: string;
   hoverBgClass: string;
   hoverTextClass?: string;
-  href?: string;
-}
+  class?: string;
+};
 
-const { tag, title, description, bgClass, hoverBgClass, hoverTextClass = '', href } = Astro.props;
+type AnchorProps = HTMLAttributes<'a'> & CommonProps & { href: string };
+type DivProps = HTMLAttributes<'div'> & CommonProps & { href?: never };
 
-const Element = href ? 'a' : 'div';
+type Props = AnchorProps | DivProps;
+
+const props = Astro.props as Props;
+const {
+  tag,
+  title,
+  description,
+  bgClass,
+  hoverBgClass,
+  hoverTextClass = '',
+  class: className,
+  ...rest
+} = props;
+const href = 'href' in props ? props.href : undefined;
+
+const blockClass = `block flex-1 p-8 border-b-2 border-secondary transition-all duration-300 cursor-pointer group no-underline hover:no-underline focus:no-underline ${bgClass} ${hoverBgClass} ${hoverTextClass} ${className ?? ''}`.trim();
+const tagClass = `block mb-4 text-primary ${hoverTextClass ? 'group-hover:text-on-primary transition-colors' : ''}`;
+const descriptionClass = `font-body text-lg opacity-80 ${hoverTextClass ? 'group-hover:opacity-100' : ''}`;
 ---
 
-<Element {...(href ? { href } : {})} class={`block flex-1 p-8 border-b-2 border-secondary transition-all duration-300 cursor-pointer group no-underline hover:no-underline focus:no-underline ${bgClass} ${hoverBgClass} ${hoverTextClass}`}>
-  <SectionTag class={`block mb-4 text-primary ${hoverTextClass ? 'group-hover:text-on-primary transition-colors' : ''}`}>{tag}</SectionTag>
-  <h2 class="font-headline text-3xl mb-4 group-hover:italic">{title}</h2>
-  <p class={`font-body text-lg opacity-80 ${hoverTextClass ? 'group-hover:opacity-100' : ''}`}>{description}</p>
-</Element>
+{href ? (
+  <a href={href} class={blockClass} {...rest}>
+    <SectionTag class={tagClass}>{tag}</SectionTag>
+    <h2 class="font-headline text-3xl mb-4 group-hover:italic">{title}</h2>
+    <p class={descriptionClass}>{description}</p>
+  </a>
+) : (
+  <div class={blockClass} {...rest}>
+    <SectionTag class={tagClass}>{tag}</SectionTag>
+    <h2 class="font-headline text-3xl mb-4 group-hover:italic">{title}</h2>
+    <p class={descriptionClass}>{description}</p>
+  </div>
+)}

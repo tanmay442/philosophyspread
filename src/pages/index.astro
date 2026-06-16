@@ -8,29 +8,26 @@ import Essays from '../components/sections/Essays.astro';
 import GetInvolved from '../components/sections/GetInvolved.astro';
 import Footer from '../components/layout/Footer.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { getLatestContent } from '../utils/latest';
+import { getLatestContent, getSortedLogicModules } from '../utils/latest';
 
 const [logicModules, bits, essays, { latestLogic, latestBit, latestEssay }] = await Promise.all([
-  getCollection('logicModules'),
+  getSortedLogicModules(),
   getCollection('bits'),
   getCollection('essays'),
   getLatestContent(),
 ]);
 
-const moduleNumberCollator = new Intl.Collator(undefined, {
-  numeric: true,
-  sensitivity: 'base',
-});
-
-const logicModuleCards = [...logicModules]
-  .sort((a, b) => moduleNumberCollator.compare(a.data.moduleNumber, b.data.moduleNumber))
-  .slice(0, 4);
+const logicModuleCards = logicModules.slice(0, 4);
 
 const dailyBitCards = [...bits]
   .sort((a: CollectionEntry<'bits'>, b: CollectionEntry<'bits'>) => b.data.timestamp.valueOf() - a.data.timestamp.valueOf())
   .slice(0, 6);
 
 const featuredEssay = essays.find((essay) => essay.data.featured) ?? essays[0];
+// filter returns a new array, so the subsequent sort does not mutate
+// the source `essays` collection. The chain is already O(n log n) on
+// the filtered set; no further optimization is justified at the
+// current collection size (~6 essays).
 const trendingEssays = featuredEssay
   ? essays
       .filter((essay) => essay.id !== featuredEssay.id)

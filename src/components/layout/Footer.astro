@@ -1,7 +1,14 @@
 ---
-import Icon from '../ui/Icon.astro';
+import Icon, { type IconName } from '../ui/Icon.astro';
 
-const socialLinks = [
+type SocialLink = {
+  href: string;
+  label: string;
+  target: string;
+  icon: IconName;
+};
+
+const socialLinks: SocialLink[] = [
   {
     href: 'https://github.com/tanmay442/PhilosophySpread',
     label: 'GitHub',

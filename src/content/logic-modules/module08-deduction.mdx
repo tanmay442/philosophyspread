@@ -54,11 +54,7 @@ export const quizData = [
 
 In the previous modules, you learned how truth tables can be used to determine the validity of any deductive argument. However, for an argument with five or more simple statements, a truth table would require 32 rows or more. This is not only tedious but impractical.
 
-<br/>
-
 Instead, we can prove an argument's validity by deducing its conclusion from its premises in a series of short, simple steps. This is the **method of deduction**. It relies on a set of elementary argument forms that are already known to be valid. These are our tools for building proofs.
-
-<br/>
 
 ## 2. Understanding the Symbols
 
@@ -98,54 +94,54 @@ The first set of tools are the **Rules of Inference**. Think of these as the fun
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-8">
   <div class="bg-surface-container-low border-2 border-secondary p-4">
     <h4 class="font-bold text-lg mb-2">1. Modus Ponens (M.P.)</h4>
-    <pre class="bg-surface-container p-2 font-mono text-sm">p ⊃ q
+    <pre class="bg-surface-container p-2 font-mono text-sm text-stone-900 font-semibold">p ⊃ q
 p
 /∴ q</pre>
   </div>
   <div class="bg-surface-container-low border-2 border-secondary p-4">
     <h4 class="font-bold text-lg mb-2">2. Modus Tollens (M.T.)</h4>
-    <pre class="bg-surface-container p-2 font-mono text-sm">p ⊃ q
+    <pre class="bg-surface-container p-2 font-mono text-sm text-stone-900 font-semibold">p ⊃ q
 ~q
 /∴ ~p</pre>
   </div>
   <div class="bg-surface-container-low border-2 border-secondary p-4">
     <h4 class="font-bold text-lg mb-2">3. Hypothetical Syllogism (H.S.)</h4>
-    <pre class="bg-surface-container p-2 font-mono text-sm">p ⊃ q
+    <pre class="bg-surface-container p-2 font-mono text-sm text-stone-900 font-semibold">p ⊃ q
 q ⊃ r
 /∴ p ⊃ r</pre>
   </div>
   <div class="bg-surface-container-low border-2 border-secondary p-4">
     <h4 class="font-bold text-lg mb-2">4. Disjunctive Syllogism (D.S.)</h4>
-    <pre class="bg-surface-container p-2 font-mono text-sm">p v q
+    <pre class="bg-surface-container p-2 font-mono text-sm text-stone-900 font-semibold">p v q
 ~p
 /∴ q</pre>
   </div>
   <div class="bg-surface-container-low border-2 border-secondary p-4">
     <h4 class="font-bold text-lg mb-2">5. Constructive Dilemma (C.D.)</h4>
-    <pre class="bg-surface-container p-2 font-mono text-sm">(p ⊃ q) • (r ⊃ s)
+    <pre class="bg-surface-container p-2 font-mono text-sm text-stone-900 font-semibold">(p ⊃ q) • (r ⊃ s)
 p v r
 /∴ q v s</pre>
   </div>
   <div class="bg-surface-container-low border-2 border-secondary p-4">
     <h4 class="font-bold text-lg mb-2">6. Destructive Dilemma (D.D.)</h4>
-    <pre class="bg-surface-container p-2 font-mono text-sm">(p ⊃ q) • (r ⊃ s)
+    <pre class="bg-surface-container p-2 font-mono text-sm text-stone-900 font-semibold">(p ⊃ q) • (r ⊃ s)
 ~q v ~s
 /∴ ~p v ~r</pre>
   </div>
   <div class="bg-surface-container-low border-2 border-secondary p-4">
     <h4 class="font-bold text-lg mb-2">7. Simplification (Simp.)</h4>
-    <pre class="bg-surface-container p-2 font-mono text-sm">p • q
+    <pre class="bg-surface-container p-2 font-mono text-sm text-stone-900 font-semibold">p • q
 /∴ p</pre>
   </div>
   <div class="bg-surface-container-low border-2 border-secondary p-4">
     <h4 class="font-bold text-lg mb-2">8. Conjunction (Conj.)</h4>
-    <pre class="bg-surface-container p-2 font-mono text-sm">p
+    <pre class="bg-surface-container p-2 font-mono text-sm text-stone-900 font-semibold">p
 q
 /∴ p • q</pre>
   </div>
   <div class="bg-surface-container-low border-2 border-secondary p-4">
     <h4 class="font-bold text-lg mb-2">9. Addition (Add.)</h4>
-    <pre class="bg-surface-container p-2 font-mono text-sm">p
+    <pre class="bg-surface-container p-2 font-mono text-sm text-stone-900 font-semibold">p
 /∴ p v q</pre>
   </div>
 </div>
@@ -167,7 +163,6 @@ q
   <p class="mt-4">Notice the first row: it is the <strong>only</strong> row where both premises are true. In that row, the conclusion is also true. There is no row with all true premises and a false conclusion, so the rule is valid.</p>
 </div>
 
-<br/>
 
 ## 4. Formal Proofs in Action
 
@@ -190,12 +185,10 @@ A **formal proof of validity** is a sequence of statements where each step is ei
   <p class="mt-4">In step 4, we use Hypothetical Syllogism on lines 1 and 2 to create a new conditional. In step 5, we use Modus Ponens on our new line 4 and our premise on line 3 to derive the conclusion.</p>
 </div>
 
-<br/>
 
 ## 5. Expanding the Toolkit: Rules of Replacement
 
 The nine rules of inference are powerful, but they aren't sufficient to prove every valid argument. For example, how would you prove the simple argument `A • B /∴ B`? Simplification only lets you infer `A`! To solve this, we would first need to use Commutation to change `A • B` to `B • A`, and then use Simplification. This requires a second set of tools: the **Rules of Replacement**.
-<br/>
 These rules are based on **logical equivalence**. Each pair of expressions is logically identical, meaning you can replace one with the other anywhere it appears—even inside a larger statement. This is a key difference from the Rules of Inference, which must apply to an entire line.
 
 <Callout type="info" title="Key Distinction: Replacement vs. Substitution">
@@ -205,57 +198,57 @@ This is a subtle but important point from the original source. **Replacement** (
 <div class="space-y-6 my-8">
   <div>
     <h4 class="font-bold text-lg mb-2">1. De Morgan's Theorems (De M.)</h4>
-    <pre class="bg-surface-container p-3 font-mono text-sm">~(p • q) ≡ (~p v ~q)
+    <pre class="bg-surface-container p-3 font-mono text-sm text-stone-900 font-semibold">~(p • q) ≡ (~p v ~q)
 ~(p v q) ≡ (~p • ~q)</pre>
     <p class="pl-4 mt-2 text-sm border-l-2 border-secondary text-on-surface-variant">To negate a conjunction or disjunction, you "distribute" the negation to each term and flip the operator. "Not (p and q)" is the same as "Not p or not q". Likewise, "Not (p or q)" is the same as "Not p and not q".</p>
   </div>
   <div>
     <h4 class="font-bold text-lg mb-2">2. Commutation (Com.)</h4>
-    <pre class="bg-surface-container p-3 font-mono text-sm">(p v q) ≡ (q v p)
+    <pre class="bg-surface-container p-3 font-mono text-sm text-stone-900 font-semibold">(p v q) ≡ (q v p)
 (p • q) ≡ (q • p)</pre>
     <p class="pl-4 mt-2 text-sm border-l-2 border-secondary text-on-surface-variant">The order of terms in a conjunction or disjunction doesn't affect the truth value. "p and q" is the same as "q and p". This is one of the most simple and intuitive rules.</p>
   </div>
   <div>
     <h4 class="font-bold text-lg mb-2">3. Association (Assoc.)</h4>
-    <pre class="bg-surface-container p-3 font-mono text-sm">[p v (q v r)] ≡ [(p v q) v r]
+    <pre class="bg-surface-container p-3 font-mono text-sm text-stone-900 font-semibold">[p v (q v r)] ≡ [(p v q) v r]
 [p • (q • r)] ≡ [(p • q) • r]</pre>
     <p class="pl-4 mt-2 text-sm border-l-2 border-secondary text-on-surface-variant">When you have a chain of only conjunctions or only disjunctions, it doesn't matter how you group them with parentheses. This rule lets you regroup them as needed.</p>
   </div>
   <div>
     <h4 class="font-bold text-lg mb-2">4. Distribution (Dist.)</h4>
-    <pre class="bg-surface-container p-3 font-mono text-sm">[p • (q v r)] ≡ [(p • q) v (p • r)]
+    <pre class="bg-surface-container p-3 font-mono text-sm text-stone-900 font-semibold">[p • (q v r)] ≡ [(p • q) v (p • r)]
 [p v (q • r)] ≡ [(p v q) • (p v r)]</pre>
     <p class="pl-4 mt-2 text-sm border-l-2 border-secondary text-on-surface-variant">This rule lets you "distribute" one logical operator across another. It's similar to distribution in algebra, like a(b+c) = ab+ac. This is powerful for rearranging complex statements.</p>
   </div>
   <div>
     <h4 class="font-bold text-lg mb-2">5. Double Negation (D.N.)</h4>
-    <pre class="bg-surface-container p-3 font-mono text-sm">p ≡ ~~p</pre>
+    <pre class="bg-surface-container p-3 font-mono text-sm text-stone-900 font-semibold">p ≡ ~~p</pre>
     <p class="pl-4 mt-2 text-sm border-l-2 border-secondary text-on-surface-variant">A statement is logically equivalent to its double negation. Two "nots" cancel each other out, allowing you to add or remove two tilde symbols from any statement.</p>
   </div>
   <div>
     <h4 class="font-bold text-lg mb-2">6. Transposition (Trans.)</h4>
-    <pre class="bg-surface-container p-3 font-mono text-sm">(p ⊃ q) ≡ (~q ⊃ ~p)</pre>
+    <pre class="bg-surface-container p-3 font-mono text-sm text-stone-900 font-semibold">(p ⊃ q) ≡ (~q ⊃ ~p)</pre>
     <p class="pl-4 mt-2 text-sm border-l-2 border-secondary text-on-surface-variant">This allows you to flip a conditional statement by negating both terms. For example, "If it is a dog, then it is an animal" is equivalent to "If it is not an animal, then it is not a dog."</p>
   </div>
   <div>
     <h4 class="font-bold text-lg mb-2">7. Material Implication (Impl.)</h4>
-    <pre class="bg-surface-container p-3 font-mono text-sm">(p ⊃ q) ≡ (~p v q)</pre>
+    <pre class="bg-surface-container p-3 font-mono text-sm text-stone-900 font-semibold">(p ⊃ q) ≡ (~p v q)</pre>
     <p class="pl-4 mt-2 text-sm border-l-2 border-secondary text-on-surface-variant">This rule states that a conditional "If p then q" is logically the same as saying "Either p is false, or q is true." It's a key rule for converting between conditional and disjunctive forms.</p>
   </div>
   <div>
     <h4 class="font-bold text-lg mb-2">8. Material Equivalence (Equiv.)</h4>
-    <pre class="bg-surface-container p-3 font-mono text-sm">(p ≡ q) ≡ [(p ⊃ q) • (q ⊃ p)]
+    <pre class="bg-surface-container p-3 font-mono text-sm text-stone-900 font-semibold">(p ≡ q) ≡ [(p ⊃ q) • (q ⊃ p)]
 (p ≡ q) ≡ [(p • q) v (~p • ~q)]</pre>
     <p class="pl-4 mt-2 text-sm border-l-2 border-secondary text-on-surface-variant">A biconditional ("p if and only if q") is equivalent to a two-way conditional (p implies q AND q implies p). It's also equivalent to stating that p and q share the same truth value (they are both true OR they are both false).</p>
   </div>
   <div>
     <h4 class="font-bold text-lg mb-2">9. Exportation (Exp.)</h4>
-    <pre class="bg-surface-container p-3 font-mono text-sm">[(p • q) ⊃ r] ≡ [p ⊃ (q ⊃ r)]</pre>
+    <pre class="bg-surface-container p-3 font-mono text-sm text-stone-900 font-semibold">[(p • q) ⊃ r] ≡ [p ⊃ (q ⊃ r)]</pre>
     <p class="pl-4 mt-2 text-sm border-l-2 border-secondary text-on-surface-variant">This rule allows us to "export" part of a conjoined antecedent. It says that "If p and q are true, then r is true" is the same as "If p is true, then it follows that if q is true, r is true."</p>
   </div>
   <div>
     <h4 class="font-bold text-lg mb-2">10. Tautology (Taut.)</h4>
-    <pre class="bg-surface-container p-3 font-mono text-sm">p ≡ (p v p)
+    <pre class="bg-surface-container p-3 font-mono text-sm text-stone-900 font-semibold">p ≡ (p v p)
 p ≡ (p • p)</pre>
     <p class="pl-4 mt-2 text-sm border-l-2 border-secondary text-on-surface-variant">A statement is equivalent to itself joined with "and" or "or". "p" means the same thing as "p and p". This is useful for simplifying expressions like `(A • A)` to `A` or setting up other rules.</p>
   </div>
@@ -288,8 +281,6 @@ Unlike truth tables, formal proofs require strategy. There's no single recipe fo
   
   <p class="mt-4 text-sm text-on-surface-variant"><strong>Strategy:</strong> Seeing <code class="font-mono text-secondary">{"~"}A</code> as the goal, Modus Tollens is a likely candidate. To use it on line 3, we need <code class="font-mono text-secondary">{"~"}(R • S)</code>. We look at premise 2 and see that, thanks to De Morgan's theorem, <code class="font-mono text-secondary">{"~"}R v {"~"}S</code> is equivalent to <code class="font-mono text-secondary">{"~"}(R • S)</code>. The path becomes clear. We also simplify `(A • A)` to `A` using Tautology to set up the final Modus Tollens step.</p>
 </div>
-
-<br/>
 
 ## 7. Test Your Skills
 

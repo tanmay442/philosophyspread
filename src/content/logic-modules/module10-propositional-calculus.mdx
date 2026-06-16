@@ -49,13 +49,9 @@ export const quizFunctionalCompleteness = [
 ## 1. Object Language and Metalanguage
 
 This study unit follows the construction of a formal system, or logical calculus, designed to handle arguments based on how sentences are truth-functionally compounded. Unlike natural languages like English, which evolve organically, a formal language must be deliberately constructed.
-<br/>
 When we build this formal language, we need a way to talk **about** it. This creates a crucial distinction:
-<br/>
 - The **Object Language** is the formal language we are constructing and studying. Initially, its symbols and formulas are just meaningless marks.
-<br/>
 - The **Metalanguage** is the language we use to describe and give meaning to the object language. In this module, our metalanguage will be English.
-<br/>
 It's important to note that these terms are relative. We can use English (a metalanguage) to study the grammar of Japanese (an object language), or we could use Japanese to study the grammar of English.
 
 <Callout type="example" title="The Liar's Paradox and Language Levels">
@@ -73,16 +69,12 @@ It's important to note that these terms are relative. We can use English (a meta
 ## 2. Primitive Symbols and Well-Formed Formulae (WFFs)
 
 A logistic system begins with a set of basic units, or **primitive symbols**. Our system starts with just four operator symbols, which are initially meaningless marks that we will later interpret.
-<br/>
 - **Negation: `~` (the "tilde")**
   Represents "not." For example, if **A** stands for "It is raining," then `~A` will represent "It is **not** raining."
-<br/>
 - **Conjunction: `•` (the "dot")**
   Represents "and." If **A** is "It is raining" and **B** is "It is cold," then `A•B` will represent "It is raining **and** it is cold."
-<br/>
 - **Grouping: `(` and `)`**
   Parentheses are used to group expressions and avoid ambiguity, just like in mathematics. For example, `~ (A•B)` ("It is not the case that both A and B are true") is different from `(~A)•B` ("A is false and B is true").
-<br/>
 In addition to operators, our system requires two kinds of symbols:
 
 - **Operator Symbols:** The four symbols defined above: `~` `•` `(` `)`
@@ -91,8 +83,6 @@ In addition to operators, our system requires two kinds of symbols:
   `B, B₁, B₂, B₃, ...`
   `C, C₁, C₂, C₃, ...`
   `D, D₁, D₂, D₃, ...`
-
-<br/>
 
 A 'formula' is any sequence of these symbols, such as `B₁~((A)•` or `C₃)))((`. However, we are only interested in sequences that are grammatically correct, which we call **Well-Formed Formulae (WFFs)**.
 
@@ -124,18 +114,11 @@ Since we have successfully broken the formula down into its basic components usi
 
 Now we begin to interpret our system, which we'll call **R.S.** (for 'Rosser's System', after the logician J. Barkley Rosser). We intend for `~(P)` to stand for negation and `(P)•(Q)` for conjunction. With just these two operators, we want our system to be **functionally complete**—that is, able to express every possible truth-functional compound statement.
 
-<br/>
-
 To make the system easier to use, we introduce abbreviations in our metalanguage (Syntax Language). These abbreviations do not exist in the object language itself.
 
-<br/>
-
 - **Disjunction (v):** `P v Q` is an abbreviation for `~((~(P))•(~(Q)))`. In natural language, this is the inclusive "or". "P or Q" means P is true, or Q is true, or both are true.
-<br/>
 - **Conditional (⊃):** `P ⊃ Q` is an abbreviation for `~((P)•(~(Q)))`. This represents the "if... then..." statement. "If P, then Q." (For a refresher, see our module on [truth-functional connectives](/logic-modules/module07-truthtables).)
-<br/>
 - **Equivalence (≡):** `P ≡ Q` is an abbreviation for `(P ⊃ Q)•(Q ⊃ P)`. This is the "if and only if" connective, meaning P and Q have the same truth value. It's a mutual conditional: P implies Q, and Q implies P.
-<br/>
 ### Notational Conventions
 
 To reduce clutter, we adopt two conventions:
@@ -148,7 +131,6 @@ To reduce clutter, we adopt two conventions:
 </Callout>
 
 For example, `P ⊃ Q v R•S` is unambiguous. The `⊃` has the widest scope, followed by `v`, then `•`. It is interpreted as: `P ⊃ [Q v (R•S)]`.
-<br/>
 When an expression contains multiple instances of the same connective, we use the convention of **association to the left**. This means the rightmost occurrence has the widest scope. For example, `P ⊃ Q ⊃ R` is interpreted as `[ (P ⊃ Q) ⊃ R ]`.
 
 <Callout type="example" title='Example: "Undoing" an Abbreviation'>
@@ -163,7 +145,6 @@ When an expression contains multiple instances of the same connective, we use th
 ## 4. Functional Completeness
 
 We have shown that R.S. can express several truth functions (negation, conjunction, disjunction, etc.). But to be **functionally complete**, it must be able to express **all possible** truth functions.
-<br/>
 A truth function's value is completely determined by the truth values of its arguments. We can define any truth function with a truth table. For a single argument `P`, there are exactly four possible truth functions (unary functions):
 
 <TruthTable
@@ -181,8 +162,6 @@ R.S. can express all of these:
 - `f3(P)` (always false) is expressible as `P•~P`. (Contradiction)
 - `f4(P)` (always true) is expressible as `~(~(P•~P))`. (Tautology)
 
-<br/>
-
 Similarly, there are 16 possible truth functions for two arguments (binary functions), and 256 for three arguments. It can be proven that R.S. can express every single one. This proof shows that for any truth table, no matter how many variables it has, we can construct an equivalent WFF in R.S. using only `~` and `•`. This leads to our first major theorem **about** the system:
 
 <Callout type="info" title="Metatheorem I">
@@ -195,31 +174,22 @@ Similarly, there are 16 possible truth functions for two arguments (binary funct
 
 To build a deductive system, we need starting points (axioms) and rules for moving from one point to another (rules of inference). To simplify proofs, we can assume infinitely many WFFs as axioms, as long as they fit specific patterns.
 
-<br/>
-
 ### The Axioms of R.S.
 
 1. `P ⊃ (P•P)`
    **Natural Language Meaning:** "If P is true, then 'P and P' is true." This is a version of the Law of Tautology, establishing a basic property of conjunction.
-<br/>
 2. `(P•Q) ⊃ P`
    **Natural Language Meaning:** "If 'P and Q' are true, then P is true." This is the fundamental principle of Simplification.
-<br/>
 3. `(P ⊃ Q) ⊃ [~(Q•R) ⊃ ~(R•P)]`
    **Natural Language Meaning:** This axiom is a complex version of Transposition (or Modus Tollens). It essentially states that if P implies Q, then if Q and R cannot both be true, then R and P cannot both be true.
-<br/>
 These are axiom **schemata**; any WFF that has one of these forms is an axiom. For example, `(A•B) ⊃ A` and `((C⊃D)•~F) ⊃ (C⊃D)` are both instances of Axiom 2.
-
-<br/>
 
 ### The Rule of Inference
 
 R.S. has only one rule of inference:
 
 - **Rule 1 (R1):** From `P` and `P ⊃ Q`, infer `Q`. (Modus Ponens)
-<br/>
 A **demonstration** of an argument's validity is a sequence of WFFs where each line is either a premise, an axiom, or follows from two preceding lines by R1. A **theorem** is the conclusion of a demonstration that uses only axioms as premises. We use the symbol `⊢` (turnstile) to indicate a theorem, e.g., `⊢ Q`.
-<br/>
 This setup creates a "symbolic machine" that generates theorems. A key question is whether this machine is consistent and sound. A system is **analytic** if all of its theorems are tautologies.
 
 <Callout type="info" title="Metatheorem II and Corollary">
@@ -240,20 +210,13 @@ An important property of an axiom set is **independence**, which means that no a
 2. All other axioms **have** the characteristic.
 3. The characteristic is **hereditary** with respect to the rules of inference (i.e., the rules can't produce a formula without the characteristic from formulas that have it).
 
-<br/>
-
 We can't use "being a tautology" because all our axioms have that characteristic. Instead, we can use a three-valued logic model with values `{0, 1, 2}`. We can think of `0` as our "designated" or "true-like" value.
 
-<br/>
-
 By carefully defining truth tables for `~` and `•` in this three-valued system, we can show that Axioms 2 and 3 will always evaluate to `0` (they have the characteristic), but for certain inputs, Axiom 1 evaluates to `1` (it lacks the characteristic). This proves Axiom 1 is independent. The process can be repeated with different three-valued models to prove the independence of Axioms 2 and 3 as well.
-
-<br/>
 
 ## 7. Development and Deductive Completeness
 
 From our three axioms and one rule of inference, we can now derive a vast number of theorems and new, valid rules of inference (Derived Rules). This is the process of developing the calculus. We start by proving foundational theorems like `⊢ ~(~P•P)` and `⊢ ~~P ⊃ P` (Double Negation).
-<br/>
 Crucially, we can prove a metatheorem that greatly simplifies this process:
 
 <Callout type="info" title="Metatheorem III: The Deduction Theorem">
@@ -261,7 +224,6 @@ Crucially, we can prove a metatheorem that greatly simplifies this process:
 </Callout>
 
 With the Deduction Theorem and other derived rules, we can eventually prove all 19 of the standard Rules of Inference and Replacement used in introductory logic. This shows that our minimal system is surprisingly powerful.
-<br/>
 The final question is whether our system is powerful enough. A system is **deductively complete** if all its tautologies are provable as theorems.
 
 <Callout type="info" title="Metatheorem X">

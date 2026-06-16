@@ -2,8 +2,9 @@
 import Button from '../ui/Button.astro';
 import ContributeModal from '../ui/ContributeModal.astro';
 import { SignInButton } from '@clerk/astro/components';
+import { buildClerkRedirectProps, currentReturnTo } from '../../utils/clerk-redirect';
 
-const returnTo = `${Astro.url.pathname}${Astro.url.search}`;
+const signInRedirectProps = buildClerkRedirectProps(currentReturnTo(Astro.url.pathname, Astro.url.search));
 ---
 
 <section class="py-32 px-8 md:px-12 bg-primary text-on-primary [&_h2]:!text-on-primary [&_p]:!text-on-primary">
@@ -17,10 +18,7 @@ const returnTo = `${Astro.url.pathname}${Astro.url.search}`;
       <SignInButton
         asChild
         mode="modal"
-        forceRedirectUrl={returnTo}
-        signUpForceRedirectUrl={returnTo}
-        fallbackRedirectUrl={returnTo}
-        signUpFallbackRedirectUrl={returnTo}
+        {...signInRedirectProps}
       >
         <Button variant="secondary">Subscribe</Button>
       </SignInButton>

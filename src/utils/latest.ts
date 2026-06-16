@@ -46,3 +46,10 @@ export async function getLatestContent(): Promise<LatestContent> {
 
   return { latestLogic, latestBit, latestEssay };
 }
+
+export async function getSortedLogicModules() {
+  const modules = await getCollection('logicModules');
+  return [...modules].sort((a, b) =>
+    moduleNumberCollator.compare(a.data.moduleNumber, b.data.moduleNumber),
+  );
+}

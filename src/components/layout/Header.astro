@@ -3,9 +3,19 @@ import { SignInButton, Show, UserButton } from '@clerk/astro/components';
 import logoRemoveBg from '../../assets/logo-removebg.avif';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
+import { buildClerkRedirectProps, currentReturnTo } from '../../utils/clerk-redirect';
 
+// NOTE: Astro.url is per-request, so pages that render this Header
+// must be SSR (output: 'server'). Prerendering would bake the build-time
+// path into the active-link state and break nav highlighting on every
+// other route. Move active-link resolution to a client script if you
+// want to prerender content pages.
 const currentPath = Astro.url.pathname.replace(/^\//, '');
-const returnTo = `${Astro.url.pathname}${Astro.url.search}`;
+
+const isActiveSegment = (segment: string) =>
+  currentPath === segment || currentPath.startsWith(`${segment}/`);
+
+const signInRedirectProps = buildClerkRedirectProps(currentReturnTo(Astro.url.pathname, Astro.url.search));
 
 const navigationLinks = [
   { href: '/logic-modules/page/1', label: 'Logic and Reasoning', segment: 'logic-modules' },
@@ -13,23 +23,16 @@ const navigationLinks = [
   { href: '/essays/page/1', label: 'Essays', segment: 'essays' },
 ];
 
-const signInRedirectProps = {
-  forceRedirectUrl: returnTo,
-  signUpForceRedirectUrl: returnTo,
-  fallbackRedirectUrl: returnTo,
-  signUpFallbackRedirectUrl: returnTo,
-};
-
 const desktopLinkClass = (segment: string) =>
   `font-label text-xs uppercase tracking-widest transition-colors ${
-    currentPath.startsWith(segment)
+    isActiveSegment(segment)
       ? 'text-primary border-b-2 border-primary font-bold'
       : 'text-secondary hover:text-primary'
   }`;
 
 const mobileLinkClass = (segment: string) =>
   `font-headline text-3xl uppercase tracking-widest border-b-2 border-secondary pb-4 transition-colors ${
-    currentPath.startsWith(segment) ? 'text-primary italic' : 'text-secondary hover:text-primary'
+    isActiveSegment(segment) ? 'text-primary italic' : 'text-secondary hover:text-primary'
   }`;
 ---
 
@@ -148,39 +151,3 @@ const mobileLinkClass = (segment: string) =>
     link.addEventListener('click', () => setMenuOpen(false));
   });
 </script>
-
-<style is:global>
-  .clerk-user-button {
-    display: flex !important;
-    aspect-ratio: 1 / 1 !important;
-    align-items: center !important;
-    justify-content: center !important;
-    overflow: hidden !important;
-    border: 2px solid #1a1a1a !important;
-    border-radius: 9999px !important;
-    padding: 2px !important;
-  }
-
-  .clerk-user-button:hover {
-    background-color: #1a1a1a !important;
-  }
-
-  .clerk-user-button svg,
-  .clerk-user-button img {
-    width: 100% !important;
-    height: 100% !important;
-    border-radius: 9999px !important;
-    object-fit: cover !important;
-  }
-
-  .clerk-dropdown,
-  .clerk-popover {
-    border: 2px solid #1a1a1a !important;
-    border-radius: 8px !important;
-  }
-
-  .clerk-popover a,
-  .clerk-popover button {
-    border-radius: 4px !important;
-  }
-</style>

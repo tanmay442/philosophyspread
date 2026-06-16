@@ -2,6 +2,12 @@
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   darkMode: 'class',
+  safelist: [
+    'w-8',
+    'h-8',
+    'w-10',
+    'h-10',
+  ],
   theme: {
     extend: {
       colors: {
@@ -71,5 +77,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography')],
 };
