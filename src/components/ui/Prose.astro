@@ -14,7 +14,7 @@ const proseVariants = {
     'prose prose-xl max-w-none font-body leading-relaxed prose-headings:font-headline prose-headings:text-secondary prose-headings:font-bold prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b-2 prose-h2:border-outline prose-h2:pb-4 prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4 prose-p:mb-6 prose-p:text-lg prose-p:text-on-surface prose-a:text-primary prose-a:underline hover:prose-a:text-secondary prose-strong:text-on-surface prose-strong:font-bold prose-ul:list-disc prose-ul:pl-6 prose-li:mb-2 prose-li:text-on-surface prose-li:pl-2 prose-ul ul:list-[circle] prose-ul ul:pl-6',
   essay: `${baseArticleClasses} prose-blockquote:not-italic prose-blockquote:border-none prose-blockquote:pl-0`,
   logicModule: `${baseArticleClasses} prose-code:text-on-surface prose-code:bg-surface-container prose-code:px-2 prose-code:py-0.5`,
-  bit: 'prose prose-xl prose-slate dark:prose-invert max-w-none font-body text-secondary leading-relaxed mb-16 prose-p:text-2xl md:prose-p:text-3xl prose-p:leading-relaxed prose-p:text-secondary prose-a:text-primary hover:prose-a:text-secondary prose-strong:text-secondary prose-strong:font-bold prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-6 prose-blockquote:italic',
+  bit: 'prose prose-base prose-slate dark:prose-invert max-w-none font-body text-secondary leading-relaxed mb-16 prose-p:text-xl prose-p:leading-relaxed prose-p:text-secondary prose-a:text-primary hover:prose-a:text-secondary prose-strong:text-secondary prose-strong:font-bold prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-xl',
 } as const;
 
 const classes = `${proseVariants[variant]} ${className}`.trim();
