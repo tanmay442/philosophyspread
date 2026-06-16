@@ -3,22 +3,16 @@ import { SignInButton, Show, UserButton } from '@clerk/astro/components';
 import logoRemoveBg from '../../assets/logo-removebg.avif';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
+import { buildClerkRedirectProps, currentReturnTo } from '../../utils/clerk-redirect';
 
 const currentPath = Astro.url.pathname.replace(/^\//, '');
-const returnTo = `${Astro.url.pathname}${Astro.url.search}`;
+const signInRedirectProps = buildClerkRedirectProps(currentReturnTo(Astro.url.pathname, Astro.url.search));
 
 const navigationLinks = [
   { href: '/logic-modules/page/1', label: 'Logic and Reasoning', segment: 'logic-modules' },
   { href: '/bits/page/1', label: 'Idea-Bits', segment: 'bits' },
   { href: '/essays/page/1', label: 'Essays', segment: 'essays' },
 ];
-
-const signInRedirectProps = {
-  forceRedirectUrl: returnTo,
-  signUpForceRedirectUrl: returnTo,
-  fallbackRedirectUrl: returnTo,
-  signUpFallbackRedirectUrl: returnTo,
-};
 
 const desktopLinkClass = (segment: string) =>
   `font-label text-xs uppercase tracking-widest transition-colors ${

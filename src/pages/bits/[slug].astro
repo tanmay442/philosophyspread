@@ -7,11 +7,9 @@ import Footer from '../../components/layout/Footer.astro';
 import Callout from '../../components/mdx/Callout.astro';
 import Icon from '../../components/ui/Icon.astro';
 import Prose from '../../components/ui/Prose.astro';
+import { truncateText } from '../../utils/text';
 
 const bitSlug = Astro.params.slug;
-
-const truncateText = (value: string, maxLength: number) =>
-  value.length > maxLength ? `${value.slice(0, maxLength)}...` : value;
 
 if (bitSlug && /^\d+$/.test(bitSlug)) {
   return Astro.redirect(`/bits/page/${bitSlug}`, 301);
@@ -21,7 +19,7 @@ const bits = await getCollection('bits');
 const currentBit = bits.find((entry) => entry.id === bitSlug);
 
 if (!currentBit) {
-  return new Response('Not found', { status: 404 });
+  return Astro.rewrite('/404');
 }
 
 const { Content } = await render(currentBit);
