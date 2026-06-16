@@ -8,20 +8,14 @@ import Essays from '../components/sections/Essays.astro';
 import GetInvolved from '../components/sections/GetInvolved.astro';
 import Footer from '../components/layout/Footer.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { getLatestContent } from '../utils/latest';
 
-const [logicModules, bits, essays] = await Promise.all([
+const [logicModules, bits, essays, { latestLogic, latestBit, latestEssay }] = await Promise.all([
   getCollection('logicModules'),
   getCollection('bits'),
   getCollection('essays'),
+  getLatestContent(),
 ]);
-
-const latestBy = <T,>(items: T[], compareFn: (a: T, b: T) => number): T | undefined => {
-  if (!items.length) {
-    return undefined;
-  }
-
-  return items.reduce((best, curr) => (compareFn(curr, best) < 0 ? curr : best));
-};
 
 const moduleNumberCollator = new Intl.Collator(undefined, {
   numeric: true,
@@ -35,24 +29,6 @@ const logicModuleCards = [...logicModules]
 const dailyBitCards = [...bits]
   .sort((a: CollectionEntry<'bits'>, b: CollectionEntry<'bits'>) => b.data.timestamp.valueOf() - a.data.timestamp.valueOf())
   .slice(0, 6);
-
-const latestLogic = latestBy(
-  logicModules,
-  (a: CollectionEntry<'logicModules'>, b: CollectionEntry<'logicModules'>) =>
-    moduleNumberCollator.compare(b.data.moduleNumber, a.data.moduleNumber),
-);
-
-const latestBit = latestBy(
-  bits,
-  (a: CollectionEntry<'bits'>, b: CollectionEntry<'bits'>) =>
-    b.data.timestamp.valueOf() - a.data.timestamp.valueOf(),
-);
-
-const latestEssay = latestBy(
-  essays,
-  (a: CollectionEntry<'essays'>, b: CollectionEntry<'essays'>) =>
-    b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
 
 const featuredEssay = essays.find((essay) => essay.data.featured) ?? essays[0];
 const trendingEssays = featuredEssay
