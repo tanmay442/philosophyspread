@@ -5,6 +5,11 @@ import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
 import { buildClerkRedirectProps, currentReturnTo } from '../../utils/clerk-redirect';
 
+// NOTE: Astro.url is per-request, so pages that render this Header
+// must be SSR (output: 'server'). Prerendering would bake the build-time
+// path into the active-link state and break nav highlighting on every
+// other route. Move active-link resolution to a client script if you
+// want to prerender content pages.
 const currentPath = Astro.url.pathname.replace(/^\//, '');
 
 const isActiveSegment = (segment: string) =>
