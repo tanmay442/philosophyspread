@@ -6,6 +6,6 @@ interface Props {
 const { class: className = '' } = Astro.props;
 ---
 
-<div class={`bg-surface-container-lowest p-8 border-2 border-secondary hard-offset-teal flex flex-col h-full cursor-pointer ${className}`}>
+<div class={`bg-surface-container-lowest p-8 border-2 border-secondary hard-offset-teal flex flex-col h-full ${className}`}>
   <slot />
 </div>
