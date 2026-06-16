@@ -55,6 +55,10 @@ const latestEssay = latestBy(
 );
 
 const featuredEssay = essays.find((essay) => essay.data.featured) ?? essays[0];
+// filter returns a new array, so the subsequent sort does not mutate
+// the source `essays` collection. The chain is already O(n log n) on
+// the filtered set; no further optimization is justified at the
+// current collection size (~6 essays).
 const trendingEssays = featuredEssay
   ? essays
       .filter((essay) => essay.id !== featuredEssay.id)
