@@ -55,17 +55,16 @@ const requestedPath = Astro.url.pathname;
           </a>
         </div>
 
-        <div class="mt-12">
-          <Button variant="primary" href="/">TAKE ME HOME</Button>
-        </div>
+
       </div>
 
+      <!-- Right pane: latest content (mirrors HeroRightPane) -->
       <div class="md:col-span-4 flex flex-col bg-surface-container-low">
-        <div class="px-8 pt-8 pb-2">
+        <!-- <div class="px-8 pt-8 pb-2">
           <span class="font-label text-xs uppercase tracking-widest text-primary">
             [ WHILE YOU'RE HERE — EXPLORE THE LATEST ]
           </span>
-        </div>
+        </div> -->
 
         {latestLogic && (
           <HeroBlock
