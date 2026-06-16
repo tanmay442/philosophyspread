@@ -142,39 +142,3 @@ const mobileLinkClass = (segment: string) =>
     link.addEventListener('click', () => setMenuOpen(false));
   });
 </script>
-
-<style is:global>
-  .clerk-user-button {
-    display: flex !important;
-    aspect-ratio: 1 / 1 !important;
-    align-items: center !important;
-    justify-content: center !important;
-    overflow: hidden !important;
-    border: 2px solid #1a1a1a !important;
-    border-radius: 9999px !important;
-    padding: 2px !important;
-  }
-
-  .clerk-user-button:hover {
-    background-color: #1a1a1a !important;
-  }
-
-  .clerk-user-button svg,
-  .clerk-user-button img {
-    width: 100% !important;
-    height: 100% !important;
-    border-radius: 9999px !important;
-    object-fit: cover !important;
-  }
-
-  .clerk-dropdown,
-  .clerk-popover {
-    border: 2px solid #1a1a1a !important;
-    border-radius: 8px !important;
-  }
-
-  .clerk-popover a,
-  .clerk-popover button {
-    border-radius: 4px !important;
-  }
-</style>
