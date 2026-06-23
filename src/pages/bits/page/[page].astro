@@ -1,11 +1,26 @@
 ---
-import { getCollection } from 'astro:content';
+export const prerender = true;
+
+import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Header from '../../../components/layout/Header.astro';
 import Footer from '../../../components/layout/Footer.astro';
 import BitCard from '../../../components/cards/BitCard.astro';
 import { paginateItems, parsePageNumber } from '../../../utils/pagination';
 import { BITS_PAGE_SIZE } from '../../../constants/pagination';
+
+export async function getStaticPaths() {
+  const bits = await getCollection('bits');
+  const sortedBits = [...bits].sort(
+    (a: CollectionEntry<'bits'>, b: CollectionEntry<'bits'>) =>
+      b.data.timestamp.valueOf() - a.data.timestamp.valueOf(),
+  );
+
+  const lastPage = Math.max(1, Math.ceil(sortedBits.length / BITS_PAGE_SIZE));
+  return Array.from({ length: lastPage }, (_, index) => ({
+    params: { page: String(index + 1) },
+  }));
+}
 
 const pageNumber = parsePageNumber(Astro.params.page);
 if (!pageNumber) {

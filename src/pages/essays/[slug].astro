@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ReadingProgressBar from '../../components/ui/ReadingProgressBar.astro';
@@ -9,17 +11,22 @@ import { getSiteUrl } from '../../utils/site';
 import { truncateText } from '../../utils/text';
 import Prose from '../../components/ui/Prose.astro';
 
-const slug = Astro.params.slug;
-
-if (slug && /^\d+$/.test(slug)) {
-  return Astro.redirect(`/essays/page/${slug}`, 301);
+export async function getStaticPaths() {
+  const essays = await getCollection('essays');
+  return essays.map((essay: CollectionEntry<'essays'>) => ({
+    params: { slug: essay.id },
+    props: { essay },
+  }));
 }
 
-const essays = await getCollection('essays');
-const essay = essays.find((entry: CollectionEntry<'essays'>) => entry.id === slug);
+const { essay } = Astro.props as { essay: CollectionEntry<'essays'> };
 
-if (!essay) {
-  return Astro.rewrite('/404');
+// `getStaticPaths` already produces an HTML file for every essay, so a
+// purely-numeric slug (e.g. `/essays/3`) is handled via a 301 to the
+// canonical pagination URL. This is purely a request-time redirect — it
+// happens at runtime for any unmatched slug that wasn't generated.
+if (Astro.params.slug && /^\d+$/.test(Astro.params.slug)) {
+  return Astro.redirect(`/essays/page/${Astro.params.slug}`, 301);
 }
 
 const { Content } = await render(essay);
