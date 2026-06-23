@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/layout/Header.astro';
 import Hero from '../components/sections/Hero.astro';
@@ -24,11 +26,17 @@ const dailyBitCards = [...bits]
   .sort((a: CollectionEntry<'bits'>, b: CollectionEntry<'bits'>) => b.data.timestamp.valueOf() - a.data.timestamp.valueOf())
   .slice(0, 6);
 
-const featuredEssay = essays.find((essay) => essay.data.featured) ?? essays[0];
-// filter returns a new array, so the subsequent sort does not mutate
-// the source `essays` collection. The chain is already O(n log n) on
-// the filtered set; no further optimization is justified at the
-// current collection size (~6 essays).
+// Pick the most-recent featured essay deterministically. `.find()` would
+// silently return whichever featured entry comes first in collection
+// order if two are ever flagged, so we sort the featured set by pubDate.
+const featuredEssay =
+  essays
+    .filter((essay) => essay.data.featured)
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())[0]
+  ?? essays[0];
+
+// Guard against an empty essays collection: without this, accessing
+// featuredEssay.id below would throw and 500 the homepage.
 const trendingEssays = featuredEssay
   ? essays
       .filter((essay) => essay.id !== featuredEssay.id)

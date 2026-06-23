@@ -16,6 +16,9 @@ const { essay: featuredEssay } = Astro.props;
         src={featuredEssay.data.imageSrc}
         alt={featuredEssay.data.imageAlt}
         class="w-full aspect-video object-cover border-2 border-secondary filter grayscale contrast-125 mb-12"
+        width={1280}
+        height={720}
+        loading="lazy"
         referrerpolicy="no-referrer"
       />
       <h3 class="font-headline text-5xl md:text-6xl mb-6 leading-tight">{featuredEssay.data.title}</h3>

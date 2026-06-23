@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 import { render, type CollectionEntry } from 'astro:content';
 import { getSortedLogicModules } from '../../utils/latest';
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -12,23 +14,32 @@ import Blockquote from '../../components/mdx/Blockquote.astro';
 import Callout from '../../components/mdx/Callout.astro';
 import Prose from '../../components/ui/Prose.astro';
 
-const moduleSlug = Astro.params.slug;
-
-if (moduleSlug && /^\d+$/.test(moduleSlug)) {
-  return Astro.redirect(`/logic-modules/page/${moduleSlug}`, 301);
+export async function getStaticPaths() {
+  const sortedModules = await getSortedLogicModules();
+  return sortedModules.map((module: CollectionEntry<'logicModules'>, index: number) => ({
+    params: { slug: module.id },
+    props: {
+      currentModule: module,
+      prevModule: index > 0 ? sortedModules[index - 1] : null,
+      nextModule: index < sortedModules.length - 1 ? sortedModules[index + 1] : null,
+      moduleByNumber: Object.fromEntries(
+        sortedModules.map((m) => [m.data.moduleNumber, { id: m.id }]),
+      ) as Record<string, { id: string }>,
+    },
+  }));
 }
 
-const sortedModules = await getSortedLogicModules();
-const moduleIndex = sortedModules.findIndex((entry: CollectionEntry<'logicModules'>) => entry.id === moduleSlug);
-const moduleByNumber = new Map(sortedModules.map((m) => [m.data.moduleNumber, m]));
+const { currentModule, prevModule, nextModule, moduleByNumber } = Astro.props as {
+  currentModule: CollectionEntry<'logicModules'>;
+  prevModule: CollectionEntry<'logicModules'> | null;
+  nextModule: CollectionEntry<'logicModules'> | null;
+  moduleByNumber: Record<string, { id: string }>;
+};
 
-if (moduleIndex === -1) {
-  return Astro.rewrite('/404');
+if (Astro.params.slug && /^\d+$/.test(Astro.params.slug)) {
+  return Astro.redirect(`/logic-modules/page/${Astro.params.slug}`, 301);
 }
 
-const currentModule = sortedModules[moduleIndex];
-const prevModule = moduleIndex > 0 ? sortedModules[moduleIndex - 1] : null;
-const nextModule = moduleIndex < sortedModules.length - 1 ? sortedModules[moduleIndex + 1] : null;
 const { Content } = await render(currentModule);
 
 const components = {
@@ -71,7 +82,7 @@ const components = {
             <h3 class="font-label text-xs uppercase tracking-widest text-secondary mb-2">Prerequisites:</h3>
             <ul class="flex flex-wrap gap-4">
               {currentModule.data.prerequisites.map((prereq: string) => {
-                const prereqModule = moduleByNumber.get(prereq);
+                const prereqModule = moduleByNumber[prereq];
                 return prereqModule
                   ? <li class="font-body text-sm italic"><a href={`/logic-modules/${prereqModule.id}`} class="underline hover:text-primary transition-colors">{prereq}</a></li>
                   : <li class="font-body text-sm italic">{prereq}</li>;

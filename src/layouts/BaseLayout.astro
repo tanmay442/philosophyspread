@@ -39,7 +39,9 @@ const imageType = imagePathname.endsWith('.png')
         ? 'image/gif'
         : imagePathname.endsWith('.avif')
           ? 'image/avif'
-          : undefined;
+          : imagePathname.endsWith('.svg')
+            ? 'image/svg+xml'
+            : undefined;
 const keywordsContent = keywords.join(', ');
 
 const defaultStructuredData: Array<Record<string, unknown>> = [

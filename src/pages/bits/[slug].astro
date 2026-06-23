@@ -1,5 +1,7 @@
 ---
-import { getCollection, render } from 'astro:content';
+export const prerender = true;
+
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ReadingProgressBar from '../../components/ui/ReadingProgressBar.astro';
 import Header from '../../components/layout/Header.astro';
@@ -7,23 +9,26 @@ import Footer from '../../components/layout/Footer.astro';
 import Callout from '../../components/mdx/Callout.astro';
 import Icon from '../../components/ui/Icon.astro';
 import Prose from '../../components/ui/Prose.astro';
-import { truncateText } from '../../utils/text';
+import { truncateText, stripMarkdown } from '../../utils/text';
 
-const bitSlug = Astro.params.slug;
-
-if (bitSlug && /^\d+$/.test(bitSlug)) {
-  return Astro.redirect(`/bits/page/${bitSlug}`, 301);
+export async function getStaticPaths() {
+  const bits = await getCollection('bits');
+  return bits.map((bit: CollectionEntry<'bits'>) => ({
+    params: { slug: bit.id },
+    props: { bit },
+  }));
 }
 
-const bits = await getCollection('bits');
-const currentBit = bits.find((entry) => entry.id === bitSlug);
+const { bit: currentBit } = Astro.props as { bit: CollectionEntry<'bits'> };
 
-if (!currentBit) {
-  return Astro.rewrite('/404');
+if (Astro.params.slug && /^\d+$/.test(Astro.params.slug)) {
+  return Astro.redirect(`/bits/page/${Astro.params.slug}`, 301);
 }
 
 const { Content } = await render(currentBit);
-const bitDescription = truncateText(currentBit.data.content, 157);
+// Strip markdown emphasis/quote markers before truncating so literal
+// `*`/`_` characters don't leak into the meta description / SERP snippet.
+const bitDescription = truncateText(stripMarkdown(currentBit.data.content), 157);
 ---
 
 <BaseLayout

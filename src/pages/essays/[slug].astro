@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ReadingProgressBar from '../../components/ui/ReadingProgressBar.astro';
@@ -6,19 +8,25 @@ import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
 import Blockquote from '../../components/mdx/Blockquote.astro';
 import { getSiteUrl } from '../../utils/site';
+import { truncateText } from '../../utils/text';
 import Prose from '../../components/ui/Prose.astro';
 
-const slug = Astro.params.slug;
-
-if (slug && /^\d+$/.test(slug)) {
-  return Astro.redirect(`/essays/page/${slug}`, 301);
+export async function getStaticPaths() {
+  const essays = await getCollection('essays');
+  return essays.map((essay: CollectionEntry<'essays'>) => ({
+    params: { slug: essay.id },
+    props: { essay },
+  }));
 }
 
-const essays = await getCollection('essays');
-const essay = essays.find((entry: CollectionEntry<'essays'>) => entry.id === slug);
+const { essay } = Astro.props as { essay: CollectionEntry<'essays'> };
 
-if (!essay) {
-  return Astro.rewrite('/404');
+// `getStaticPaths` already produces an HTML file for every essay, so a
+// purely-numeric slug (e.g. `/essays/3`) is handled via a 301 to the
+// canonical pagination URL. This is purely a request-time redirect — it
+// happens at runtime for any unmatched slug that wasn't generated.
+if (Astro.params.slug && /^\d+$/.test(Astro.params.slug)) {
+  return Astro.redirect(`/essays/page/${Astro.params.slug}`, 301);
 }
 
 const { Content } = await render(essay);
@@ -28,6 +36,10 @@ const socialImagePath = essay.data.imageSrc;
 const socialImageUrl = socialImagePath.startsWith('http://') || socialImagePath.startsWith('https://')
   ? socialImagePath
   : new URL(socialImagePath, siteUrl).toString();
+
+// Truncate the meta description to fit SERP snippets (~158 chars) while
+// the full description is still rendered in the article <header> body.
+const metaDescription = truncateText(essay.data.description, 158);
 
 const articleStructuredData = {
   '@context': 'https://schema.org',
@@ -58,7 +70,7 @@ const components = {
 
 <BaseLayout
   title={`${essay.data.title} | Philosophy Spread`}
-  description={essay.data.description}
+  description={metaDescription}
   image={socialImagePath}
   keywords={['philosophy essay', 'critical thinking', essay.data.category, ...essay.data.tags]}
   type="article"
@@ -95,10 +107,12 @@ const components = {
 
       <div class="max-w-3xl mx-auto mb-16 group">
         <div class="aspect-video overflow-hidden border-2 border-secondary bg-surface-container-lowest">
-          <img 
-            src={essay.data.imageSrc} 
-            alt={essay.data.imageAlt} 
+          <img
+            src={essay.data.imageSrc}
+            alt={essay.data.imageAlt}
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            loading="eager"
+            fetchpriority="high"
             referrerpolicy="no-referrer"
           />
         </div>
