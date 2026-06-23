@@ -52,7 +52,7 @@ const mobileLinkActive = 'text-primary italic';
 
     <div class="hidden items-center space-x-3 lg:flex">
       <Show when="signed-out" isStatic={true}>
-        <SignInButton asChild mode="modal" isStatic={true}>
+        <SignInButton asChild mode="modal">
           <Button variant="primary">SUBSCRIBE</Button>
         </SignInButton>
       </Show>
@@ -62,7 +62,7 @@ const mobileLinkActive = 'text-primary italic';
             <span class="text-[9px] font-bold uppercase leading-tight tracking-widest text-primary">Thank you</span>
             <span class="text-[10px] font-medium italic leading-tight text-secondary">for joining!</span>
           </div>
-          <UserButton appearance={{ elements: { userButtonAvatarBox: 'w-8 h-8' } }} isStatic={true} />
+          <UserButton appearance={{ elements: { userButtonAvatarBox: 'w-8 h-8' } }} />
         </div>
       </Show>
     </div>
@@ -98,7 +98,7 @@ const mobileLinkActive = 'text-primary italic';
 
     <div class="mt-auto pt-8">
       <Show when="signed-out" isStatic={true}>
-        <SignInButton asChild mode="modal" isStatic={true}>
+        <SignInButton asChild mode="modal">
           <Button variant="tertiary" class="flex w-full justify-center py-4 text-lg">SUBSCRIBE</Button>
         </SignInButton>
       </Show>
@@ -108,7 +108,7 @@ const mobileLinkActive = 'text-primary italic';
             <span class="text-[11px] font-bold uppercase leading-tight tracking-widest text-primary">Thank you</span>
             <span class="mt-1 text-sm font-medium italic leading-tight text-secondary">for joining!</span>
           </div>
-          <UserButton appearance={{ elements: { userButtonAvatarBox: 'w-10 h-10' } }} isStatic={true} />
+          <UserButton appearance={{ elements: { userButtonAvatarBox: 'w-10 h-10' } }} />
         </div>
       </Show>
     </div>

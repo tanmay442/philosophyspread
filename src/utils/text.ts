@@ -26,5 +26,7 @@ export const stripMarkdown = (value: string): string =>
     .replace(/^\s{0,3}>\s?/gm, '') // blockquotes
     .replace(/^\s{0,3}[-*+]\s+/gm, '') // unordered list bullets
     .replace(/^\s{0,3}\d+\.\s+/gm, '') // ordered list items
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '') // images ![alt](url)
+    .replace(/\[[^\]]*\]\([^)]*\)/g, '') // links [text](url)
     .replace(/\s+/g, ' ')
     .trim();
