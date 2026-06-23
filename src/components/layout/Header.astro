@@ -51,18 +51,18 @@ const mobileLinkActive = 'text-primary italic';
     </nav>
 
     <div class="hidden items-center space-x-3 lg:flex">
-      <Show when="signed-out">
-        <SignInButton asChild mode="modal">
+      <Show when="signed-out" isStatic={true}>
+        <SignInButton asChild mode="modal" isStatic={true}>
           <Button variant="primary">SUBSCRIBE</Button>
         </SignInButton>
       </Show>
-      <Show when="signed-in">
+      <Show when="signed-in" isStatic={true}>
         <div class="flex items-center gap-2">
           <div class="flex w-[70px] flex-col items-end justify-center">
             <span class="text-[9px] font-bold uppercase leading-tight tracking-widest text-primary">Thank you</span>
             <span class="text-[10px] font-medium italic leading-tight text-secondary">for joining!</span>
           </div>
-          <UserButton appearance={{ elements: { userButtonAvatarBox: 'w-8 h-8' } }} />
+          <UserButton appearance={{ elements: { userButtonAvatarBox: 'w-8 h-8' } }} isStatic={true} />
         </div>
       </Show>
     </div>
@@ -97,18 +97,18 @@ const mobileLinkActive = 'text-primary italic';
     </nav>
 
     <div class="mt-auto pt-8">
-      <Show when="signed-out">
-        <SignInButton asChild mode="modal">
+      <Show when="signed-out" isStatic={true}>
+        <SignInButton asChild mode="modal" isStatic={true}>
           <Button variant="tertiary" class="flex w-full justify-center py-4 text-lg">SUBSCRIBE</Button>
         </SignInButton>
       </Show>
-      <Show when="signed-in">
+      <Show when="signed-in" isStatic={true}>
         <div class="flex w-full items-center justify-between border-2 border-secondary/20 bg-primary/5 p-4">
           <div class="flex flex-col">
             <span class="text-[11px] font-bold uppercase leading-tight tracking-widest text-primary">Thank you</span>
             <span class="mt-1 text-sm font-medium italic leading-tight text-secondary">for joining!</span>
           </div>
-          <UserButton appearance={{ elements: { userButtonAvatarBox: 'w-10 h-10' } }} />
+          <UserButton appearance={{ elements: { userButtonAvatarBox: 'w-10 h-10' } }} isStatic={true} />
         </div>
       </Show>
     </div>

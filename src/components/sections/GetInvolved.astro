@@ -18,6 +18,7 @@ const signInRedirectProps = buildClerkRedirectProps(currentReturnTo(Astro.url.pa
       <SignInButton
         asChild
         mode="modal"
+        isStatic={true}
         {...signInRedirectProps}
       >
         <Button variant="secondary">Subscribe</Button>
