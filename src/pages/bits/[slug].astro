@@ -7,7 +7,7 @@ import Footer from '../../components/layout/Footer.astro';
 import Callout from '../../components/mdx/Callout.astro';
 import Icon from '../../components/ui/Icon.astro';
 import Prose from '../../components/ui/Prose.astro';
-import { truncateText } from '../../utils/text';
+import { truncateText, stripMarkdown } from '../../utils/text';
 
 const bitSlug = Astro.params.slug;
 
@@ -23,7 +23,9 @@ if (!currentBit) {
 }
 
 const { Content } = await render(currentBit);
-const bitDescription = truncateText(currentBit.data.content, 157);
+// Strip markdown emphasis/quote markers before truncating so literal
+// `*`/`_` characters don't leak into the meta description / SERP snippet.
+const bitDescription = truncateText(stripMarkdown(currentBit.data.content), 157);
 ---
 
 <BaseLayout

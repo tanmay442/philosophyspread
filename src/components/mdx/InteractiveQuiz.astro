@@ -90,8 +90,12 @@ const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
             opt.classList.remove(...baseClasses);
             opt.classList.add(...correctClasses);
             if (currentLetter) {
-              currentLetter.classList.remove('text-primary');
-              currentLetter.classList.add('text-primary');
+              // Flip the letter to the highlighted container's text color
+              // (text-secondary is part of correctClasses) so it matches the
+              // green primary-container background. Previously this removed
+              // then re-added 'text-primary', leaving the letter unchanged.
+              currentLetter.classList.remove('text-primary', 'text-tertiary');
+              currentLetter.classList.add('text-secondary');
             }
             
             feedback.className = 'mt-4 p-4 text-sm block transition-all duration-300 bg-primary-container text-secondary feedback-container';

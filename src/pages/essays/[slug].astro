@@ -6,6 +6,7 @@ import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
 import Blockquote from '../../components/mdx/Blockquote.astro';
 import { getSiteUrl } from '../../utils/site';
+import { truncateText } from '../../utils/text';
 import Prose from '../../components/ui/Prose.astro';
 
 const slug = Astro.params.slug;
@@ -28,6 +29,10 @@ const socialImagePath = essay.data.imageSrc;
 const socialImageUrl = socialImagePath.startsWith('http://') || socialImagePath.startsWith('https://')
   ? socialImagePath
   : new URL(socialImagePath, siteUrl).toString();
+
+// Truncate the meta description to fit SERP snippets (~158 chars) while
+// the full description is still rendered in the article <header> body.
+const metaDescription = truncateText(essay.data.description, 158);
 
 const articleStructuredData = {
   '@context': 'https://schema.org',
@@ -58,7 +63,7 @@ const components = {
 
 <BaseLayout
   title={`${essay.data.title} | Philosophy Spread`}
-  description={essay.data.description}
+  description={metaDescription}
   image={socialImagePath}
   keywords={['philosophy essay', 'critical thinking', essay.data.category, ...essay.data.tags]}
   type="article"
@@ -95,10 +100,14 @@ const components = {
 
       <div class="max-w-3xl mx-auto mb-16 group">
         <div class="aspect-video overflow-hidden border-2 border-secondary bg-surface-container-lowest">
-          <img 
-            src={essay.data.imageSrc} 
-            alt={essay.data.imageAlt} 
+          <img
+            src={essay.data.imageSrc}
+            alt={essay.data.imageAlt}
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            width={1280}
+            height={720}
+            loading="eager"
+            fetchpriority="high"
             referrerpolicy="no-referrer"
           />
         </div>
