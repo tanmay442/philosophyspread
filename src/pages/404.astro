@@ -2,10 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
-import HeroBlock from '../components/cards/HeroBlock.astro';
+import HeroRightPane from '../components/sections/HeroRightPane.astro';
 import Icon from '../components/ui/Icon.astro';
 import { getLatestContent } from '../utils/latest';
-import { truncateText } from '../utils/text';
 import { getCollection } from 'astro:content';
 
 const [logicModules, bits, essays] = await Promise.all([
@@ -65,46 +64,7 @@ const requestedPath = Astro.url.pathname;
       </div>
 
       <!-- Right pane: latest content (mirrors HeroRightPane) -->
-      <div class="md:col-span-4 flex flex-col bg-surface-container-low">
-        <!-- <div class="px-8 pt-8 pb-2">
-          <span class="font-label text-xs uppercase tracking-widest text-primary">
-            [ WHILE YOU'RE HERE — EXPLORE THE LATEST ]
-          </span>
-        </div> -->
-
-        {latestLogic && (
-          <HeroBlock
-            tag={`MODULE ${latestLogic.data.moduleNumber}`}
-            title={latestLogic.data.title}
-            description={latestLogic.data.description}
-            bgClass="bg-primary-container"
-            hoverBgClass="hover:bg-tertiary-container hover:-translate-y-1"
-            href={`/logic-modules/${latestLogic.id}`}
-          />
-        )}
-
-        {latestBit && (
-          <HeroBlock
-            tag={`BIT ${latestBit.data.bitNumber}`}
-            title={latestBit.data.category}
-            description={truncateText(latestBit.data.content, 100)}
-            bgClass="bg-surface-container-lowest"
-            hoverBgClass="hover:bg-primary/10 hover:-translate-y-1"
-            href={`/bits/${latestBit.id}`}
-          />
-        )}
-
-        {latestEssay && (
-          <HeroBlock
-            tag="ESSAY"
-            title={latestEssay.data.title}
-            description={latestEssay.data.description}
-            bgClass="bg-tertiary"
-            hoverBgClass="hover:bg-tertiary-container hover:-translate-y-1"
-            href={`/essays/${latestEssay.id}`}
-          />
-        )}
-      </div>
+      <HeroRightPane latestLogic={latestLogic} latestBit={latestBit} latestEssay={latestEssay} />
     </section>
   </main>
 

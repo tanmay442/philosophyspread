@@ -1,4 +1,8 @@
 ---
+// Fallow dup:0106bc70: the card grid below mirrors logic-modules/page/[page].astro by design.
+// The homepage section and the paginated index page render the same LogicCard markup but diverge
+// in surrounding layout (header/footer, pagination, section chrome). Extracting just the grid
+// would leave two thin wrappers. Listed in .github/workflows/build-fallow.yml as known-intentional.
 import type { CollectionEntry } from 'astro:content';
 import LogicCard from '../cards/LogicCard.astro';
 import Icon from '../ui/Icon.astro';

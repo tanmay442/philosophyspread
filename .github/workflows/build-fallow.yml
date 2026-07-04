@@ -112,7 +112,16 @@ jobs:
             .check.summary.circular_dependencies
           ) // 0' "$REPORT_PATH")
 
-          DUPLICATE_COUNT=$(jq '.dupes.stats.clone_groups // 0' "$REPORT_PATH")
+          # Known-intentional clone groups (see source-level comments and rationale below).
+          # These are filtered by fingerprint so NEW duplication in the same files is still caught.
+          #   dup:d9ffbf4e  HeroBlock.astro  <a>/<div> wrapper conditional (3 lines of static markup)
+          #   dup:0106bc70  LogicModules.astro ↔ logic-modules/page/[page].astro  card grid mirror
+          #   dup:2cf8e3a5  authors/contribute/terms  shared page header skeleton
+          #   dup:0dad0c89  authors/contribute  shared article + Prose + Footer block
+          KNOWN_DUPLICATE_FINGERPRINTS='["dup:d9ffbf4e","dup:0106bc70","dup:2cf8e3a5","dup:0dad0c89"]'
+          DUPLICATE_COUNT=$(jq --argjson known "$KNOWN_DUPLICATE_FINGERPRINTS" '
+            [.dupes.clone_groups[] | .fingerprint as $fp | select($known | index($fp) | not)] | length
+          ' "$REPORT_PATH")
 
           echo "report_path=$REPORT_PATH" >> "$GITHUB_OUTPUT"
           echo "exit_code=$FALLOW_EXIT" >> "$GITHUB_OUTPUT"
@@ -122,7 +131,7 @@ jobs:
           echo "---- Fallow summary ----"
           echo "exit_code=$FALLOW_EXIT"
           echo "dead_code_count=$DEAD_CODE_COUNT"
-          echo "duplicate_count=$DUPLICATE_COUNT"
+          echo "duplicate_count=$DUPLICATE_COUNT (after filtering known-intentional groups)"
 
           # Never fail here; gating is done after notification/comment steps.
           exit 0
@@ -229,7 +238,8 @@ jobs:
       - name: Duplicate warning only (non-blocking)
         if: always() && steps.bypass.outputs.bypass != 'true' && steps.fallow.outputs.duplicate_count != '0'
         run: |
-          echo "⚠️ Duplicate code warning: clone_groups=${{ steps.fallow.outputs.duplicate_count }}"
+          echo "⚠️ Duplicate code warning: new clone_groups=${{ steps.fallow.outputs.duplicate_count }}"
+          echo "Known-intentional groups are filtered; see .github/workflows/build-fallow.yml for the list."
           echo "Please review duplication findings in the log and refactor if needed."
 
   ai-review-gate:

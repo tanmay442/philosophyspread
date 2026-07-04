@@ -36,7 +36,7 @@ export default defineConfig({
   vite: {
     ssr: {
       optimizeDeps: {
-        exclude: ['@clerk/astro', '@clerk/astro/components', 'astro-seo-metadata'],
+        exclude: ['@clerk/astro', '@clerk/astro/components', 'astro-seo-metadata', 'audit'],
       },
     },
   },

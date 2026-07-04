@@ -33,6 +33,11 @@ const href = 'href' in props ? props.href : undefined;
 const blockClass = `block flex-1 p-8 border-b-2 border-secondary transition-all duration-300 cursor-pointer group no-underline hover:no-underline focus:no-underline ${bgClass} ${hoverBgClass} ${hoverTextClass} ${className ?? ''}`.trim();
 const tagClass = `block mb-4 text-primary ${hoverTextClass ? 'group-hover:text-on-primary transition-colors' : ''}`;
 const descriptionClass = `font-body text-lg opacity-80 ${hoverTextClass ? 'group-hover:opacity-100' : ''}`;
+
+// Fallow dup:d9ffbf4e: the <a> and <div> branches below share identical inner content by design.
+// Only the wrapper element differs (link vs non-link). Extracting a sub-component for 3 lines of
+// static markup would add indirection without meaningful dedup value.
+// Listed in .github/workflows/build-fallow.yml as a known-intentional clone group (CI fingerprint filter).
 ---
 
 {href ? (
