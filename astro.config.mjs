@@ -6,7 +6,7 @@ import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
   site: 'https://philosophyspread.live',
-  integrations: [tailwind(), mdx(), clerk({ publishableKey: process.env.PUBLIC_CLERK_PUBLISHABLE_KEY })],
+  integrations: [tailwind(), mdx(), clerk({ publishableKey: 'pk_live_Y2xlcmsucGhpbG9zb3BoeXNwcmVhZC5saXZlJA' })],
   fonts: [
     {
       provider: fontProviders.google(),
