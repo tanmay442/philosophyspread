@@ -87,6 +87,8 @@ jobs:
 
       - name: Build check
         if: steps.bypass.outputs.bypass != 'true'
+        env:
+          PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ vars.PUBLIC_CLERK_PUBLISHABLE_KEY }}
         run: pnpm build
 
       - name: Run fallow and analyze report (log-only, no artifact)
