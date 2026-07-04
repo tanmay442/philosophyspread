@@ -1,4 +1,9 @@
 ---
+// Fallow dup:2cf8e3a5, dup:0dad0c89: the page skeleton below (Header + article header +
+// Back-to-Home link + Prose + Footer) is shared with contribute.astro and terms.astro.
+// These are stable static content pages that rarely change; extracting a shared layout
+// component would add indirection for 3 simple pages.
+// Listed in .github/workflows/build-fallow.yml as known-intentional clone groups.
 export const prerender = true;
 
 import { getCollection, render } from 'astro:content';

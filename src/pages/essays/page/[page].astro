@@ -6,7 +6,8 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Header from '../../../components/layout/Header.astro';
 import Footer from '../../../components/layout/Footer.astro';
 import EssayCard from '../../../components/cards/EssayCard.astro';
-import { paginateItems, parsePageNumber } from '../../../utils/pagination';
+import PaginationNav from '../../../components/ui/PaginationNav.astro';
+import { buildPagePaths, resolvePage } from '../../../utils/pagination';
 import { ESSAYS_PAGE_SIZE } from '../../../constants/pagination';
 
 export async function getStaticPaths() {
@@ -15,27 +16,13 @@ export async function getStaticPaths() {
     (a: CollectionEntry<'essays'>, b: CollectionEntry<'essays'>) =>
       b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
   );
-
-  const lastPage = Math.max(1, Math.ceil(sortedEssays.length / ESSAYS_PAGE_SIZE));
-  return Array.from({ length: lastPage }, (_, index) => ({
-    params: { page: String(index + 1) },
-  }));
-}
-
-const pageNumber = parsePageNumber(Astro.params.page);
-if (!pageNumber) {
-  return Astro.rewrite('/404');
+  return buildPagePaths(sortedEssays.length, ESSAYS_PAGE_SIZE);
 }
 
 const essays = await getCollection('essays');
 const sortedEssays = [...essays].sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
-const page = paginateItems(sortedEssays, {
-  pageNumber,
-  pageSize: ESSAYS_PAGE_SIZE,
-  basePath: '/essays',
-});
-
+const page = resolvePage(sortedEssays, Astro.params.page, ESSAYS_PAGE_SIZE, '/essays');
 if (!page) {
   return Astro.rewrite('/404');
 }
@@ -74,31 +61,7 @@ if (!page) {
         ))}
       </div>
       
-      <nav class="mt-16 flex justify-center items-center space-x-4">
-        {page.url.prev ? (
-          <a href={page.url.prev} class="font-label text-xs uppercase tracking-widest border-2 border-secondary px-6 py-3 hover:bg-primary hover:text-on-primary transition-colors">
-            &lt;- Newer
-          </a>
-        ) : (
-          <span class="font-label text-xs uppercase tracking-widest border-2 border-secondary/30 text-secondary/30 px-6 py-3 cursor-not-allowed">
-            &lt;- Newer
-          </span>
-        )}
-        
-        <span class="font-label text-xs tracking-widest text-secondary">
-          {page.currentPage} / {page.lastPage}
-        </span>
-        
-        {page.url.next ? (
-          <a href={page.url.next} class="font-label text-xs uppercase tracking-widest border-2 border-secondary px-6 py-3 hover:bg-primary hover:text-on-primary transition-colors">
-            Older -&gt;
-          </a>
-        ) : (
-          <span class="font-label text-xs uppercase tracking-widest border-2 border-secondary/30 text-secondary/30 px-6 py-3 cursor-not-allowed">
-            Older -&gt;
-          </span>
-        )}
-      </nav>
+      <PaginationNav page={page} prevLabel="Newer" nextLabel="Older" />
     </section>
   </main>
 

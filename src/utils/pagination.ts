@@ -1,9 +1,9 @@
-type PaginationUrls = {
+export type PaginationUrls = {
   prev: string | null;
   next: string | null;
 };
 
-type PaginationResult<T> = {
+export type PaginationResult<T> = {
   items: T[];
   currentPage: number;
   lastPage: number;
@@ -16,7 +16,7 @@ type PaginateItemsOptions = {
   basePath: string;
 };
 
-export function parsePageNumber(rawPageNumber: string | undefined): number | null {
+function parsePageNumber(rawPageNumber: string | undefined): number | null {
   const pageToken = rawPageNumber ?? '1';
   if (!/^[1-9]\d*$/.test(pageToken)) {
     return null;
@@ -31,7 +31,27 @@ export function parsePageNumber(rawPageNumber: string | undefined): number | nul
   return pageNumber;
 }
 
-export function paginateItems<T>(
+export function buildPagePaths(itemCount: number, pageSize: number) {
+  const lastPage = Math.max(1, Math.ceil(itemCount / pageSize));
+  return Array.from({ length: lastPage }, (_, index) => ({
+    params: { page: String(index + 1) },
+  }));
+}
+
+export function resolvePage<T>(
+  items: T[],
+  rawPageNumber: string | undefined,
+  pageSize: number,
+  basePath: string,
+): PaginationResult<T> | null {
+  const pageNumber = parsePageNumber(rawPageNumber);
+  if (!pageNumber) {
+    return null;
+  }
+  return paginateItems(items, { pageNumber, pageSize, basePath });
+}
+
+function paginateItems<T>(
   items: T[],
   { pageNumber, pageSize, basePath }: PaginateItemsOptions,
 ): PaginationResult<T> | null {

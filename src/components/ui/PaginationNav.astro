@@ -1,0 +1,54 @@
+---
+interface Props {
+  page: {
+    currentPage: number;
+    lastPage: number;
+    url: { prev: string | null; next: string | null };
+  };
+  prevLabel?: string;
+  nextLabel?: string;
+  extraLinkClass?: string;
+}
+
+const {
+  page,
+  prevLabel = 'Newer',
+  nextLabel = 'Older',
+  extraLinkClass = '',
+} = Astro.props;
+const { currentPage, lastPage, url } = page;
+
+const baseLinkClass =
+  'font-label text-xs uppercase tracking-widest border-2 border-secondary px-6 py-3 hover:bg-primary hover:text-on-primary transition-colors';
+const activeLinkClass = extraLinkClass
+  ? `${baseLinkClass} ${extraLinkClass}`
+  : baseLinkClass;
+const disabledClass =
+  'font-label text-xs uppercase tracking-widest border-2 border-secondary/30 text-secondary/30 px-6 py-3 cursor-not-allowed';
+---
+
+<nav class="mt-16 flex justify-center items-center space-x-4">
+  {url.prev ? (
+    <a href={url.prev} class={activeLinkClass}>
+      &lt;- {prevLabel}
+    </a>
+  ) : (
+    <span class={disabledClass}>
+      &lt;- {prevLabel}
+    </span>
+  )}
+
+  <span class="font-label text-xs tracking-widest text-secondary">
+    {currentPage} / {lastPage}
+  </span>
+
+  {url.next ? (
+    <a href={url.next} class={activeLinkClass}>
+      {nextLabel} -&gt;
+    </a>
+  ) : (
+    <span class={disabledClass}>
+      {nextLabel} -&gt;
+    </span>
+  )}
+</nav>
