@@ -1,12 +1,12 @@
 import { defineConfig, fontProviders } from 'astro/config';
-import tailwind from '@astrojs/tailwind';
+import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 import clerk from '@clerk/astro';
 import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
   site: 'https://philosophyspread.live',
-  integrations: [tailwind(), mdx(), clerk({ publishableKey: 'pk_live_Y2xlcmsucGhpbG9zb3BoeXNwcmVhZC5saXZlJA' })],
+  integrations: [mdx(), clerk({ publishableKey: 'pk_live_Y2xlcmsucGhpbG9zb3BoeXNwcmVhZC5saXZlJA' })],
   fonts: [
     {
       provider: fontProviders.google(),
@@ -34,6 +34,7 @@ export default defineConfig({
     port: 3000,
   },
   vite: {
+    plugins: [tailwindcss()],
     ssr: {
       optimizeDeps: {
         exclude: ['@clerk/astro', '@clerk/astro/components', 'astro-seo-metadata', 'audit'],
