@@ -12,23 +12,23 @@
     "generate-types": "wrangler types"
   },
   "dependencies": {
-    "@clerk/astro": "^3.4.16",
-    "@tailwindcss/vite": "^4.3.2",
-    "astro": "^7.0.7",
+    "@clerk/astro": "^4.0.19",
+    "astro": "^7.2.7",
     "astro-seo-metadata": "^0.6.0"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.9",
-    "@astrojs/cloudflare": "^14.1.2",
-    "@astrojs/mdx": "^7.0.2",
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/cloudflare": "^14.2.5",
+    "@astrojs/mdx": "^7.0.8",
     "@tailwindcss/typography": "^0.5.20",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/express": "^4.17.25",
     "@types/node": "^22.20.1",
     "fallow": "^2.104.0",
-    "tailwindcss": "^4.3.2",
-    "tsx": "^4.23.0",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.12",
     "typescript": "~5.8.3",
-    "wrangler": "^4.110.0"
+    "wrangler": "^4.126.0"
   },
   "overrides": {
     "vite": "^8"
