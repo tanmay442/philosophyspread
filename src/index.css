@@ -1,3 +1,15 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @config "../tailwind.config.mjs";
+
+@layer base {
+  a {
+    color: #0f5132;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: #ff8c5a;
+    text-decoration: underline;
+  }
+}
