@@ -1,4 +1,6 @@
 ---
+import { buildQuizKey } from '../../utils/quiz';
+
 interface Question {
   question: string;
   options: string[];
@@ -7,18 +9,13 @@ interface Question {
 }
 
 interface Props {
+  id: string;
   questions: Question[];
 }
 
-const { questions } = Astro.props;
+const { id, questions } = Astro.props;
 const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
-const quizKey = questions
-  .map((question) => question.question)
-  .join('|')
-  .toLowerCase()
-  .replace(/[^a-z0-9]+/g, '-')
-  .replace(/^-|-$/g, '')
-  .slice(0, 48) || 'set';
+const quizKey = buildQuizKey(id, questions);
 ---
 
 <div class="my-12 space-y-12 quiz-container">

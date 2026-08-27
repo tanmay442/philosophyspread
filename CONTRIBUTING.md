@@ -77,7 +77,6 @@ For urgent production situations, there is a maintainer-only bypass flag.
 - **Who can use it:** only GitHub user **`tanmay442`**
 **Where it works:**
 - direct `push` to `master` (skips Build + Fallow workflow)
-- PRs to `master` (skips the AI guidance job entirely because `build-fallow` is bypassed)
 
 If anyone else uses this flag, it has no effect.
 

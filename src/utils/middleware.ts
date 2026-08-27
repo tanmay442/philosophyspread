@@ -11,3 +11,10 @@ export const shouldSkipClerkMiddleware = (pathname: string): boolean => {
   }
   return SKIP_EXTENSION.test(pathname);
 };
+
+const LEGACY_ARCHIVE_ALIAS = /^\/(essays|bits|logic-modules)\/([1-9]\d*)\/?$/;
+
+export const getLegacyArchiveRedirectPath = (pathname: string): string | undefined => {
+  const match = LEGACY_ARCHIVE_ALIAS.exec(pathname);
+  return match ? `/${match[1]}/page/${match[2]}/` : undefined;
+};

@@ -1,6 +1,6 @@
 import { clerkMiddleware } from '@clerk/astro/server';
 import type { MiddlewareHandler } from 'astro';
-import { shouldSkipClerkMiddleware } from './utils/middleware';
+import { getLegacyArchiveRedirectPath, shouldSkipClerkMiddleware } from './utils/middleware';
 
 const SECURITY_HEADERS: Readonly<Record<string, string>> = {
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
@@ -46,6 +46,20 @@ const redirectHttpToHttps = (context: Parameters<MiddlewareHandler>[0]): Respons
   return Response.redirect(location, 308);
 };
 
+const redirectLegacyArchiveAlias = (
+  context: Parameters<MiddlewareHandler>[0],
+): Response | undefined => {
+  const redirectPath = getLegacyArchiveRedirectPath(context.url.pathname);
+  return redirectPath ? Response.redirect(new URL(redirectPath, context.url), 301) : undefined;
+};
+
+const resolveRequestRedirect = (
+  context: Parameters<MiddlewareHandler>[0],
+): Response | undefined => {
+  const httpsRedirect = redirectHttpToHttps(context);
+  return httpsRedirect || redirectLegacyArchiveAlias(context);
+};
+
 // Astro middleware does not expose a Next.js-style `config.matcher` export,
 // so we wrap clerkMiddleware with an inline skip for non-HTML/static routes.
 // This keeps Clerk's auth checks off the hot path for the sitemap, robots,
@@ -54,9 +68,9 @@ const redirectHttpToHttps = (context: Parameters<MiddlewareHandler>[0]): Respons
 const clerk = clerkMiddleware();
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
-  const httpsRedirect = redirectHttpToHttps(context);
-  if (httpsRedirect) {
-    return addSecurityHeaders(httpsRedirect);
+  const redirect = resolveRequestRedirect(context);
+  if (redirect) {
+    return addSecurityHeaders(redirect);
   }
 
   let nextResponse: Response | undefined;
