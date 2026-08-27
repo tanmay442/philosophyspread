@@ -32,7 +32,7 @@ const displayDescription = truncateWords(description, MAX_DESCRIPTION_WORDS);
       {icon && <Icon name={icon} class="h-5 w-5 text-secondary opacity-40 group-hover:opacity-100 transition-opacity" />}
     </div>
   )}
-  <h4 class={`font-headline font-bold text-secondary mb-4 ${titleClass ? titleClass : (moduleNumber ? 'text-3xl' : 'text-2xl')}`}>{title}</h4>
+  <h3 class={`font-headline font-bold text-secondary mb-4 ${titleClass ? titleClass : (moduleNumber ? 'text-3xl' : 'text-2xl')}`}>{title}</h3>
   <p class="font-body text-lg text-on-surface-variant leading-relaxed mb-6 flex-grow min-h-[5.5rem]">
     {displayDescription}
   </p>

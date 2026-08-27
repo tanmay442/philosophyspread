@@ -16,6 +16,9 @@ type PaginateItemsOptions = {
   basePath: string;
 };
 
+const pageUrl = (basePath: string, pageNumber: number): string =>
+  pageNumber === 1 ? `${basePath}/` : `${basePath}/page/${pageNumber}/`;
+
 function parsePageNumber(rawPageNumber: string | undefined): number | null {
   const pageToken = rawPageNumber ?? '1';
   if (!/^[1-9]\d*$/.test(pageToken)) {
@@ -68,8 +71,8 @@ function paginateItems<T>(
     currentPage: pageNumber,
     lastPage,
     url: {
-      prev: pageNumber > 1 ? `${basePath}/page/${pageNumber - 1}` : null,
-      next: pageNumber < lastPage ? `${basePath}/page/${pageNumber + 1}` : null,
+      prev: pageNumber > 1 ? pageUrl(basePath, pageNumber - 1) : null,
+      next: pageNumber < lastPage ? pageUrl(basePath, pageNumber + 1) : null,
     },
   };
 }

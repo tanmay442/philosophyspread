@@ -16,7 +16,7 @@ const { bits } = Astro.props;
         <h2 class="font-headline text-5xl mb-4">Idea-Bits</h2>
         <p class="font-label text-sm text-secondary uppercase tracking-widest">Dense fragments of wisdom updated bi-weekly.</p>
       </div>
-      <a href="/bits/page/1" class="hidden md:inline-block font-label text-xs bg-primary text-on-primary px-3 py-1 hover:bg-tertiary hover:text-on-tertiary transition-colors">LIVE FEED</a>
+      <a href="/bits/" class="hidden md:inline-block font-label text-xs bg-primary text-on-primary px-3 py-1 hover:bg-tertiary hover:text-on-tertiary transition-colors">LIVE FEED</a>
     </div>
     
     <div class="columns-1 md:columns-2 lg:columns-3 gap-8">
@@ -25,13 +25,13 @@ const { bits } = Astro.props;
           tag={`#${bit.data.bitNumber} / ${bit.data.category.toUpperCase()}`}
           time={bit.data.timestamp.toLocaleString('en-US', { timeZone: 'UTC', dateStyle: 'medium', timeStyle: 'short' }) + ' UTC'}
           content={bit.data.content}
-          href={`/bits/${bit.id}`}
+          href={`/bits/${bit.id}/`}
         />
       ))}
     </div>
 
     <div class="mt-8 flex md:hidden justify-center">
-      <a href="/bits/page/1" class="font-label text-xs bg-primary text-on-primary px-4 py-2 hover:bg-tertiary hover:text-on-tertiary transition-colors">LIVE FEED</a>
+      <a href="/bits/" class="font-label text-xs bg-primary text-on-primary px-4 py-2 hover:bg-tertiary hover:text-on-tertiary transition-colors">LIVE FEED</a>
     </div>
   </div>
 </section>

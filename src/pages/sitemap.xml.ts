@@ -2,6 +2,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import type { APIContext } from 'astro';
 import { BITS_PAGE_SIZE, ESSAYS_PAGE_SIZE, MODULES_PAGE_SIZE } from '../constants/pagination';
 import { getSiteUrl } from '../utils/site';
+import { absoluteSiteUrl } from '../utils/seo';
 
 type SitemapEntry = {
   loc: string;
@@ -21,7 +22,7 @@ const escapeXml = (value: string) =>
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&apos;');
 
-const toAbsolute = (pathname: string, siteUrl: URL) => new URL(pathname, siteUrl).toString();
+const toAbsolute = (pathname: string, siteUrl: URL) => absoluteSiteUrl(pathname, siteUrl);
 
 const parseDate = (value: unknown): string | undefined => {
   if (!value) {
@@ -61,8 +62,11 @@ const buildPaginationEntries = (
 ): SitemapEntry[] => {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
-  return Array.from({ length: totalPages }, (_, index) => ({
-    loc: toAbsolute(`${basePath}/page/${index + 1}`, siteUrl),
+  // Page one is rendered at the archive root. The legacy `/page/1/` route
+  // remains available for old links but is canonicalized to that root, so it
+  // should not create a second sitemap entry for the same document.
+  return Array.from({ length: Math.max(0, totalPages - 1) }, (_, index) => ({
+    loc: toAbsolute(`${basePath}/page/${index + 2}`, siteUrl),
     lastmod,
   }));
 };
@@ -94,7 +98,10 @@ export async function GET({ site }: APIContext) {
       lastmod: parseDate(entry.data.lastUpdated),
     })),
 
-    // 3. Pagination Roots
+    // 3. Archive roots (page one) and subsequent pagination routes
+    { loc: toAbsolute('/essays', siteUrl), lastmod: latestDate(essayDates) },
+    { loc: toAbsolute('/bits', siteUrl), lastmod: latestDate(bitDates) },
+    { loc: toAbsolute('/logic-modules', siteUrl) },
     ...buildPaginationEntries('/essays', essays.length, ESSAYS_PAGE_SIZE, siteUrl, latestDate(essayDates)),
     ...buildPaginationEntries('/bits', bits.length, BITS_PAGE_SIZE, siteUrl, latestDate(bitDates)),
     ...buildPaginationEntries('/logic-modules', modules.length, MODULES_PAGE_SIZE, siteUrl),

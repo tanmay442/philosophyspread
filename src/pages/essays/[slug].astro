@@ -10,6 +10,14 @@ import Blockquote from '../../components/mdx/Blockquote.astro';
 import { getSiteUrl } from '../../utils/site';
 import { truncateText } from '../../utils/text';
 import Prose from '../../components/ui/Prose.astro';
+import EditorialImage from '../../components/ui/EditorialImage.astro';
+import { absoluteSiteUrl, getImageDimensions, SITE_NAME } from '../../utils/seo';
+import socialBoredom from '../../assets/social/boredom.jpg';
+import socialChoice from '../../assets/social/choice.jpg';
+import socialConsciousness from '../../assets/social/consciousness.jpg';
+import socialLogic from '../../assets/social/logic.jpg';
+import socialMetaphysics from '../../assets/social/metaphysics.jpg';
+import socialMorality from '../../assets/social/morality.jpg';
 
 export async function getStaticPaths() {
   const essays = await getCollection('essays');
@@ -21,21 +29,27 @@ export async function getStaticPaths() {
 
 const { essay } = Astro.props as { essay: CollectionEntry<'essays'> };
 
-// `getStaticPaths` already produces an HTML file for every essay, so a
-// purely-numeric slug (e.g. `/essays/3`) is handled via a 301 to the
-// canonical pagination URL. This is purely a request-time redirect — it
-// happens at runtime for any unmatched slug that wasn't generated.
-if (Astro.params.slug && /^\d+$/.test(Astro.params.slug)) {
-  return Astro.redirect(`/essays/page/${Astro.params.slug}`, 301);
-}
-
 const { Content } = await render(essay);
 const siteUrl = getSiteUrl(Astro.site);
-const essayUrl = new URL(Astro.url.pathname, siteUrl).toString();
-const socialImagePath = essay.data.imageSrc;
+const essayUrl = absoluteSiteUrl(Astro.url.pathname, siteUrl);
+const sourceImagePath = essay.data.imageSrc;
+const socialImages: Record<string, { src: string; width: number; height: number }> = {
+  '/boredom.png': socialBoredom,
+  '/choice.avif': socialChoice,
+  '/consciousness.avif': socialConsciousness,
+  '/logic.avif': socialLogic,
+  '/metaphysics.avif': socialMetaphysics,
+  '/morality.avif': socialMorality,
+};
+const socialImage = socialImages[sourceImagePath];
+const socialImagePath = socialImage?.src ?? sourceImagePath;
 const socialImageUrl = socialImagePath.startsWith('http://') || socialImagePath.startsWith('https://')
   ? socialImagePath
   : new URL(socialImagePath, siteUrl).toString();
+const socialImageDimensions = socialImage ?? getImageDimensions(sourceImagePath);
+const authorUrl = essay.data.author === 'Tanmay Goel'
+  ? 'https://x.com/TanmayGoel442'
+  : undefined;
 
 // Truncate the meta description to fit SERP snippets (~158 chars) while
 // the full description is still rendered in the article <header> body.
@@ -44,18 +58,28 @@ const metaDescription = truncateText(essay.data.description, 158);
 const articleStructuredData = {
   '@context': 'https://schema.org',
   '@type': 'Article',
+  '@id': `${essayUrl}#article`,
   headline: essay.data.title,
   description: essay.data.description,
   datePublished: essay.data.pubDate.toISOString(),
+  articleSection: essay.data.category,
+  keywords: essay.data.tags,
+  inLanguage: 'en-US',
   author: {
     '@type': 'Person',
     name: essay.data.author,
+    ...(authorUrl ? { url: authorUrl } : {}),
   },
-  image: [socialImageUrl],
-  mainEntityOfPage: essayUrl,
+  image: {
+    '@type': 'ImageObject',
+    url: socialImageUrl,
+    ...(socialImageDimensions ?? {}),
+  },
+  mainEntityOfPage: { '@id': `${essayUrl}#webpage` },
   publisher: {
     '@type': 'Organization',
-    name: 'Philosophy Spread',
+    name: SITE_NAME,
+    url: siteUrl.toString(),
     logo: {
       '@type': 'ImageObject',
       url: new URL('/favicon.svg', siteUrl).toString(),
@@ -72,14 +96,25 @@ const components = {
   title={`${essay.data.title} | Philosophy Spread`}
   description={metaDescription}
   image={socialImagePath}
+  imageAlt={essay.data.imageAlt}
+  imageWidth={socialImageDimensions?.width}
+  imageHeight={socialImageDimensions?.height}
   keywords={['philosophy essay', 'critical thinking', essay.data.category, ...essay.data.tags]}
   type="article"
+  publishedTime={essay.data.pubDate.toISOString()}
+  author={essay.data.author}
+  authorUrl={authorUrl}
+  breadcrumbs={[
+    { name: 'Home', url: '/' },
+    { name: 'Essays', url: '/essays/' },
+    { name: essay.data.title, url: essayUrl },
+  ]}
   structuredData={articleStructuredData}
 >
   <ReadingProgressBar />
   <Header />
   
-  <main class="pt-32 px-6 md:px-12 pb-20 max-w-4xl mx-auto">
+  <main id="main-content" class="pt-32 px-6 md:px-12 pb-20 max-w-4xl mx-auto">
     <article>
       <header class="mb-12 text-center">
         <div class="font-label text-xs text-primary mb-4 tracking-[0.2em] uppercase">
@@ -107,13 +142,13 @@ const components = {
 
       <div class="max-w-3xl mx-auto mb-16 group">
         <div class="aspect-video overflow-hidden border-2 border-secondary bg-surface-container-lowest">
-          <img
-            src={essay.data.imageSrc}
+          <EditorialImage
+            src={sourceImagePath}
             alt={essay.data.imageAlt}
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, 768px"
             loading="eager"
             fetchpriority="high"
-            referrerpolicy="no-referrer"
           />
         </div>
       </div>
@@ -133,7 +168,7 @@ const components = {
       )}
 
       <div class="mt-12 pt-8 border-t border-outline-variant text-center">
-        <a href="/essays/page/1" class="font-label text-xs text-primary uppercase tracking-widest hover:text-secondary transition-colors">
+        <a href="/essays/" class="font-label text-xs text-primary uppercase tracking-widest hover:text-secondary transition-colors">
           &lt;- Back to Essays
         </a>
       </div>

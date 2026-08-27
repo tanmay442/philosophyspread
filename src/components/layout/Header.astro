@@ -1,5 +1,6 @@
 ---
 import { SignInButton, Show, UserButton } from '@clerk/astro/components';
+import { Image } from 'astro:assets';
 import logoRemoveBg from '../../assets/logo-removebg.avif';
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
@@ -10,9 +11,9 @@ import Icon from '../ui/Icon.astro';
 // `currentPath` was computed here from `Astro.url.pathname`, which forced
 // every page to render on demand.
 const navigationLinks = [
-  { href: '/logic-modules/page/1', label: 'Logic and Reasoning', segment: 'logic-modules' },
-  { href: '/bits/page/1', label: 'Idea-Bits', segment: 'bits' },
-  { href: '/essays/page/1', label: 'Essays', segment: 'essays' },
+  { href: '/logic-modules/', label: 'Logic and Reasoning', segment: 'logic-modules' },
+  { href: '/bits/', label: 'Idea-Bits', segment: 'bits' },
+  { href: '/essays/', label: 'Essays', segment: 'essays' },
 ];
 
 const desktopLinkBase =
@@ -25,11 +26,17 @@ const mobileLinkActive = 'text-primary italic';
 ---
 
 <header class="fixed top-0 z-50 w-full border-b-2 border-secondary bg-surface shadow-[1px_1px_0px_#1a1a1a]">
+  <a
+    href="#main-content"
+    class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[70] focus:bg-primary focus:px-4 focus:py-3 focus:text-sm focus:text-on-primary focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-primary"
+  >
+    Skip to main content
+  </a>
   <div class="relative z-50 mx-auto flex w-full max-w-7xl items-center justify-between bg-surface px-4 py-2">
-    <a href="/" class="shrink-0 transition-opacity hover:opacity-90" aria-label="Philosophy Spread home">
+    <a href="/" class="shrink-0 transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-label="Philosophy Spread home">
       <span class="block h-10 w-[200px] sm:h-12 sm:w-[240px]">
-        <img
-          src={logoRemoveBg.src}
+        <Image
+          src={logoRemoveBg}
           alt="Philosophy Spread"
           width={594}
           height={109}
@@ -43,7 +50,7 @@ const mobileLinkActive = 'text-primary italic';
     <nav class="hidden items-center space-x-8 lg:flex">
       {navigationLinks.map(({ href, label, segment }) => (
         <a
-          class={`${desktopLinkBase} js-nav-link`}
+          class={`${desktopLinkBase} js-nav-link focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary`}
           data-nav-segment={segment}
           data-nav-active-class={desktopLinkActive}
           href={href}>{label}</a>
@@ -69,8 +76,8 @@ const mobileLinkActive = 'text-primary italic';
 
     <button
       id="mobile-menu-toggle"
-      class="flex items-center justify-center p-2 text-secondary transition-colors hover:text-primary lg:hidden"
-      aria-label="Toggle menu"
+      class="flex items-center justify-center p-2 text-secondary transition-colors hover:text-primary lg:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      aria-label="Open menu"
       aria-expanded="false"
       aria-controls="mobile-menu"
       type="button"
@@ -85,11 +92,13 @@ const mobileLinkActive = 'text-primary italic';
   <div
     id="mobile-menu"
     class="fixed right-0 top-0 z-40 hidden h-full w-[85vw] flex-col overflow-y-auto border-l-2 border-secondary bg-surface px-6 pb-8 pt-24 shadow-2xl md:w-[60vw]"
+    aria-hidden="true"
+    inert
   >
-    <nav class="mt-4 flex flex-grow flex-col space-y-6">
+    <nav class="mt-4 flex flex-grow flex-col space-y-6" aria-label="Mobile navigation">
       {navigationLinks.map(({ href, label, segment }) => (
         <a
-          class={`${mobileLinkBase} js-nav-link`}
+          class={`${mobileLinkBase} js-nav-link focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary`}
           data-nav-segment={segment}
           data-nav-active-class={mobileLinkActive}
           href={href}>{label}</a>
@@ -121,19 +130,41 @@ const mobileLinkActive = 'text-primary italic';
   const backdrop = document.getElementById('mobile-menu-backdrop');
   const menuIcon = toggleButton?.querySelector('.menu-icon');
   const closeIcon = toggleButton?.querySelector('.close-icon');
+  const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  let previousFocus: HTMLElement | null = null;
+  let previousBodyOverflow = '';
 
   const setMenuOpen = (isOpen: boolean) => {
     if (!mobileMenu || !backdrop || !toggleButton) {
       return;
     }
 
+    if (isOpen) {
+      previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : toggleButton;
+      previousBodyOverflow = document.body.style.overflow;
+    }
+
     mobileMenu.classList.toggle('hidden', !isOpen);
     mobileMenu.classList.toggle('flex', isOpen);
+    mobileMenu.toggleAttribute('inert', !isOpen);
+    mobileMenu.setAttribute('aria-hidden', String(!isOpen));
     backdrop.classList.toggle('hidden', !isOpen);
     menuIcon?.classList.toggle('hidden', isOpen);
     closeIcon?.classList.toggle('hidden', !isOpen);
     toggleButton.setAttribute('aria-expanded', String(isOpen));
+    toggleButton.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
     document.body.style.overflow = isOpen ? 'hidden' : '';
+
+    if (isOpen) {
+      window.requestAnimationFrame(() => {
+        const firstFocusable = mobileMenu.querySelector<HTMLElement>(focusableSelector);
+        firstFocusable?.focus({ preventScroll: true });
+      });
+    } else {
+      document.body.style.overflow = previousBodyOverflow;
+      previousFocus?.focus({ preventScroll: true });
+      previousFocus = null;
+    }
   };
 
   const toggleMenu = () => {
@@ -147,6 +178,44 @@ const mobileLinkActive = 'text-primary italic';
     link.addEventListener('click', () => setMenuOpen(false));
   });
 
+  document.addEventListener('keydown', (event) => {
+    if (!mobileMenu || !toggleButton?.getAttribute('aria-expanded') || toggleButton.getAttribute('aria-expanded') !== 'true') {
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      setMenuOpen(false);
+      return;
+    }
+
+    if (event.key !== 'Tab') {
+      return;
+    }
+
+    const focusableElements = Array.from(mobileMenu.querySelectorAll<HTMLElement>(focusableSelector));
+    if (focusableElements.length === 0) {
+      event.preventDefault();
+      return;
+    }
+
+    const firstFocusable = focusableElements[0];
+    const lastFocusable = focusableElements[focusableElements.length - 1];
+    if (event.shiftKey && document.activeElement === firstFocusable) {
+      event.preventDefault();
+      lastFocusable.focus();
+    } else if (!event.shiftKey && document.activeElement === lastFocusable) {
+      event.preventDefault();
+      firstFocusable.focus();
+    }
+  });
+
+  window.matchMedia('(min-width: 1024px)').addEventListener('change', (event) => {
+    if (event.matches && toggleButton?.getAttribute('aria-expanded') === 'true') {
+      setMenuOpen(false);
+    }
+  });
+
   // Active-nav highlighting, resolved on the client so this Header
   // can be rendered into prerendered pages. Each link carries its
   // segment and active-state class list as data attributes.
@@ -158,6 +227,20 @@ const mobileLinkActive = 'text-primary italic';
     const isActive = currentPath === segment || currentPath.startsWith(`${segment}/`);
     if (isActive && activeClass) {
       link.classList.add(...activeClass.split(/\s+/).filter(Boolean));
+      link.setAttribute('aria-current', 'page');
     }
   });
 </script>
+
+<style is:global>
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>

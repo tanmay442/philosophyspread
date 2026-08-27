@@ -3,10 +3,24 @@ import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 import clerk from '@clerk/astro';
 import cloudflare from '@astrojs/cloudflare';
+import { loadEnv } from 'vite';
+
+// Astro does not expose import.meta.env while evaluating this config. Load
+// the public Clerk key explicitly so local development and local production
+// previews use the ignored `.env`/`.env.local` value. Cloudflare builds can
+// still provide an environment value, and otherwise use the public live-key
+// fallback because the ignored local env file is not present in CI.
+const configMode = process.env.NODE_ENV === 'production' ? 'production' : 'development';
+const loadedEnv = loadEnv(configMode, process.cwd(), '');
+const productionFallback = 'pk_live_Y2xlcmsucGhpbG9zb3BoeXNwcmVhZC5saXZlJA';
+const publishableKey = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY
+  ?? loadedEnv.PUBLIC_CLERK_PUBLISHABLE_KEY
+  ?? productionFallback;
 
 export default defineConfig({
   site: 'https://philosophyspread.live',
-  integrations: [mdx(), clerk({ publishableKey: 'pk_live_Y2xlcmsucGhpbG9zb3BoeXNwcmVhZC5saXZlJA' })],
+  trailingSlash: 'always',
+  integrations: [mdx(), clerk({ publishableKey })],
   fonts: [
     {
       provider: fontProviders.google(),
@@ -37,7 +51,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
     ssr: {
       optimizeDeps: {
-        exclude: ['@clerk/astro', '@clerk/astro/components', 'astro-seo-metadata', 'audit'],
+        exclude: ['@clerk/astro', '@clerk/astro/components'],
       },
     },
   },

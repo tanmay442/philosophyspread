@@ -3,11 +3,9 @@ name: Build + Fallow + AI Review Guidance
 on:
   push:
     branches:
-      - main
       - master
   pull_request:
     branches:
-      - main
       - master
 
 permissions:
@@ -43,7 +41,7 @@ jobs:
           FLAG='[skip-tanmay-gates]'
           BYPASS='false'
 
-          if [ "$ACTOR" = "tanmay442" ] && [ "$EVENT_NAME" = "push" ] && [ "$REF" = "refs/heads/main" ]; then
+          if [ "$ACTOR" = "tanmay442" ] && [ "$EVENT_NAME" = "push" ] && [ "$REF" = "refs/heads/master" ]; then
             if printf '%s' "$HEAD_COMMIT_MESSAGE" | grep -Fqi "$FLAG"; then
               BYPASS='true'
             fi
@@ -56,13 +54,13 @@ jobs:
         if: steps.bypass.outputs.bypass == 'true'
         run: |
           echo "Maintainer bypass enabled by tanmay442 using flag: ${{ steps.bypass.outputs.flag }}"
-          echo "Skipping build + fallow for this direct main push."
+          echo "Skipping build + fallow for this direct master push."
 
       - name: Setup pnpm
         if: steps.bypass.outputs.bypass != 'true'
         uses: pnpm/action-setup@v6
         with:
-          version: 10
+          version: 10.33.2
           run_install: false
 
       - name: Setup Node
@@ -83,7 +81,11 @@ jobs:
 
       - name: Astro check
         if: steps.bypass.outputs.bypass != 'true'
-        run: pnpm astro check
+        run: pnpm check
+
+      - name: Unit tests
+        if: steps.bypass.outputs.bypass != 'true'
+        run: pnpm test
 
       - name: Build check
         if: steps.bypass.outputs.bypass != 'true'
@@ -95,43 +97,64 @@ jobs:
         shell: bash
         run: |
           set +e
+          set -o pipefail
 
           REPORT_PATH="$RUNNER_TEMP/fallow-report.json"
-          pnpm fallow --config .github/fallow.ci.json --format json | tee "$REPORT_PATH"
-          FALLOW_EXIT=$?
+          pnpm fallow --no-cache --config .github/fallow.ci.json --format json | tee "$REPORT_PATH"
+          FALLOW_EXIT=${PIPESTATUS[0]}
+          set +o pipefail
 
-          DEAD_CODE_COUNT=$(jq '(
-            .check.summary.unused_files +
-            .check.summary.unused_exports +
-            .check.summary.unused_types +
-            .check.summary.unused_dependencies +
-            .check.summary.unused_enum_members +
-            .check.summary.unused_class_members +
-            .check.summary.type_only_dependencies +
-            .check.summary.test_only_dependencies +
-            .check.summary.circular_dependencies
-          ) // 0' "$REPORT_PATH")
+          REPORT_VALID='false'
+          if jq -e '(.check.summary and .dupes and .health)' "$REPORT_PATH" >/dev/null 2>&1; then
+            REPORT_VALID='true'
+          fi
+
+          BLOCKING_CODE_COUNT=$(jq '[
+            .check.summary.unused_files,
+            .check.summary.unused_exports,
+            .check.summary.unused_types,
+            .check.summary.unused_dependencies,
+            .check.summary.unused_dev_dependencies,
+            .check.summary.unused_optional_dependencies,
+            .check.summary.unused_enum_members,
+            .check.summary.unused_class_members,
+            .check.summary.unresolved_imports,
+            .check.summary.unlisted_dependencies,
+            .check.summary.duplicate_exports,
+            .check.summary.circular_dependencies,
+            .check.summary.re_export_cycles,
+            .check.summary.boundary_violations,
+            .check.summary.unresolved_catalog_references,
+            .check.summary.misconfigured_dependency_overrides,
+            .check.summary.route_collisions,
+            .check.summary.dynamic_segment_name_conflicts
+          ] | map(. // 0) | add' "$REPORT_PATH" 2>/dev/null || echo 0)
 
           # Known-intentional clone groups (see source-level comments and rationale below).
           # These are filtered by fingerprint so NEW duplication in the same files is still caught.
           #   dup:d9ffbf4e  HeroBlock.astro  <a>/<div> wrapper conditional (3 lines of static markup)
-          #   dup:0106bc70  LogicModules.astro ↔ logic-modules/page/[page].astro  card grid mirror
-          #   dup:2cf8e3a5  authors/contribute/terms  shared page header skeleton
-          #   dup:0dad0c89  authors/contribute  shared article + Prose + Footer block
-          KNOWN_DUPLICATE_FINGERPRINTS='["dup:d9ffbf4e","dup:0106bc70","dup:2cf8e3a5","dup:0dad0c89"]'
+          #   dup:32f5b325  LogicModules.astro ↔ logic-modules/page/[page].astro  card grid mirror
+          #   dup:21dd34f0  bits/page/[page].astro ↔ logic-modules/page/[page].astro  archive shell
+          #   dup:9f003af2  bits/page/[page].astro ↔ essays/page/[page].astro ↔ logic-modules/page/[page].astro  archive shell
+          KNOWN_DUPLICATE_FINGERPRINTS='["dup:d9ffbf4e","dup:32f5b325","dup:21dd34f0","dup:9f003af2"]'
           DUPLICATE_COUNT=$(jq --argjson known "$KNOWN_DUPLICATE_FINGERPRINTS" '
-            [.dupes.clone_groups[] | .fingerprint as $fp | select($known | index($fp) | not)] | length
-          ' "$REPORT_PATH")
+            [(.dupes.clone_groups // [])[] | .fingerprint as $fp | select($known | index($fp) | not)] | length
+          ' "$REPORT_PATH" 2>/dev/null || echo 0)
+          HEALTH_FINDING_COUNT=$(jq '(.health.findings // []) | length' "$REPORT_PATH" 2>/dev/null || echo 0)
 
           echo "report_path=$REPORT_PATH" >> "$GITHUB_OUTPUT"
           echo "exit_code=$FALLOW_EXIT" >> "$GITHUB_OUTPUT"
-          echo "dead_code_count=$DEAD_CODE_COUNT" >> "$GITHUB_OUTPUT"
+          echo "report_valid=$REPORT_VALID" >> "$GITHUB_OUTPUT"
+          echo "blocking_code_count=$BLOCKING_CODE_COUNT" >> "$GITHUB_OUTPUT"
           echo "duplicate_count=$DUPLICATE_COUNT" >> "$GITHUB_OUTPUT"
+          echo "health_finding_count=$HEALTH_FINDING_COUNT" >> "$GITHUB_OUTPUT"
 
           echo "---- Fallow summary ----"
           echo "exit_code=$FALLOW_EXIT"
-          echo "dead_code_count=$DEAD_CODE_COUNT"
+          echo "report_valid=$REPORT_VALID"
+          echo "blocking_code_count=$BLOCKING_CODE_COUNT"
           echo "duplicate_count=$DUPLICATE_COUNT (after filtering known-intentional groups)"
+          echo "health_finding_count=$HEALTH_FINDING_COUNT (non-blocking maintainability findings)"
 
           # Never fail here; gating is done after notification/comment steps.
           exit 0
@@ -141,36 +164,45 @@ jobs:
         uses: actions/github-script@v9
         env:
           REPORT_PATH: ${{ steps.fallow.outputs.report_path }}
-          DEAD_CODE_COUNT: ${{ steps.fallow.outputs.dead_code_count }}
+          REPORT_VALID: ${{ steps.fallow.outputs.report_valid }}
+          BLOCKING_CODE_COUNT: ${{ steps.fallow.outputs.blocking_code_count }}
           DUPLICATE_COUNT: ${{ steps.fallow.outputs.duplicate_count }}
+          HEALTH_FINDING_COUNT: ${{ steps.fallow.outputs.health_finding_count }}
           FALLOW_EXIT_CODE: ${{ steps.fallow.outputs.exit_code }}
         with:
           script: |
             const fs = require('fs');
-            const dead = Number(process.env.DEAD_CODE_COUNT || '0');
+            const reportValid = process.env.REPORT_VALID === 'true';
+            const blocking = Number(process.env.BLOCKING_CODE_COUNT || '0');
             const dupes = Number(process.env.DUPLICATE_COUNT || '0');
+            const health = Number(process.env.HEALTH_FINDING_COUNT || '0');
             const exitCode = process.env.FALLOW_EXIT_CODE || '0';
 
             const lines = [
               `@${context.actor} Fallow checks detected issues.`,
               '',
               `- Fallow exit code: ${exitCode}`,
-              `- Dead code findings: ${dead}`,
+              `- Report valid: ${reportValid}`,
+              `- Blocking code findings: ${blocking}`,
               `- Duplicate clone groups: ${dupes}`,
+              `- Maintainability findings: ${health}`,
               '',
-              dead > 0
-                ? 'Dead code was found; this run will be failed to block merge/promotion.'
-                : 'No dead code detected.',
+              blocking > 0
+                ? 'Blocking code findings were found; this run will be failed to block merge/promotion.'
+                : 'No blocking code findings detected.',
               dupes > 0
                 ? 'Duplicate code detected. Please review and refactor where appropriate.'
                 : 'No duplication warnings.',
+              health > 0
+                ? 'Maintainability findings are reported for follow-up and do not block this run.'
+                : 'No maintainability findings.',
             ];
             const summaryBody = lines.join('\n');
 
             const { owner, repo } = context.repo;
 
             if (context.eventName === 'pull_request') {
-              const reportMarker = '<!-- fallow-full-report-main-pr -->';
+              const reportMarker = '<!-- fallow-full-report-pr -->';
               const summaryMarker = '<!-- fallow-summary -->';
               const reportPath = process.env.REPORT_PATH;
               let report = reportPath && fs.existsSync(reportPath) ? fs.readFileSync(reportPath, 'utf8') : 'No fallow report found.';
@@ -186,8 +218,10 @@ jobs:
                 `Actor: @${context.actor}\n\n` +
                 `Summary:\n` +
                 `- Fallow exit code: ${exitCode}\n` +
-                `- Dead code findings: ${dead}\n` +
+                `- Report valid: ${reportValid}\n` +
+                `- Blocking code findings: ${blocking}\n` +
                 `- Duplicate clone groups: ${dupes}\n\n` +
+                `- Maintainability findings: ${health}\n\n` +
                 '<details><summary>Open full fallow report</summary>\n\n' +
                 '```json\n' +
                 `${report}\n` +
@@ -209,7 +243,7 @@ jobs:
                 await github.rest.issues.createComment({ owner, repo, issue_number, body: reportBody });
               }
 
-              if (dead > 0 || dupes > 0 || exitCode !== '0') {
+              if (!reportValid || blocking > 0 || dupes > 0 || health > 0) {
                 const summary = `${summaryMarker}\n${summaryBody}`;
                 const existingSummary = comments.find((c) => c.body && c.body.includes(summaryMarker));
                 if (existingSummary) {
@@ -218,7 +252,7 @@ jobs:
                   await github.rest.issues.createComment({ owner, repo, issue_number, body: summary });
                 }
               }
-            } else if (dead > 0 || dupes > 0 || exitCode !== '0') {
+            } else if (!reportValid || blocking > 0 || dupes > 0 || health > 0) {
               await github.rest.repos.createCommitComment({
                 owner,
                 repo,
@@ -227,11 +261,12 @@ jobs:
               });
             }
 
-      - name: Fail when dead code is detected
-        if: always() && steps.bypass.outputs.bypass != 'true' && (steps.fallow.outputs.dead_code_count != '0' || steps.fallow.outputs.exit_code != '0')
+      - name: Fail when blocking Fallow findings are detected
+        if: always() && steps.bypass.outputs.bypass != 'true' && (steps.fallow.outputs.report_valid != 'true' || steps.fallow.outputs.blocking_code_count != '0')
         run: |
-          echo "❌ Blocking: dead code found (or fallow failed to run cleanly)."
-          echo "dead_code_count=${{ steps.fallow.outputs.dead_code_count }}"
+          echo "❌ Blocking: fallow reported blocking code findings or did not produce a valid report."
+          echo "blocking_code_count=${{ steps.fallow.outputs.blocking_code_count }}"
+          echo "report_valid=${{ steps.fallow.outputs.report_valid }}"
           echo "fallow_exit_code=${{ steps.fallow.outputs.exit_code }}"
           exit 1
 
@@ -245,7 +280,7 @@ jobs:
   ai-review-gate:
     needs: build-fallow
     runs-on: ubuntu-latest
-    if: always() && github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'master') && needs.build-fallow.outputs.bypass != 'true'
+    if: always() && github.event_name == 'pull_request' && github.base_ref == 'master' && needs.build-fallow.outputs.bypass != 'true'
 
     steps:
       - name: Post Copilot guidance + request reviewer
@@ -267,7 +302,7 @@ jobs:
               '2. Risks or potential regressions (if any), with severity.\n' +
               '3. Specific, actionable review comments tied to file paths.\n\n' +
               'Use the latest Fallow report comment in this PR as analysis context.\n' +
-              'Look for comment marker: <!-- fallow-full-report-main-pr --> and prioritize dead code or duplication findings from that JSON report.';
+              'Look for comment marker: <!-- fallow-full-report-pr --> and prioritize dead code or duplication findings from that JSON report.';
 
             const { owner, repo } = context.repo;
             const issue_number = context.payload.pull_request.number;

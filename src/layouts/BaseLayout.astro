@@ -1,30 +1,70 @@
 ---
-import SEOMetadata from 'astro-seo-metadata/SEOMetadata.astro';
 import { Font } from 'astro:assets';
-import siteLogo from '../assets/logo.png';
+import defaultSocialImage from '../assets/og-default.jpg';
 import { getSiteUrl } from '../utils/site';
+import {
+  absoluteSiteUrl,
+  SITE_DESCRIPTION,
+  SITE_LOCALE,
+  SITE_NAME,
+  serializeJsonLd,
+  truncateMetadata,
+  withTrailingSlash,
+} from '../utils/seo';
 import '../index.css';
+
+interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   keywords?: string[];
   type?: 'website' | 'article';
   structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
+  breadcrumbs?: BreadcrumbItem[];
+  canonical?: string | null;
+  noindex?: boolean;
+  includeSiteSchema?: boolean;
+  publishedTime?: string;
+  modifiedTime?: string;
+  author?: string;
+  authorUrl?: string;
 }
 
 const {
-  title = "Philosophy Spread | Exploring Wisdom, Inspiring Minds",
-  description = "Philosophy Spread explores timeless wisdom, logic modules, and philosophical insights. Join our community of thinkers.",
-  image = siteLogo.src,
+  title = `${SITE_NAME} | Exploring Wisdom, Inspiring Minds`,
+  description = SITE_DESCRIPTION,
+  image = defaultSocialImage.src,
+  imageAlt = `${SITE_NAME} — ${title}`,
+  imageWidth = image === defaultSocialImage.src ? defaultSocialImage.width : undefined,
+  imageHeight = image === defaultSocialImage.src ? defaultSocialImage.height : undefined,
   keywords = [],
   type = 'website',
   structuredData = [],
+  breadcrumbs = [],
+  canonical,
+  noindex = false,
+  includeSiteSchema,
+  publishedTime,
+  modifiedTime,
+  author,
+  authorUrl,
 } = Astro.props as Props;
 
 const siteUrl = getSiteUrl(Astro.site);
-const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
+const pagePath = withTrailingSlash(Astro.url.pathname);
+const canonicalUrl = canonical === null
+  ? null
+  : canonical
+    ? absoluteSiteUrl(canonical, siteUrl)
+    : absoluteSiteUrl(pagePath, siteUrl);
 const resolvedImageUrl = image.startsWith('http://') || image.startsWith('https://')
   ? image
   : new URL(image, siteUrl).toString();
@@ -42,36 +82,109 @@ const imageType = imagePathname.endsWith('.png')
           : imagePathname.endsWith('.svg')
             ? 'image/svg+xml'
             : undefined;
-const keywordsContent = keywords.join(', ');
+const keywordsContent = keywords.filter(Boolean).join(', ');
+const metaDescription = truncateMetadata(description, 160);
+const metaTitle = truncateMetadata(title, 70);
+// Keep one stable WebSite/Organization entity available to every indexable
+// page. Page descriptions belong on WebPage/Article; the site entity keeps a
+// single site-level description so structured-data consumers do not see a
+// different WebSite definition on every route.
+const shouldIncludeSiteSchema = includeSiteSchema ?? true;
+const organizationId = `${siteUrl.toString()}#organization`;
+const websiteId = `${siteUrl.toString()}#website`;
 
-const defaultStructuredData: Array<Record<string, unknown>> = [
-  {
+const defaultStructuredData: Array<Record<string, unknown>> = [];
+
+if (!noindex && shouldIncludeSiteSchema) {
+  defaultStructuredData.push(
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      '@id': websiteId,
+      name: SITE_NAME,
+      url: siteUrl.toString(),
+      description: SITE_DESCRIPTION,
+      inLanguage: 'en-US',
+      publisher: { '@id': organizationId },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      '@id': organizationId,
+      name: SITE_NAME,
+      url: siteUrl.toString(),
+      logo: {
+        '@type': 'ImageObject',
+        url: new URL('/favicon.svg', siteUrl).toString(),
+      },
+      sameAs: [
+        'https://www.linkedin.com/in/goeltanmay442/',
+        'https://www.instagram.com/gtanmay442',
+        'https://x.com/TanmayGoel442',
+      ],
+    },
+  );
+}
+
+if (!noindex && canonicalUrl) {
+  defaultStructuredData.push({
     '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: 'Philosophy Spread',
-    url: siteUrl.toString(),
-    description,
-  },
-  {
+    '@type': 'WebPage',
+    '@id': `${canonicalUrl}#webpage`,
+    name: title,
+    url: canonicalUrl,
+    description: metaDescription,
+    inLanguage: 'en-US',
+    ...(shouldIncludeSiteSchema ? { isPartOf: { '@id': websiteId } } : {}),
+    ...(imageWidth && imageHeight
+      ? {
+          primaryImageOfPage: {
+            '@type': 'ImageObject',
+            url: resolvedImageUrl,
+            width: imageWidth,
+            height: imageHeight,
+          },
+        }
+      : {}),
+    ...(publishedTime ? { datePublished: publishedTime } : {}),
+    ...(modifiedTime ? { dateModified: modifiedTime } : {}),
+    ...(author
+      ? {
+          author: {
+            '@type': 'Person',
+            name: author,
+            ...(authorUrl ? { url: authorUrl } : {}),
+          },
+        }
+      : {}),
+  });
+}
+
+if (!noindex && canonicalUrl && breadcrumbs.length > 0) {
+  defaultStructuredData.push({
     '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: 'Philosophy Spread',
-    url: siteUrl.toString(),
-    logo: new URL('/favicon.svg', siteUrl).toString(),
-    sameAs: [
-      'https://www.linkedin.com/in/goeltanmay442/',
-      'https://www.instagram.com/gtanmay442',
-      'https://x.com/TanmayGoel442',
-    ],
-  },
-];
+    '@type': 'BreadcrumbList',
+    '@id': `${canonicalUrl}#breadcrumb`,
+    itemListElement: breadcrumbs.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: absoluteSiteUrl(item.url, siteUrl),
+    })),
+  });
+}
 
 const additionalStructuredData = Array.isArray(structuredData)
   ? structuredData
   : structuredData
     ? [structuredData]
     : [];
-const combinedStructuredData = [...defaultStructuredData, ...additionalStructuredData];
+const combinedStructuredData = noindex
+  ? []
+  : [...defaultStructuredData, ...additionalStructuredData];
+const robotsContent = noindex
+  ? 'noindex, nofollow, noarchive'
+  : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 ---
 
 <!DOCTYPE html>
@@ -80,29 +193,38 @@ const combinedStructuredData = [...defaultStructuredData, ...additionalStructure
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <SEOMetadata
-      siteName={'Philosophy Spread'}
-      title={title}
-      description={description}
-      image={resolvedImageUrl}
-      favicon={'/favicon.svg'}
-      author="Philosophy Spread"
-      copyright="2026"
-      canonicalUrl={canonicalUrl}
-      type={type}
-      astroGenerator={true}
-    />
+    <title>{metaTitle}</title>
+    <meta name="description" content={metaDescription} />
+    <meta name="author" content={author ?? SITE_NAME} />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content={SITE_LOCALE} />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={metaTitle} />
+    <meta property="og:description" content={metaDescription} />
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+    <meta property="og:image" content={resolvedImageUrl} />
+    <meta property="og:image:alt" content={imageAlt} />
+    {imageWidth && <meta property="og:image:width" content={String(imageWidth)} />}
+    {imageHeight && <meta property="og:image:height" content={String(imageHeight)} />}
     <meta property="og:image:secure_url" content={resolvedImageUrl} />
     {imageType && <meta property="og:image:type" content={imageType} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={metaTitle} />
+    <meta name="twitter:description" content={metaDescription} />
     <meta name="twitter:image" content={resolvedImageUrl} />
+    <meta name="twitter:image:alt" content={imageAlt} />
+    {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+    {author && <meta property="article:author" content={authorUrl ?? author} />}
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" type="image/svg+xml" href="/favicon.svg" />
     {keywordsContent && <meta name="keywords" content={keywordsContent} />}
-    <meta name="robots" content="index, follow, max-image-preview:large" />
-    <meta name="googlebot" content="index, follow" />
+    <meta name="robots" content={robotsContent} />
+    <meta name="googlebot" content={robotsContent} />
     {combinedStructuredData.map((schema) => (
-      <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+      <script is:inline type="application/ld+json" set:html={serializeJsonLd(schema)} />
     ))}
     
     <link rel="preconnect" href="https://clerk.philosophyspread.live" crossorigin />

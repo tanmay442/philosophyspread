@@ -19,7 +19,7 @@ const {
 const { currentPage, lastPage, url } = page;
 
 const baseLinkClass =
-  'font-label text-xs uppercase tracking-widest border-2 border-secondary px-6 py-3 hover:bg-primary hover:text-on-primary transition-colors';
+  'font-label text-xs uppercase tracking-widest border-2 border-secondary px-6 py-3 hover:bg-primary hover:text-on-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
 const activeLinkClass = extraLinkClass
   ? `${baseLinkClass} ${extraLinkClass}`
   : baseLinkClass;
@@ -27,27 +27,27 @@ const disabledClass =
   'font-label text-xs uppercase tracking-widest border-2 border-secondary/30 text-secondary/30 px-6 py-3 cursor-not-allowed';
 ---
 
-<nav class="mt-16 flex justify-center items-center space-x-4">
+<nav class="mt-16 flex justify-center items-center space-x-4" aria-label="Pagination">
   {url.prev ? (
-    <a href={url.prev} class={activeLinkClass}>
+    <a href={url.prev} class={activeLinkClass} rel="prev" aria-label={`${prevLabel} page`}>
       &lt;- {prevLabel}
     </a>
   ) : (
-    <span class={disabledClass}>
+    <span class={disabledClass} aria-disabled="true">
       &lt;- {prevLabel}
     </span>
   )}
 
-  <span class="font-label text-xs tracking-widest text-secondary">
+  <span class="font-label text-xs tracking-widest text-secondary" aria-current="page" aria-label={`Page ${currentPage} of ${lastPage}`}>
     {currentPage} / {lastPage}
   </span>
 
   {url.next ? (
-    <a href={url.next} class={activeLinkClass}>
+    <a href={url.next} class={activeLinkClass} rel="next" aria-label={`${nextLabel} page`}>
       {nextLabel} -&gt;
     </a>
   ) : (
-    <span class={disabledClass}>
+    <span class={disabledClass} aria-disabled="true">
       {nextLabel} -&gt;
     </span>
   )}

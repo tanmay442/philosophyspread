@@ -6,5 +6,19 @@
     ".astro/**",
     "node_modules/**",
     ".wrangler/**"
-  ]
+  ],
+  "rules": {
+    "unused-files": "error",
+    "unused-exports": "error",
+    "unused-types": "error",
+    "unused-dependencies": "error",
+    "unused-dev-dependencies": "error",
+    "unused-enum-members": "error",
+    "unused-class-members": "error",
+    "unresolved-imports": "error",
+    "unlisted-dependencies": "error",
+    "duplicate-exports": "error",
+    "circular-dependencies": "error",
+    "boundary-violation": "error"
+  }
 }

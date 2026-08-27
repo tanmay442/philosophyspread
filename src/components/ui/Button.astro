@@ -3,12 +3,19 @@ interface Props {
   variant?: 'primary' | 'secondary' | 'tertiary';
   href?: string;
   class?: string;
+  type?: 'button' | 'submit' | 'reset';
   'data-modal'?: string;
 }
 
-const { variant = 'primary', href, class: className = '', ...rest } = Astro.props;
+const {
+  variant = 'primary',
+  href,
+  type = 'button',
+  class: className = '',
+  ...rest
+} = Astro.props as Props;
 
-const baseStyles = 'font-label text-xs uppercase transition-all duration-200 border-2 border-secondary active:translate-y-1 active:shadow-none';
+const baseStyles = 'font-label text-xs uppercase transition-all duration-200 border-2 border-secondary active:translate-y-1 active:shadow-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
 
 const variants = {
   primary: 'bg-primary-container text-secondary hover:bg-primary hover:text-on-primary px-6 py-2',
@@ -24,7 +31,7 @@ const classes = `${baseStyles} ${variants[variant]} ${className}`;
     <slot />
   </a>
 ) : (
-  <button class={classes} {...rest}>
+  <button class={classes} type={type} {...rest}>
     <slot />
   </button>
 )}
