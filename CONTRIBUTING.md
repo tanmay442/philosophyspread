@@ -21,7 +21,7 @@ You can contribute in three ways:
 
 This repository uses a single combined GitHub Actions workflow:
 
-### Build + Fallow + AI Review Guidance
+### Build + Fallow
 File: `.github/workflows/build-fallow.yml`
 
 **Runs on:**
@@ -49,25 +49,8 @@ File: `.github/workflows/build-fallow.yml`
 - Duplicate findings > 0 -> workflow does not fail; it warns and tags the actor
 
 **PR to `master` extra behavior:**
-- Posts/updates a PR comment with a short summary (exit code, blocking code count, duplicate clone groups, and maintainability findings) plus the full fallow JSON report so Copilot can use it as context.
+- Posts/updates one PR comment containing a short summary (exit code, blocking code count, duplicate clone groups, and maintainability findings) plus the full Fallow JSON report in a collapsible section.
 - The comment uses marker `<!-- fallow-full-report-pr -->` for stable discovery.
-- When issues are detected, the workflow updates a single summary comment (`<!-- fallow-summary -->`) instead of posting a new one each run.
-
-**Embedded AI review job (`ai-review-gate`)**
-
-**Runs only when:**
-- Event is `pull_request`
-- Target branch is `master`
-- Maintainer bypass is not active
-- It waits for `build-fallow` (`needs: build-fallow`) so the fallow report comment is available first.
-
-**What it does (normal path):**
-1. Posts/updates an `@copilot` guidance comment
-2. Best-effort requests Copilot as reviewer
-3. Relies on the fallow report PR comment as analysis context (`<!-- fallow-full-report-pr -->`)
-
-**Fail/block rules:**
-- This AI guidance job does not block merges; it posts guidance and requests Copilot as reviewer.
 
 ## Maintainer-only emergency bypass
 
@@ -83,10 +66,9 @@ If anyone else uses this flag, it has no effect.
 ## Branch protection recommendation
 
 On `master`, require these checks:
-- `Build + Fallow + AI Review Guidance / build-fallow`
-- `Build + Fallow + AI Review Guidance / ai-review-gate`
+- `Build + Fallow / build-fallow`
 
-This ensures failing build/dead-code states block merge, while Copilot guidance runs after fallow context is posted.
+This ensures failing build/dead-code states block merge while CodeRabbit remains the automated review tool.
 
 ---
 

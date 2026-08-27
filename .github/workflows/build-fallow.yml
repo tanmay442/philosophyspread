@@ -1,4 +1,4 @@
-name: Build + Fallow + AI Review Guidance
+name: Build + Fallow
 
 on:
   push:
@@ -10,7 +10,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
   issues: write
 
 concurrency:
@@ -20,8 +19,6 @@ concurrency:
 jobs:
   build-fallow:
     runs-on: ubuntu-latest
-    outputs:
-      bypass: ${{ steps.bypass.outputs.bypass }}
 
     steps:
       - name: Checkout
@@ -159,7 +156,7 @@ jobs:
           # Never fail here; gating is done after notification/comment steps.
           exit 0
 
-      - name: Post fallow summary + report comment
+      - name: Post single fallow report comment
         if: always() && steps.bypass.outputs.bypass != 'true'
         uses: actions/github-script@v9
         env:
@@ -203,7 +200,10 @@ jobs:
 
             if (context.eventName === 'pull_request') {
               const reportMarker = '<!-- fallow-full-report-pr -->';
-              const summaryMarker = '<!-- fallow-summary -->';
+              const staleMarkers = [
+                '<!-- fallow-summary -->',
+                '<!-- ai-review-gate-guidance -->',
+              ];
               const reportPath = process.env.REPORT_PATH;
               let report = reportPath && fs.existsSync(reportPath) ? fs.readFileSync(reportPath, 'utf8') : 'No fallow report found.';
 
@@ -214,14 +214,23 @@ jobs:
 
               const reportBody =
                 `${reportMarker}\n` +
-                '# Fallow Report (full JSON)\n\n' +
+                '# Fallow Report\n\n' +
                 `Actor: @${context.actor}\n\n` +
-                `Summary:\n` +
+                `## Summary\n\n` +
                 `- Fallow exit code: ${exitCode}\n` +
                 `- Report valid: ${reportValid}\n` +
                 `- Blocking code findings: ${blocking}\n` +
-                `- Duplicate clone groups: ${dupes}\n\n` +
+                `- Duplicate clone groups: ${dupes}\n` +
                 `- Maintainability findings: ${health}\n\n` +
+                (blocking > 0
+                  ? 'Blocking code findings were found; this run will be failed to block merge/promotion.\n\n'
+                  : 'No blocking code findings detected.\n\n') +
+                (dupes > 0
+                  ? 'Duplicate code detected. Please review and refactor where appropriate.\n\n'
+                  : 'No duplication warnings.\n\n') +
+                (health > 0
+                  ? 'Maintainability findings are reported for follow-up and do not block this run.\n\n'
+                  : 'No maintainability findings.\n\n') +
                 '<details><summary>Open full fallow report</summary>\n\n' +
                 '```json\n' +
                 `${report}\n` +
@@ -243,14 +252,10 @@ jobs:
                 await github.rest.issues.createComment({ owner, repo, issue_number, body: reportBody });
               }
 
-              if (!reportValid || blocking > 0 || dupes > 0 || health > 0) {
-                const summary = `${summaryMarker}\n${summaryBody}`;
-                const existingSummary = comments.find((c) => c.body && c.body.includes(summaryMarker));
-                if (existingSummary) {
-                  await github.rest.issues.updateComment({ owner, repo, comment_id: existingSummary.id, body: summary });
-                } else {
-                  await github.rest.issues.createComment({ owner, repo, issue_number, body: summary });
-                }
+              // Remove comments created by older workflow versions.
+              for (const comment of comments.filter((c) =>
+                c.body && staleMarkers.some((marker) => c.body.includes(marker)))) {
+                await github.rest.issues.deleteComment({ owner, repo, comment_id: comment.id });
               }
             } else if (!reportValid || blocking > 0 || dupes > 0 || health > 0) {
               await github.rest.repos.createCommitComment({
@@ -276,59 +281,3 @@ jobs:
           echo "⚠️ Duplicate code warning: new clone_groups=${{ steps.fallow.outputs.duplicate_count }}"
           echo "Known-intentional groups are filtered; see .github/workflows/build-fallow.yml for the list."
           echo "Please review duplication findings in the log and refactor if needed."
-
-  ai-review-gate:
-    needs: build-fallow
-    runs-on: ubuntu-latest
-    if: always() && github.event_name == 'pull_request' && github.base_ref == 'master' && needs.build-fallow.outputs.bypass != 'true'
-
-    steps:
-      - name: Post Copilot guidance + request reviewer
-        uses: actions/github-script@v9
-        with:
-          script: |
-            const marker = '<!-- ai-review-gate-guidance -->';
-            const body =
-              `${marker}\n` +
-              '# AI Review Guidance\n\n' +
-              '@copilot Please review this PR.\n\n' +
-              'Focus:\n' +
-              '- Correctness, safety, and edge cases.\n' +
-              '- Consistency with existing patterns and architecture.\n' +
-              '- Maintainability: clear naming, minimal coupling, and straightforward control flow.\n' +
-              '- Performance only when there is clear impact.\n\n' +
-              'Required output:\n' +
-              '1. A brief summary of what changed (1-3 bullets).\n' +
-              '2. Risks or potential regressions (if any), with severity.\n' +
-              '3. Specific, actionable review comments tied to file paths.\n\n' +
-              'Use the latest Fallow report comment in this PR as analysis context.\n' +
-              'Look for comment marker: <!-- fallow-full-report-pr --> and prioritize dead code or duplication findings from that JSON report.';
-
-            const { owner, repo } = context.repo;
-            const issue_number = context.payload.pull_request.number;
-
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner,
-              repo,
-              issue_number,
-              per_page: 100,
-            });
-
-            const existing = comments.find((c) => c.body && c.body.includes(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
-            } else {
-              await github.rest.issues.createComment({ owner, repo, issue_number, body });
-            }
-
-            try {
-              await github.rest.pulls.requestReviewers({
-                owner,
-                repo,
-                pull_number: issue_number,
-                reviewers: ['copilot'],
-              });
-              core.info('Requested copilot as reviewer.');
-            } catch (error) {
-              core.warning(`Could not request copilot reviewer automatically: ${error.message}`);
-            }
