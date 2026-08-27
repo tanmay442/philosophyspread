@@ -3,18 +3,24 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": ">=22.12.0",
+    "pnpm": ">=10"
+  },
   "scripts": {
     "dev": "astro dev --port=3000 --host=0.0.0.0",
     "build": "astro build",
     "preview": "astro preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
+    "check": "astro check",
+    "test": "tsx --test tests/*.test.ts",
     "generate-types": "wrangler types"
   },
   "dependencies": {
     "@clerk/astro": "^4.0.19",
-    "astro": "^7.2.7",
-    "astro-seo-metadata": "^0.6.0"
+    "astro": "^7.2.7"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
@@ -22,15 +28,18 @@
     "@astrojs/mdx": "^7.0.8",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
-    "@types/express": "^4.17.25",
     "@types/node": "^22.20.1",
     "fallow": "^2.104.0",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.12",
     "typescript": "~5.8.3",
+    "vite": "^8.2.2",
     "wrangler": "^4.126.0"
   },
-  "overrides": {
-    "vite": "^8"
+  "pnpm": {
+    "overrides": {
+      "vite": "^8",
+      "@clerk/astro>nanoid": "5.1.16"
+    }
   }
 }

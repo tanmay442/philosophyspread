@@ -20,7 +20,7 @@ const { latestLogic, latestBit, latestEssay } = Astro.props;
       description={latestLogic.data.description}
       bgClass="bg-primary-container"
       hoverBgClass="hover:bg-tertiary-container hover:-translate-y-1"
-      href={`/logic-modules/${latestLogic.id}`}
+      href={`/logic-modules/${latestLogic.id}/`}
     />
   )}
   
@@ -31,7 +31,7 @@ const { latestLogic, latestBit, latestEssay } = Astro.props;
       description={truncateText(latestBit.data.content, 100)}
       bgClass="bg-surface-container-lowest"
       hoverBgClass="hover:bg-primary/10 hover:-translate-y-1"
-      href={`/bits/${latestBit.id}`}
+      href={`/bits/${latestBit.id}/`}
     />
   )}
   
@@ -42,7 +42,7 @@ const { latestLogic, latestBit, latestEssay } = Astro.props;
       description={latestEssay.data.description}
       bgClass="bg-tertiary"
       hoverBgClass="hover:bg-tertiary-container hover:-translate-y-1"
-      href={`/essays/${latestEssay.id}`}
+      href={`/essays/${latestEssay.id}/`}
     />
   )}
 </div>

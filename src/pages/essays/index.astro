@@ -1,5 +1,8 @@
 ---
 export const prerender = true;
 
-return Astro.redirect('/essays/page/1', 301);
+// Render the first archive page at the canonical collection root. Rewriting
+// keeps the original `/essays/` URL in the address bar and avoids the old
+// prerendered meta-refresh page.
+return Astro.rewrite('/essays/page/1/');
 ---

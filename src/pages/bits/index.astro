@@ -1,5 +1,7 @@
 ---
 export const prerender = true;
 
-return Astro.redirect('/bits/page/1', 301);
+// Render the first archive page at the canonical collection root instead of
+// emitting a prerendered meta-refresh redirect.
+return Astro.rewrite('/bits/page/1/');
 ---

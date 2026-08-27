@@ -24,18 +24,27 @@ const sortedEssays = [...essays].sort((a, b) => b.data.pubDate.valueOf() - a.dat
 
 const page = resolvePage(sortedEssays, Astro.params.page, ESSAYS_PAGE_SIZE, '/essays');
 if (!page) {
-  return Astro.rewrite('/404');
+  return Astro.rewrite('/404/');
 }
+
+const archivePath = '/essays/';
+const canonicalPath = page.currentPage === 1 ? archivePath : `/essays/page/${page.currentPage}/`;
 ---
 
 <BaseLayout
   title={`Essays - Page ${page.currentPage} | Philosophy Spread`}
   description={`Browse page ${page.currentPage} of Philosophy Spread essays: long-form philosophical writing on logic, ethics, and critical thought.`}
   keywords={['philosophy essays', 'critical thinking', 'long-form philosophy', 'logic']}
+  canonical={canonicalPath}
+  breadcrumbs={[
+    { name: 'Home', url: '/' },
+    { name: 'Essays', url: archivePath },
+    ...(page.currentPage > 1 ? [{ name: `Page ${page.currentPage}`, url: canonicalPath }] : []),
+  ]}
 >
   <Header />
   
-  <main class="pt-32 px-6 md:px-12 pb-20">
+  <main id="main-content" class="pt-32 px-6 md:px-12 pb-20">
     <header class="max-w-7xl mx-auto mb-16">
       <div class="font-label text-xs text-secondary mb-4 tracking-[0.2em] uppercase">[ The Archives ]</div>
       <h1 class="text-6xl md:text-8xl font-bold italic tracking-tighter text-secondary mb-6">Essays</h1>
@@ -56,7 +65,7 @@ if (!page) {
             date={essay.data.pubDate}
             imageSrc={essay.data.imageSrc}
             imageAlt={essay.data.imageAlt}
-            href={`/essays/${essay.id}`}
+            href={`/essays/${essay.id}/`}
           />
         ))}
       </div>

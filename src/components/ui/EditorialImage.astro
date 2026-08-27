@@ -1,0 +1,61 @@
+---
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import boredomImage from '../../assets/editorial/boredom.webp';
+import choiceImage from '../../assets/editorial/choice.avif';
+import consciousnessImage from '../../assets/editorial/consciousness.avif';
+import logicImage from '../../assets/editorial/logic.avif';
+import metaphysicsImage from '../../assets/editorial/metaphysics.avif';
+import moralityImage from '../../assets/editorial/morality.avif';
+
+interface Props {
+  src: string;
+  alt: string;
+  class?: string;
+  sizes?: string;
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high' | 'low' | 'auto';
+}
+
+const { src, alt, class: className = '', sizes = '100vw', loading = 'lazy', fetchpriority } = Astro.props as Props;
+
+const editorialImages: Record<string, ImageMetadata> = {
+  '/boredom.png': boredomImage,
+  '/choice.avif': choiceImage,
+  '/consciousness.avif': consciousnessImage,
+  '/logic.avif': logicImage,
+  '/metaphysics.avif': metaphysicsImage,
+  '/morality.avif': moralityImage,
+};
+
+const image = editorialImages[src];
+const widths = image
+  ? [320, 640, 960, 1280].filter((width) => width < image.width).concat(image.width)
+  : [];
+---
+
+{image ? (
+  <Picture
+    src={image}
+    alt={alt}
+    class={className}
+    pictureAttributes={{ class: 'block h-full w-full' }}
+    widths={widths}
+    sizes={sizes}
+    formats={['avif', 'webp']}
+    loading={loading}
+    decoding="async"
+    referrerpolicy="no-referrer"
+    fetchpriority={fetchpriority}
+  />
+) : (
+  <img
+    src={src}
+    alt={alt}
+    class={className}
+    loading={loading}
+    decoding="async"
+    referrerpolicy="no-referrer"
+    fetchpriority={fetchpriority}
+  />
+)}

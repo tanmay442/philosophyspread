@@ -1,0 +1,56 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import Icon from '../components/ui/Icon.astro';
+import Prose from '../components/ui/Prose.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  keywords: string[];
+  lastUpdated: Date;
+}
+
+const { title, description, keywords, lastUpdated } = Astro.props as Props;
+const formattedLastUpdated = lastUpdated.toLocaleDateString('en-US', {
+  timeZone: 'UTC',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout
+  title={`${title} | Philosophy Spread`}
+  description={description}
+  keywords={keywords}
+  breadcrumbs={[{ name: 'Home', url: '/' }, { name: title, url: Astro.url.pathname }]}
+>
+  <Header />
+
+  <main id="main-content" class="pt-32 px-6 md:px-12 pb-20 max-w-4xl mx-auto">
+    <article>
+      <header class="mb-12">
+        <a href="/" class="inline-flex items-center gap-2 text-primary hover:text-secondary transition-colors mb-6 font-label text-xs uppercase tracking-widest">
+          <Icon name="arrow_back" class="h-4 w-4" />
+          Back to Home
+        </a>
+
+        <h1 class="text-4xl md:text-6xl font-bold italic tracking-tighter text-secondary mb-4">
+          {title}
+        </h1>
+
+        <p class="text-on-surface-variant leading-relaxed font-body">
+          Last Updated: {formattedLastUpdated}
+        </p>
+      </header>
+
+      <Prose variant="page">
+        <slot />
+      </Prose>
+    </article>
+  </main>
+
+  <Footer />
+</BaseLayout>

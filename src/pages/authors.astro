@@ -1,68 +1,25 @@
 ---
-// Fallow dup:2cf8e3a5, dup:0dad0c89: the page skeleton below (Header + article header +
-// Back-to-Home link + Prose + Footer) is shared with contribute.astro and terms.astro.
-// These are stable static content pages that rarely change; extracting a shared layout
-// component would add indirection for 3 simple pages.
-// Listed in .github/workflows/build-fallow.yml as known-intentional clone groups.
 export const prerender = true;
 
 import { getCollection, render } from 'astro:content';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/layout/Header.astro';
-import Footer from '../components/layout/Footer.astro';
+import ContentPageLayout from '../layouts/ContentPageLayout.astro';
 import Blockquote from '../components/mdx/Blockquote.astro';
-import Icon from '../components/ui/Icon.astro';
-import Prose from '../components/ui/Prose.astro';
 
 const pages = await getCollection('pages');
 const authorsPage = pages.find((entry) => entry.id === 'authors');
 
 if (!authorsPage) {
-  return Astro.rewrite('/404');
+  return Astro.rewrite('/404/');
 }
 
 const { Content } = await render(authorsPage);
-const lastUpdated = authorsPage.data.lastUpdated.toLocaleDateString('en-US', {
-  timeZone: 'UTC',
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-});
-
-const components = {
-  Blockquote,
-};
 ---
 
-<BaseLayout
-  title={`${authorsPage.data.title} | Philosophy Spread`}
+<ContentPageLayout
+  title={authorsPage.data.title}
   description="Browse the listed authors at Philosophy Spread and access their provided profile links."
   keywords={['authors', 'philosophy spread', 'contributors']}
+  lastUpdated={authorsPage.data.lastUpdated}
 >
-  <Header />
-  
-  <main class="pt-32 px-6 md:px-12 pb-20 max-w-4xl mx-auto">
-    <article>
-      <header class="mb-12">
-        <a href="/" class="inline-flex items-center gap-2 text-primary hover:text-secondary transition-colors mb-6 font-label text-xs uppercase tracking-widest">
-          <Icon name="arrow_back" class="h-4 w-4" />
-          Back to Home
-        </a>
-        
-        <h1 class="text-4xl md:text-6xl font-bold italic tracking-tighter text-secondary mb-4">
-          {authorsPage.data.title}
-        </h1>
-        
-        <p class="text-on-surface-variant leading-relaxed font-body">
-          Last Updated: {lastUpdated}
-        </p>
-      </header>
-
-      <Prose variant="page">
-        <Content components={components} />
-      </Prose>
-    </article>
-  </main>
-
-  <Footer />
-</BaseLayout>
+  <Content components={{ Blockquote }} />
+</ContentPageLayout>

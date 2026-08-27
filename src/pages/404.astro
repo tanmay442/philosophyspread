@@ -22,10 +22,13 @@ const requestedPath = Astro.url.pathname;
   title="404 | Content Not Found | Philosophy Spread"
   description="The page you were looking for could not be found. Explore the latest logic modules, idea bits, and essays from Philosophy Spread."
   keywords={['404', 'not found', 'philosophy spread']}
+  canonical={null}
+  noindex
+  includeSiteSchema={false}
 >
   <Header />
 
-  <main class="pt-20">
+  <main id="main-content" class="pt-20">
     <section class="min-h-[calc(100dvh-80px)] grid grid-cols-1 md:grid-cols-10 border-b-2 border-secondary">
       <div class="md:col-span-6 flex flex-col justify-center p-8 md:p-12 lg:p-24 border-b-2 md:border-b-0 md:border-r-2 border-secondary bg-surface-container-lowest">
         <span class="font-label text-xs uppercase tracking-widest text-primary mb-8">
@@ -52,10 +55,10 @@ const requestedPath = Astro.url.pathname;
             <Icon name="arrow_back" class="h-4 w-4" />
             01. RETURN HOME
           </a>
-          <a href="/essays/page/1" class="hover:text-primary transition-colors italic">
+          <a href="/essays/" class="hover:text-primary transition-colors italic">
             02. BROWSE ESSAYS
           </a>
-          <a href="/contribute" class="hover:text-primary transition-colors italic">
+          <a href="/contribute/" class="hover:text-primary transition-colors italic">
             03. CONTRIBUTE
           </a>
         </div>

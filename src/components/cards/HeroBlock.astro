@@ -30,8 +30,11 @@ const {
 } = props;
 const href = 'href' in props ? props.href : undefined;
 
-const blockClass = `block flex-1 p-8 border-b-2 border-secondary transition-all duration-300 cursor-pointer group no-underline hover:no-underline focus:no-underline ${bgClass} ${hoverBgClass} ${hoverTextClass} ${className ?? ''}`.trim();
-const tagClass = `block mb-4 text-primary ${hoverTextClass ? 'group-hover:text-on-primary transition-colors' : ''}`;
+const blockClass = `block flex-1 p-8 border-b-2 border-secondary transition-all duration-300 group no-underline hover:no-underline focus:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary ${href ? 'cursor-pointer' : ''} ${bgClass} ${hoverBgClass} ${hoverTextClass} ${className ?? ''}`.trim();
+// The orange hero panel is too close to the green accent for small label text.
+// Use the secondary ink there while preserving the accent on the lighter panels.
+const tagColorClass = bgClass.includes('bg-tertiary') ? 'text-secondary' : 'text-primary';
+const tagClass = `block mb-4 ${tagColorClass} ${hoverTextClass ? 'group-hover:text-on-primary transition-colors' : ''}`;
 const descriptionClass = `font-body text-lg opacity-80 ${hoverTextClass ? 'group-hover:opacity-100' : ''}`;
 
 // Fallow dup:d9ffbf4e: the <a> and <div> branches below share identical inner content by design.

@@ -44,21 +44,25 @@ const { name, class: className = '', title } = Astro.props as Props;
 const icon: IconDefinition = iconPaths[name];
 const paths = icon.paths;
 const filled = icon.fill ?? false;
-const decorative = !title;
+const svgAttributes = {
+  fill: filled ? 'currentColor' : 'none',
+  stroke: filled ? 'none' : 'currentColor',
+  'stroke-width': filled ? undefined : '2',
+  'stroke-linecap': 'round',
+  'stroke-linejoin': 'round',
+} as const;
+const accessibilityAttributes = title
+  ? ({ role: 'img' } as const)
+  : ({ 'aria-hidden': 'true' } as const);
 ---
 
 <svg
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 24 24"
-  fill={filled ? 'currentColor' : 'none'}
-  stroke={filled ? 'none' : 'currentColor'}
-  stroke-width={filled ? undefined : '2'}
-  stroke-linecap="round"
-  stroke-linejoin="round"
   class={className}
-  aria-hidden={decorative ? 'true' : undefined}
-  role={decorative ? undefined : 'img'}
+  {...svgAttributes}
+  {...accessibilityAttributes}
 >
-  {title && <title>{title}</title>}
-  {paths.map((path) => <path d={path} />)}
+  <title>{title ?? ''}</title>
+  <path d={paths.join(' ')} />
 </svg>

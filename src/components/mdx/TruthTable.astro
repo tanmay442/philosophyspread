@@ -7,28 +7,29 @@ interface Row {
 interface Props {
   variables: string[];
   rows: Row[];
+  caption?: string;
 }
 
-const { variables, rows } = Astro.props;
+const { variables, rows, caption = 'Truth table' } = Astro.props as Props;
 
-function getColor(value: string): string {
-  const normalized = value.trim().toUpperCase();
-  if (normalized === 'T' || normalized === 'TRUE') {
-    return 'text-[#166534] bg-[#DCFCE7]';
-  }
-  if (normalized === 'F' || normalized === 'FALSE') {
-    return 'text-[#991B1B] bg-[#FEE2E2]';
-  }
-  return 'text-secondary bg-surface-container-low';
-}
+const colorByValue: Record<string, string> = {
+  T: 'text-[#166534] bg-[#DCFCE7]',
+  TRUE: 'text-[#166534] bg-[#DCFCE7]',
+  F: 'text-[#991B1B] bg-[#FEE2E2]',
+  FALSE: 'text-[#991B1B] bg-[#FEE2E2]',
+};
+
+const getColor = (value: string) =>
+  colorByValue[value.trim().toUpperCase()] ?? 'text-secondary bg-surface-container-low';
 ---
 
 <div class="my-8 overflow-x-auto">
   <table class="w-full text-left border-collapse border-2 border-secondary">
+    <caption class="sr-only">{caption}</caption>
     <thead>
       <tr class="bg-surface-container">
         {variables.map((variable) => (
-          <th class="p-2 md:p-3 font-label text-xs uppercase tracking-widest text-primary text-center border border-secondary/50">
+          <th scope="col" class="p-2 md:p-3 font-label text-xs uppercase tracking-widest text-primary text-center border border-secondary/50">
             {variable}
           </th>
         ))}

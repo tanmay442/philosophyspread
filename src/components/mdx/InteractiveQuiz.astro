@@ -1,4 +1,6 @@
 ---
+import { buildQuizKey } from '../../utils/quiz';
+
 interface Question {
   question: string;
   options: string[];
@@ -7,27 +9,36 @@ interface Question {
 }
 
 interface Props {
+  id: string;
   questions: Question[];
 }
 
-const { questions } = Astro.props;
+const { id, questions } = Astro.props;
 const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+const quizKey = buildQuizKey(id, questions);
 ---
 
 <div class="my-12 space-y-12 quiz-container">
   {questions.map((q, qIndex) => (
-    <div class="border-2 border-outline p-8 bg-surface-container-lowest relative question-block" data-question-index={qIndex}>
-      <div class="absolute -top-3 -left-3 bg-primary text-on-primary font-label text-xs px-3 py-1 border-2 border-outline">
+    <div
+      class="border-2 border-outline p-8 bg-surface-container-lowest relative question-block"
+      data-question-index={qIndex}
+      role="group"
+      aria-labelledby={`quiz-${quizKey}-question-${qIndex}`}
+    >
+      <div aria-hidden="true" class="absolute -top-3 -left-3 bg-primary text-on-primary font-label text-xs px-3 py-1 border-2 border-outline">
         Q{qIndex + 1}
       </div>
       
-      <h4 class="font-headline text-2xl mb-6 text-on-surface" set:html={q.question}></h4>
+      <h3 id={`quiz-${quizKey}-question-${qIndex}`} class="font-headline text-2xl mb-6 text-on-surface" set:html={q.question}></h3>
       
       <div class="space-y-3 options-container">
         {q.options.map((opt, oIndex) => (
           <button 
-            class="w-full text-left border-2 border-outline p-4 flex items-center transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:bg-surface-container-low option-btn group cursor-pointer"
+            type="button"
+            class="w-full text-left border-2 border-outline p-4 flex items-center motion-safe:transition-all motion-safe:duration-200 motion-safe:ease-in-out motion-safe:transform motion-safe:hover:scale-[1.02] hover:bg-surface-container-low option-btn group cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             data-correct={oIndex === q.correctIndex ? 'true' : 'false'}
+            aria-describedby={`quiz-${quizKey}-feedback-${qIndex}`}
           >
             <span class="font-label text-xs text-primary w-8 shrink-0 group-hover:scale-110 transition-transform option-letter">{letters[oIndex]}.</span>
             <span class="font-body text-lg text-on-surface" set:html={opt}></span>
@@ -35,9 +46,9 @@ const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
         ))}
       </div>
       
-      <div class="hidden explanation-template" set:html={q.feedback}></div>
+      <div class="hidden explanation-template" aria-hidden="true" set:html={q.feedback}></div>
 
-      <div class="mt-4 p-4 text-sm hidden feedback-container transition-all duration-300">
+      <div id={`quiz-${quizKey}-feedback-${qIndex}`} class="mt-4 p-4 text-sm hidden motion-safe:transition-all motion-safe:duration-300 feedback-container" role="status" aria-live="polite" aria-atomic="true">
         <span class="feedback-content font-body text-base"></span>
       </div>
     </div>
@@ -102,7 +113,8 @@ const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
             feedbackContent.innerHTML = explanationHtml;
             
             options.forEach(o => {
-              o.classList.remove('cursor-pointer', 'hover:scale-[1.02]', 'hover:bg-surface-container-low');
+              (o as HTMLButtonElement).disabled = true;
+              o.classList.remove('cursor-pointer', 'motion-safe:hover:scale-[1.02]', 'hover:bg-surface-container-low');
               o.classList.add('cursor-not-allowed');
             });
           } else {
@@ -114,7 +126,7 @@ const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
             }
             
             feedback.className = 'mt-4 p-4 text-sm block transition-all duration-300 bg-tertiary-container text-secondary feedback-container';
-            feedbackContent.innerHTML = "Not quite. Think about the structure and truth of the premises, then try again!";
+            feedbackContent.textContent = 'Not quite. Think about the structure and truth of the premises, then try again!';
           }
         });
       });

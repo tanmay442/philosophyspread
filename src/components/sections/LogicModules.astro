@@ -1,5 +1,5 @@
 ---
-// Fallow dup:0106bc70: the card grid below mirrors logic-modules/page/[page].astro by design.
+// Fallow dup:32f5b325: the card grid below mirrors logic-modules/page/[page].astro by design.
 // The homepage section and the paginated index page render the same LogicCard markup but diverge
 // in surrounding layout (header/footer, pagination, section chrome). Extracting just the grid
 // would leave two thin wrappers. Listed in .github/workflows/build-fallow.yml as known-intentional.
@@ -21,7 +21,7 @@ const { logicModules } = Astro.props;
         <p class="font-label text-sm text-primary mb-2 uppercase tracking-[0.3em]">Foundation</p>
         <h2 class="font-headline text-5xl">Master the Fundamentals</h2>
       </div>
-        <a href="/logic-modules/page/1" class="hidden md:flex font-label text-xs text-secondary uppercase tracking-[0.3em] hover:text-primary transition-colors items-center group no-underline hover:no-underline focus:no-underline">
+        <a href="/logic-modules/" class="hidden md:flex font-label text-xs text-secondary uppercase tracking-[0.3em] hover:text-primary transition-colors items-center group no-underline hover:no-underline focus:no-underline">
         View All Modules 
         <Icon name="arrow_forward" class="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
       </a>
@@ -29,7 +29,7 @@ const { logicModules } = Astro.props;
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
       {logicModules.map((module) => (
-        <a href={`/logic-modules/${module.id}`} class="block group no-underline hover:no-underline focus:no-underline">
+        <a href={`/logic-modules/${module.id}/`} class="block group no-underline hover:no-underline focus:no-underline">
           <LogicCard 
             moduleNumber={module.data.moduleNumber}
             title={module.data.title} 
@@ -40,7 +40,7 @@ const { logicModules } = Astro.props;
     </div>
 
     <div class="mt-8 flex md:hidden justify-center">
-      <a href="/logic-modules/page/1" class="font-label text-xs text-secondary uppercase tracking-[0.3em] hover:text-primary transition-colors flex items-center group no-underline hover:no-underline focus:no-underline">
+      <a href="/logic-modules/" class="font-label text-xs text-secondary uppercase tracking-[0.3em] hover:text-primary transition-colors flex items-center group no-underline hover:no-underline focus:no-underline">
         View All Modules 
         <Icon name="arrow_forward" class="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
       </a>

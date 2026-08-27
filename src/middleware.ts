@@ -1,35 +1,94 @@
 import { clerkMiddleware } from '@clerk/astro/server';
 import type { MiddlewareHandler } from 'astro';
+import { getLegacyArchiveRedirectPath, shouldSkipClerkMiddleware } from './utils/middleware';
 
-const SKIP_PREFIXES = ['/_astro/'] as const;
-const SKIP_EXACT = new Set(['/sitemap.xml', '/robots.txt', '/favicon.svg']);
-const SKIP_EXTENSION = /\.(?:png|jpe?g|gif|svg|webp|avif|ico|css|js|map|woff2?|ttf|eot|mp4|webm|mp3|wav)$/i;
+const SECURITY_HEADERS: Readonly<Record<string, string>> = {
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'SAMEORIGIN',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+};
 
-const shouldSkipMiddleware = (pathname: string): boolean => {
-  if (SKIP_EXACT.has(pathname)) {
-    return true;
+const addSecurityHeaders = (response: Response): Response => {
+  const headers = new Headers(response.headers);
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+    if (!headers.has(name)) {
+      headers.set(name, value);
+    }
   }
-  if (SKIP_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
-    return true;
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+};
+
+const isLocalHost = (hostname: string): boolean =>
+  hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]';
+
+const redirectHttpToHttps = (context: Parameters<MiddlewareHandler>[0]): Response | undefined => {
+  // Cloudflare forwards the original protocol in this header. Only redirect
+  // explicit production HTTP requests; absent headers and local development
+  // must remain usable over plain HTTP.
+  if (context.isPrerendered) {
+    return undefined;
   }
-  return SKIP_EXTENSION.test(pathname);
+
+  const forwardedProto = context.request.headers.get('x-forwarded-proto');
+  if (forwardedProto !== 'http' || isLocalHost(context.url.hostname)) {
+    return undefined;
+  }
+
+  const location = new URL(context.request.url);
+  location.protocol = 'https:';
+  return Response.redirect(location, 308);
+};
+
+const redirectLegacyArchiveAlias = (
+  context: Parameters<MiddlewareHandler>[0],
+): Response | undefined => {
+  const redirectPath = getLegacyArchiveRedirectPath(context.url.pathname);
+  return redirectPath ? Response.redirect(new URL(redirectPath, context.url), 301) : undefined;
+};
+
+const resolveRequestRedirect = (
+  context: Parameters<MiddlewareHandler>[0],
+): Response | undefined => {
+  const httpsRedirect = redirectHttpToHttps(context);
+  return httpsRedirect || redirectLegacyArchiveAlias(context);
 };
 
 // Astro middleware does not expose a Next.js-style `config.matcher` export,
 // so we wrap clerkMiddleware with an inline skip for non-HTML/static routes.
 // This keeps Clerk's auth checks off the hot path for the sitemap, robots,
-// favicon, hashed `_astro/*` assets, and any directly-requested image/font.
+// favicon, hashed `_astro/*` assets, Astro's `/_image/*` transform endpoint,
+// and any directly-requested image/font.
 const clerk = clerkMiddleware();
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
-  if (shouldSkipMiddleware(context.url.pathname)) {
-    return next();
+  const redirect = resolveRequestRedirect(context);
+  if (redirect) {
+    return addSecurityHeaders(redirect);
   }
-  // clerkMiddleware's handler can return void or Response; normalize to
-  // a Response by falling through to next() if nothing was returned.
-  const result = await clerk(context, next);
+
+  let nextResponse: Response | undefined;
+  const runNext = async (): Promise<Response> => {
+    nextResponse ??= await next();
+    return nextResponse;
+  };
+
+  if (shouldSkipClerkMiddleware(context.url.pathname)) {
+    return addSecurityHeaders(await runNext());
+  }
+
+  // Clerk may either return the response from its handler or invoke `next`
+  // and return void. Cache the latter response so route rendering cannot run
+  // twice, which is especially important for request-scoped side effects.
+  const result = await clerk(context, runNext);
   if (result instanceof Response) {
-    return result;
+    return addSecurityHeaders(result);
   }
-  return next();
+  return addSecurityHeaders(await runNext());
 };

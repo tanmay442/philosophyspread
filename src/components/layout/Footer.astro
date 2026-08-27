@@ -22,7 +22,7 @@ const socialLinks: SocialLink[] = [
     icon: 'x',
   },
   {
-    href: '/authors',
+    href: '/authors/',
     label: 'Contributors',
     target: '_self',
     icon: 'groups',
@@ -43,6 +43,8 @@ const socialLinks: SocialLink[] = [
           alt="Philosophy Spread logo" 
           class="h-28 w-28 md:h-32 md:w-32 object-contain" 
           loading="lazy" 
+          width="128"
+          height="128"
         />
       </div>
 
@@ -54,17 +56,17 @@ const socialLinks: SocialLink[] = [
           <h2 class="font-headline text-base md:text-lg uppercase tracking-wider text-primary">Classical Logic</h2>
           <ul class="flex flex-col space-y-3">
             <li>
-              <a href="/logic-modules/module01-propositions" class="font-body text-sm text-secondary/80 transition-all hover:text-primary">
+              <a href="/logic-modules/module01-propositions/" class="font-body text-sm text-secondary/80 transition-all hover:text-primary">
                 Module 01: Propositions
               </a>
             </li>
             <li>
-              <a href="/logic-modules/module02-validity" class="font-body text-sm text-secondary/80 transition-all hover:text-primary">
+              <a href="/logic-modules/module02-validity/" class="font-body text-sm text-secondary/80 transition-all hover:text-primary">
                 Module 02: Validity
               </a>
             </li>
             <li>
-              <a href="/logic-modules/module03-cogencyandanalogy" class="font-body text-sm text-secondary/80 transition-all hover:text-primary">
+              <a href="/logic-modules/module03-cogencyandanalogy/" class="font-body text-sm text-secondary/80 transition-all hover:text-primary">
                 Module 03: Cogency and Analogy
               </a>
             </li>
@@ -76,12 +78,12 @@ const socialLinks: SocialLink[] = [
           <h2 class="font-headline text-base md:text-lg uppercase tracking-wider text-primary">Philosophical Reads</h2>
           <ul class="flex flex-col space-y-3">
             <li>
-              <a href="/bits/page/1" class="font-body text-sm text-secondary/80 transition-all hover:text-primary">
+              <a href="/bits/" class="font-body text-sm text-secondary/80 transition-all hover:text-primary">
                 Idea Bits
               </a>
             </li>
             <li>
-              <a href="/essays/page/1" class="font-body text-sm text-secondary/80 transition-all hover:text-primary">
+              <a href="/essays/" class="font-body text-sm text-secondary/80 transition-all hover:text-primary">
                 Essays
               </a>
             </li>
@@ -97,7 +99,7 @@ const socialLinks: SocialLink[] = [
                 <a 
                   href={link.href} 
                   target={link.target} 
-                  rel={link.target === '_blank' ? "noreferrer" : ""} 
+                    rel={link.target === '_blank' ? "noopener noreferrer" : undefined}
                   class="flex items-center gap-1.5 transition-all hover:text-primary"
                 >
                   <Icon name={link.icon} class="h-4 w-4" />
@@ -121,9 +123,9 @@ const socialLinks: SocialLink[] = [
 
       <!-- Sub-links (Combined Privacy & Terms, alongside Contribute) -->
       <div class="font-body text-xs text-secondary/80 space-x-2">
-        <a href="/terms" class="hover:text-primary hover:underline">Terms & Privacy Policy</a>
+        <a href="/terms/" class="hover:text-primary hover:underline">Terms & Privacy Policy</a>
         <span class="text-secondary/50">|</span>
-        <a href="/contribute" class="hover:text-primary hover:underline">How to Contribute</a>
+        <a href="/contribute/" class="hover:text-primary hover:underline">How to Contribute</a>
       </div>
 
       <!-- Copyright -->

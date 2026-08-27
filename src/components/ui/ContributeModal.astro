@@ -5,9 +5,9 @@ const backdropClass = 'modal-backdrop bg-primary/80 backdrop-blur-sm p-4 md:p-8 
 const contentClass =
   'modal-content relative w-full max-w-2xl lg:max-w-3xl bg-surface-container-lowest border-2 border-secondary shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto';
 const closeButtonClass =
-  'modal-close absolute top-3 right-3 p-2 hover:bg-primary hover:text-on-primary transition-colors z-10';
+  'modal-close absolute top-3 right-3 p-2 hover:bg-primary hover:text-on-primary transition-colors z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
 const featureCardClass =
-  'block p-4 border-2 border-secondary/30 hover:bg-primary hover:text-on-primary transition-all group no-underline hover:no-underline focus:no-underline';
+  'block p-4 border-2 border-secondary/30 hover:bg-primary hover:text-on-primary transition-all group no-underline hover:no-underline focus:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
 const featureIconWrapClass = 'p-2 bg-primary/10 border border-secondary/30';
 const featureTitleClass = 'font-medium group-hover:text-on-primary transition-colors';
 const featureDescClass = 'text-sm text-secondary/70 group-hover:text-on-primary/80 transition-opacity';
@@ -15,17 +15,21 @@ const featureCtaClass = 'flex items-center gap-1 mt-2 text-secondary text-sm gro
 const coffeeButtonClass =
   'inline-flex items-center gap-2 px-4 py-2 bg-primary-container text-secondary font-bold hover:bg-primary hover:text-on-primary transition-colors no-underline hover:no-underline focus:no-underline';
 const contributeLinkClass =
-  'inline-flex items-center gap-2 text-sm text-secondary hover:text-primary transition-colors no-underline hover:no-underline focus:no-underline';
+  'inline-flex items-center gap-2 text-sm text-secondary hover:text-primary transition-colors no-underline hover:no-underline focus:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
 ---
 
 <dialog 
   id="contribute-modal"
   class={backdropClass}
+  aria-labelledby="contribute-modal-title"
+  aria-describedby="contribute-modal-description"
+  aria-modal="true"
 >
   <div class={contentClass}>
-    <button 
+    <button
+      type="button"
       class={closeButtonClass}
-      aria-label="Close"
+      aria-label="Close contribution dialog"
     >
       <Icon name="close" class="w-5 h-5" />
     </button>
@@ -36,10 +40,10 @@ const contributeLinkClass =
           <Icon name="favorite" class="h-8 w-8 text-primary" />
         </div>
       </div>
-      <h3 class="font-headline text-2xl md:text-3xl mb-2 text-secondary">
+      <h2 id="contribute-modal-title" class="font-headline text-2xl md:text-3xl mb-2 text-secondary">
         Support Our Initiative
-      </h3>
-      <p class="text-secondary/80 text-base md:text-lg">
+      </h2>
+      <p id="contribute-modal-description" class="text-secondary/80 text-base md:text-lg">
         Your support helps us keep the philosophical journey alive
       </p>
     </div>
@@ -50,7 +54,7 @@ const contributeLinkClass =
           We appreciate your enthusiasm to join our philosophical journey. Your support reflects the spirit of curiosity and collaborative learning we value.
         </p>
         <div class="flex flex-col items-center gap-3 pt-4">
-        <a href="/contribute" class={contributeLinkClass}>
+        <a href="/contribute/" class={contributeLinkClass}>
           <Icon name="description" class="h-4 w-4" />
           Learn how to contribute to the content
         </a>
@@ -69,7 +73,7 @@ const contributeLinkClass =
               rel="noopener noreferrer"
               class={coffeeButtonClass}
             >
-              <img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Buy Me a Coffee" class="h-5 w-5" />
+              <img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="" class="h-5 w-5" loading="lazy" decoding="async" />
               <span>Buy me a coffee</span>
             </a>
           </div>
@@ -79,6 +83,10 @@ const contributeLinkClass =
               src="/bmc_qr.png" 
               alt="Buy Me a Coffee QR Code" 
               class="w-full h-full object-contain"
+              loading="lazy"
+              decoding="async"
+              width="700"
+              height="700"
             />
           </div>
         </div>
@@ -89,7 +97,7 @@ const contributeLinkClass =
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <a href="/logic-modules/page/1" class={featureCardClass}>
+        <a href="/logic-modules/" class={featureCardClass}>
           <div class="flex items-center gap-3 mb-2">
             <div class={featureIconWrapClass}>
               <Icon name="lightbulb" class="h-5 w-5 text-primary group-hover:text-on-primary" />
@@ -107,7 +115,7 @@ const contributeLinkClass =
           </div>
         </a>
 
-        <a href="/essays/page/1" class={featureCardClass}>
+        <a href="/essays/" class={featureCardClass}>
           <div class="flex items-center gap-3 mb-2">
             <div class={featureIconWrapClass}>
               <Icon name="menu_book" class="h-5 w-5 text-primary group-hover:text-on-primary" />
@@ -130,7 +138,7 @@ const contributeLinkClass =
         <p class="text-xs text-secondary/70 mb-3 italic">
           "The best way to find yourself is to lose yourself in the service of others." - Gandhi
         </p>
-        <button class="modal-close px-6 py-2 border-2 border-secondary text-secondary hover:bg-primary hover:text-on-primary transition-colors">
+        <button type="button" class="modal-close px-6 py-2 border-2 border-secondary text-secondary hover:bg-primary hover:text-on-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
           Continue Exploring
         </button>
       </div>
@@ -149,6 +157,10 @@ const contributeLinkClass =
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+
+  .modal-backdrop:not([open]) {
+    display: none;
   }
 
   .modal-backdrop[open],
@@ -179,19 +191,25 @@ const contributeLinkClass =
 </style>
 
 <script>
-  const modal = document.getElementById('contribute-modal') as HTMLDialogElement;
+  const modal = document.getElementById('contribute-modal') as HTMLDialogElement | null;
   const openButtons = document.querySelectorAll('[data-modal="contribute"]');
-  const closeButtons = modal?.querySelectorAll('.modal-close');
+  const closeButtons = modal?.querySelectorAll<HTMLButtonElement>('.modal-close');
+  let lastFocusedElement: HTMLElement | null = null;
 
   openButtons?.forEach((btn) => {
     btn.addEventListener('click', () => {
-      modal?.showModal();
+      if (!modal || modal.open) return;
+      lastFocusedElement = btn instanceof HTMLElement ? btn : null;
+      modal.showModal();
+      window.requestAnimationFrame(() => {
+        modal.querySelector<HTMLElement>('.modal-close')?.focus({ preventScroll: true });
+      });
     });
   });
 
   closeButtons?.forEach((btn) => {
     btn.addEventListener('click', () => {
-      modal?.close();
+      if (modal?.open) modal.close();
     });
   });
 
@@ -199,5 +217,17 @@ const contributeLinkClass =
     if (e.target === modal) {
       modal.close();
     }
+  });
+
+  modal?.addEventListener('cancel', (event) => {
+    event.preventDefault();
+    modal.close();
+  });
+
+  modal?.addEventListener('close', () => {
+    if (lastFocusedElement?.isConnected) {
+      lastFocusedElement.focus({ preventScroll: true });
+    }
+    lastFocusedElement = null;
   });
 </script>

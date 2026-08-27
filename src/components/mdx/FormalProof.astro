@@ -33,11 +33,12 @@ const getScopeLineStyle = (scopeIndex: number) => `left: ${scopeIndex * SCOPE_CO
 
 <div class="my-8 overflow-x-auto bg-surface-container-low border-2 border-secondary p-4 md:p-6">
   <table class="w-full text-left">
+    <caption class="sr-only">Formal proof</caption>
     <thead>
       <tr class="border-b-2 border-secondary">
-        <th class="p-2 md:p-3 font-label text-xs uppercase tracking-widest text-primary w-16">Line</th>
-        <th class="p-2 md:p-3 font-label text-xs uppercase tracking-widest text-primary">Statement</th>
-        <th class="p-2 md:p-3 font-label text-xs uppercase tracking-widest text-primary">Justification</th>
+        <th scope="col" class="p-2 md:p-3 font-label text-xs uppercase tracking-widest text-primary w-16">Line</th>
+        <th scope="col" class="p-2 md:p-3 font-label text-xs uppercase tracking-widest text-primary">Statement</th>
+        <th scope="col" class="p-2 md:p-3 font-label text-xs uppercase tracking-widest text-primary">Justification</th>
       </tr>
     </thead>
     <tbody>
